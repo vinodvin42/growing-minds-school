@@ -20,7 +20,7 @@ export default function AdminPanel() {
   const router = useRouter();
 
   const load = useCallback(async () => {
-    const res = await fetch("/api/content");
+    const res = await fetch("/api/content", { cache: "no-store" });
     if (res.status === 401) {
       router.push("/admin/login");
       return;
@@ -30,18 +30,34 @@ export default function AdminPanel() {
 
   useEffect(() => { load(); }, [load]);
 
-  async function save() {
-    if (!content) return;
+  async function persist(override?: SiteContent): Promise<boolean> {
+    const payload = override ?? content;
+    if (!payload) return false;
     setSaving(true);
     setStatus("");
-    const res = await fetch("/api/content", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(content),
-    });
-    const data = await res.json();
-    setStatus(data.success ? "Saved! Refresh the public site to see crop/image changes." : data.message || "Save failed");
-    setSaving(false);
+    try {
+      const res = await fetch("/api/content", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        cache: "no-store",
+      });
+      const data = await res.json();
+      if (data.success) {
+        if (data.content) setContent(data.content);
+        else setContent(payload);
+        setStatus("Saved successfully!");
+        return true;
+      }
+      setStatus(data.message || "Save failed");
+      return false;
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function save() {
+    await persist();
   }
 
   async function uploadFile(file: File): Promise<string | null> {
@@ -171,10 +187,10 @@ export default function AdminPanel() {
               <HomepageEditor content={content} setContent={setContent} />
             )}
             {tab === "carousel" && (
-              <CarouselEditor content={content} setContent={setContent} uploadFile={uploadFile} />
+              <CarouselEditor content={content} setContent={setContent} uploadFile={uploadFile} persist={persist} />
             )}
             {tab === "gallery" && (
-              <GalleryEditor content={content} setContent={setContent} uploadFile={uploadFile} />
+              <GalleryEditor content={content} setContent={setContent} uploadFile={uploadFile} persist={persist} />
             )}
             {tab === "videos" && (
               <VideosEditor content={content} setContent={setContent} uploadFile={uploadFile} />
@@ -183,13 +199,13 @@ export default function AdminPanel() {
               <NewsEditor content={content} setContent={setContent} />
             )}
             {tab === "teachers" && (
-              <TeachersEditor content={content} setContent={setContent} uploadFile={uploadFile} />
+              <TeachersEditor content={content} setContent={setContent} uploadFile={uploadFile} persist={persist} />
             )}
             {tab === "testimonials" && (
               <TestimonialsEditor content={content} setContent={setContent} />
             )}
             {tab === "about" && (
-              <AboutEditor content={content} setContent={setContent} uploadFile={uploadFile} />
+              <AboutEditor content={content} setContent={setContent} uploadFile={uploadFile} persist={persist} />
             )}
           </div>
         </main>
@@ -263,19 +279,26 @@ function HomepageEditor({ content, setContent }: { content: SiteContent; setCont
   );
 }
 
-function CarouselEditor({ content, setContent, uploadFile }: { content: SiteContent; setContent: (c: SiteContent) => void; uploadFile: (f: File) => Promise<string | null> }) {
+function CarouselEditor({ content, setContent, uploadFile, persist }: { content: SiteContent; setContent: (c: SiteContent) => void; uploadFile: (f: File) => Promise<string | null>; persist: (override?: SiteContent) => Promise<boolean> }) {
   const [editingId, setEditingId] = useState<string | null>(null);
-  const update = (slides: CarouselSlide[]) => setContent({ ...content, carousel: slides });
+  const withCarousel = (slides: CarouselSlide[]) => ({ ...content, carousel: slides });
+
+  const applyCarousel = (slides: CarouselSlide[]) => {
+    const next = withCarousel(slides);
+    setContent(next);
+    return next;
+  };
+
   const editingIndex = content.carousel.findIndex((s) => s.id === editingId);
   const slide = editingIndex >= 0 ? content.carousel[editingIndex] : null;
 
   const patchSlide = (index: number, patch: Partial<CarouselSlide>) => {
     const slides = [...content.carousel];
     slides[index] = { ...slides[index], ...patch };
-    update(slides);
+    return applyCarousel(slides);
   };
 
-  function addSlide() {
+  async function addSlide() {
     const newSlide: CarouselSlide = {
       id: uid(),
       imageUrl: "",
@@ -291,13 +314,15 @@ function CarouselEditor({ content, setContent, uploadFile }: { content: SiteCont
       imageFocusX: 50,
       imageFocusY: 32,
     };
-    update([...content.carousel, newSlide]);
+    const next = applyCarousel([...content.carousel, newSlide]);
     setEditingId(newSlide.id);
+    await persist(next);
   }
 
-  function removeSlide(id: string) {
-    update(content.carousel.filter((s) => s.id !== id));
+  async function removeSlide(id: string) {
+    const next = applyCarousel(content.carousel.filter((s) => s.id !== id));
     if (editingId === id) setEditingId(null);
+    await persist(next);
   }
 
   if (slide && editingIndex >= 0) {
@@ -340,7 +365,15 @@ function CarouselEditor({ content, setContent, uploadFile }: { content: SiteCont
           </div>
           <div className="col-12">
             <Field label="Upload Image">
-              <input type="file" accept="image/*" className="form-control" onChange={async (e) => { const f = e.target.files?.[0]; if (f) { const url = await uploadFile(f); if (url) patchSlide(i, { imageUrl: url }); } }} />
+              <input type="file" accept="image/*" className="form-control" onChange={async (e) => {
+                const f = e.target.files?.[0];
+                if (!f) return;
+                const url = await uploadFile(f);
+                if (!url) return;
+                const next = patchSlide(i, { imageUrl: url });
+                const ok = await persist(next);
+                if (!ok) alert("Image uploaded but save failed. Click Save Changes.");
+              }} />
             </Field>
           </div>
           <div className="col-12">
@@ -397,26 +430,30 @@ function CarouselEditor({ content, setContent, uploadFile }: { content: SiteCont
   );
 }
 
-function GalleryEditor({ content, setContent, uploadFile }: { content: SiteContent; setContent: (c: SiteContent) => void; uploadFile: (f: File) => Promise<string | null> }) {
+function GalleryEditor({ content, setContent, uploadFile, persist }: { content: SiteContent; setContent: (c: SiteContent) => void; uploadFile: (f: File) => Promise<string | null>; persist: (override?: SiteContent) => Promise<boolean> }) {
   const [editingId, setEditingId] = useState<string | null>(null);
-  const update = (gallery: GalleryImage[]) => setContent({ ...content, gallery });
+  const applyGallery = (gallery: GalleryImage[]) => {
+    const next = { ...content, gallery };
+    setContent(next);
+    return next;
+  };
   const editingIndex = content.gallery.findIndex((g) => g.id === editingId);
   const img = editingIndex >= 0 ? content.gallery[editingIndex] : null;
 
   const patchImage = (index: number, patch: Partial<GalleryImage>) => {
     const gallery = [...content.gallery];
     gallery[index] = { ...gallery[index], ...patch };
-    update(gallery);
+    return applyGallery(gallery);
   };
 
   function addPhoto() {
     const newImg: GalleryImage = { id: uid(), imageUrl: "", alt: "Photo", title: "", caption: "", category: "Campus" };
-    update([...content.gallery, newImg]);
+    applyGallery([...content.gallery, newImg]);
     setEditingId(newImg.id);
   }
 
   function removePhoto(id: string) {
-    update(content.gallery.filter((g) => g.id !== id));
+    applyGallery(content.gallery.filter((g) => g.id !== id));
     if (editingId === id) setEditingId(null);
   }
 
@@ -446,7 +483,14 @@ function GalleryEditor({ content, setContent, uploadFile }: { content: SiteConte
           </div>
           <div className="col-12">
             <Field label="Upload Image">
-              <input type="file" accept="image/*" className="form-control" onChange={async (e) => { const f = e.target.files?.[0]; if (f) { const url = await uploadFile(f); if (url) patchImage(i, { imageUrl: url }); } }} />
+              <input type="file" accept="image/*" className="form-control" onChange={async (e) => {
+                const f = e.target.files?.[0];
+                if (!f) return;
+                const url = await uploadFile(f);
+                if (!url) return;
+                const next = patchImage(i, { imageUrl: url });
+                await persist(next);
+              }} />
             </Field>
           </div>
         </div>
@@ -625,26 +669,30 @@ function NewsEditor({ content, setContent }: { content: SiteContent; setContent:
   );
 }
 
-function TeachersEditor({ content, setContent, uploadFile }: { content: SiteContent; setContent: (c: SiteContent) => void; uploadFile: (f: File) => Promise<string | null> }) {
+function TeachersEditor({ content, setContent, uploadFile, persist }: { content: SiteContent; setContent: (c: SiteContent) => void; uploadFile: (f: File) => Promise<string | null>; persist: (override?: SiteContent) => Promise<boolean> }) {
   const [editingId, setEditingId] = useState<string | null>(null);
-  const update = (teachers: Teacher[]) => setContent({ ...content, teachers });
+  const applyTeachers = (teachers: Teacher[]) => {
+    const next = { ...content, teachers };
+    setContent(next);
+    return next;
+  };
   const editingIndex = content.teachers.findIndex((t) => t.id === editingId);
   const teacher = editingIndex >= 0 ? content.teachers[editingIndex] : null;
 
   const patchTeacher = (index: number, patch: Partial<Teacher>) => {
     const teachers = [...content.teachers];
     teachers[index] = { ...teachers[index], ...patch };
-    update(teachers);
+    return applyTeachers(teachers);
   };
 
   function addTeacher() {
     const newTeacher: Teacher = { id: uid(), name: "New Teacher", role: "Teacher", experience: "", photoUrl: "" };
-    update([...content.teachers, newTeacher]);
+    applyTeachers([...content.teachers, newTeacher]);
     setEditingId(newTeacher.id);
   }
 
   function removeTeacher(id: string) {
-    update(content.teachers.filter((t) => t.id !== id));
+    applyTeachers(content.teachers.filter((t) => t.id !== id));
     if (editingId === id) setEditingId(null);
   }
 
@@ -659,7 +707,14 @@ function TeachersEditor({ content, setContent, uploadFile }: { content: SiteCont
           <div className="col-md-6"><Field label="Photo URL"><input className="form-control" value={teacher.photoUrl} onChange={(e) => patchTeacher(i, { photoUrl: e.target.value })} /></Field></div>
           <div className="col-12">
             <Field label="Upload Photo">
-              <input type="file" accept="image/*" className="form-control" onChange={async (e) => { const f = e.target.files?.[0]; if (f) { const url = await uploadFile(f); if (url) patchTeacher(i, { photoUrl: url }); } }} />
+              <input type="file" accept="image/*" className="form-control" onChange={async (e) => {
+                const f = e.target.files?.[0];
+                if (!f) return;
+                const url = await uploadFile(f);
+                if (!url) return;
+                const next = patchTeacher(i, { photoUrl: url });
+                await persist(next);
+              }} />
             </Field>
           </div>
         </div>
@@ -741,12 +796,20 @@ function TestimonialsEditor({ content, setContent }: { content: SiteContent; set
   );
 }
 
-function AboutEditor({ content, setContent, uploadFile }: { content: SiteContent; setContent: (c: SiteContent) => void; uploadFile: (f: File) => Promise<string | null> }) {
+function AboutEditor({ content, setContent, uploadFile, persist }: { content: SiteContent; setContent: (c: SiteContent) => void; uploadFile: (f: File) => Promise<string | null>; persist: (override?: SiteContent) => Promise<boolean> }) {
   const a = content.about;
   const update = (key: keyof typeof a, value: string) =>
     setContent({ ...content, about: { ...a, [key]: value } });
   const patchAbout = (patch: Partial<typeof a>) =>
     setContent({ ...content, about: { ...a, ...patch } });
+
+  async function uploadAboutImage(key: "introImageUrl" | "approachImageUrl", file: File) {
+    const url = await uploadFile(file);
+    if (!url) return;
+    const next = { ...content, about: { ...a, [key]: url } };
+    setContent(next);
+    await persist(next);
+  }
 
   return (
     <>
@@ -766,7 +829,7 @@ function AboutEditor({ content, setContent, uploadFile }: { content: SiteContent
         <div className="col-md-6">
           <Field label="Intro Text"><textarea className="form-control" rows={4} value={a.introText} onChange={(e) => update("introText", e.target.value)} /></Field>
           <Field label="Intro Image URL"><input className="form-control" value={a.introImageUrl} onChange={(e) => update("introImageUrl", e.target.value)} /></Field>
-          <input type="file" accept="image/*" className="form-control form-control-sm mb-2" onChange={async (e) => { const f = e.target.files?.[0]; if (f) { const url = await uploadFile(f); if (url) update("introImageUrl", url); } }} />
+          <input type="file" accept="image/*" className="form-control form-control-sm mb-2" onChange={async (e) => { const f = e.target.files?.[0]; if (f) await uploadAboutImage("introImageUrl", f); }} />
           <Field label="Intro Image Crop">
             <ImageCropEditor
               imageUrl={a.introImageUrl}
@@ -781,7 +844,7 @@ function AboutEditor({ content, setContent, uploadFile }: { content: SiteContent
             />
           </Field>
           <Field label="Approach Image URL"><input className="form-control" value={a.approachImageUrl} onChange={(e) => update("approachImageUrl", e.target.value)} /></Field>
-          <input type="file" accept="image/*" className="form-control form-control-sm mb-2" onChange={async (e) => { const f = e.target.files?.[0]; if (f) { const url = await uploadFile(f); if (url) update("approachImageUrl", url); } }} />
+          <input type="file" accept="image/*" className="form-control form-control-sm mb-2" onChange={async (e) => { const f = e.target.files?.[0]; if (f) await uploadAboutImage("approachImageUrl", f); }} />
           <Field label="Approach Image Crop">
             <ImageCropEditor
               imageUrl={a.approachImageUrl}

@@ -1,4 +1,4 @@
-import { head, put } from "@vercel/blob";
+import { get, put } from "@vercel/blob";
 import { defaultContent, CONTENT_BLOB_PATH } from "@/data/default-content";
 import { blobStorageErrorMessage, isBlobStorageConfigured } from "@/lib/blob-storage";
 import type { SiteContent } from "@/types/content";
@@ -9,22 +9,25 @@ export async function getSiteContent(): Promise<SiteContent> {
   }
 
   try {
-    const blobHead = await head(CONTENT_BLOB_PATH);
-    if (!blobHead?.downloadUrl) {
+    const result = await get(CONTENT_BLOB_PATH, { access: "public" });
+
+    if (!result || result.statusCode !== 200 || !result.stream) {
       return defaultContent;
     }
 
-    const response = await fetch(blobHead.downloadUrl, {
-      cache: "no-store",
-    });
-
-    if (!response.ok) {
+    const text = await new Response(result.stream).text();
+    if (!text.trim()) {
       return defaultContent;
     }
 
-    const data = (await response.json()) as SiteContent;
+    const data = JSON.parse(text) as SiteContent;
     return mergeWithDefaults(data);
-  } catch {
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (message.toLowerCase().includes("not found")) {
+      return defaultContent;
+    }
+    console.error("Failed to load site content from Blob:", error);
     return defaultContent;
   }
 }
