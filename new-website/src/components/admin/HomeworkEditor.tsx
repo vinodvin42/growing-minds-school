@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import {
   AdminBadge,
   AdminCellText,
+  AdminCollapsibleSection,
   AdminEditModal,
-  AdminListHeader,
   AdminTable,
   AdminTableActions,
 } from "@/components/admin/AdminListUi";
@@ -128,13 +128,14 @@ export default function HomeworkEditor({ uploadFile }: { uploadFile: (f: File) =
 
   return (
     <>
-      <AdminListHeader
+      <AdminCollapsibleSection
         title="Homework"
         hint="Assign homework with PDF/worksheets. Target all students, a class, or individuals."
         count={portal.homework.length}
         addLabel="Add Homework"
         onAdd={addItem}
-      />
+        defaultOpen
+      >
       {portal.homework.length === 0 ? (
         <div className="admin-empty-list">
           <i className="fas fa-book d-block" />
@@ -168,6 +169,7 @@ export default function HomeworkEditor({ uploadFile }: { uploadFile: (f: File) =
           </tbody>
         </AdminTable>
       )}
+      </AdminCollapsibleSection>
       <div className="d-flex align-items-center gap-3 mt-3">
         <button type="button" className="btn btn-orange" disabled={saving} onClick={() => save()}>
           {saving ? "Saving…" : "Save All Homework"}

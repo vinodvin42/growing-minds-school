@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import {
   AdminBadge,
   AdminCellText,
+  AdminCollapsibleSection,
   AdminEditModal,
-  AdminListHeader,
   AdminTable,
   AdminTableActions,
 } from "@/components/admin/AdminListUi";
@@ -132,13 +132,14 @@ export default function StudentsEditor() {
 
   return (
     <>
-      <AdminListHeader
+      <AdminCollapsibleSection
         title="Student Management"
         hint="Create student IDs and passwords for the PWA student app. Data is stored securely (private blob)."
         count={students.length}
         addLabel="Add Student"
         onAdd={addStudent}
-      />
+        defaultOpen
+      >
       {students.length === 0 ? (
         <div className="admin-empty-list">
           <i className="fas fa-user-graduate d-block" />
@@ -178,6 +179,7 @@ export default function StudentsEditor() {
           </tbody>
         </AdminTable>
       )}
+      </AdminCollapsibleSection>
       <div className="d-flex align-items-center gap-3 mt-3">
         <button type="button" className="btn btn-orange" disabled={saving} onClick={() => save()}>
           {saving ? "Saving…" : "Save All Students"}

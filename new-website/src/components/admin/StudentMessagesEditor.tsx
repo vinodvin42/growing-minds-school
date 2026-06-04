@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import {
   AdminBadge,
   AdminCellText,
+  AdminCollapsibleSection,
   AdminEditModal,
-  AdminListHeader,
   AdminTable,
   AdminTableActions,
 } from "@/components/admin/AdminListUi";
@@ -134,13 +134,14 @@ export default function StudentMessagesEditor({ uploadFile }: { uploadFile: (f: 
 
   return (
     <>
-      <AdminListHeader
+      <AdminCollapsibleSection
         title="Teacher Messages"
         hint="Broadcast notices to a class or send individual messages with PDF/files attached."
         count={portal.messages.length}
         addLabel="New Message"
         onAdd={addItem}
-      />
+        defaultOpen
+      >
       {portal.messages.length === 0 ? (
         <div className="admin-empty-list">
           <i className="fas fa-bullhorn d-block" />
@@ -178,6 +179,7 @@ export default function StudentMessagesEditor({ uploadFile }: { uploadFile: (f: 
           </tbody>
         </AdminTable>
       )}
+      </AdminCollapsibleSection>
       <div className="d-flex align-items-center gap-3 mt-3">
         <button type="button" className="btn btn-orange" disabled={saving} onClick={() => save()}>
           {saving ? "Saving…" : "Save All Messages"}

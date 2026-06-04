@@ -8,7 +8,7 @@ import {
   AdminBadge,
   AdminCellText,
   AdminEditModal,
-  AdminListHeader,
+  AdminCollapsibleSection,
   AdminTable,
   AdminTableActions,
   AdminTableThumb,
@@ -20,8 +20,6 @@ import AdminTopNav from "@/components/admin/AdminTopNav";
 import AdminDashboard from "@/components/admin/AdminDashboard";
 import {
   type AdminTab,
-  findAdminNavItem,
-  findAdminSection,
   usesWebsiteContentSave,
 } from "@/components/admin/admin-nav";
 import { ACTIVITY_CATEGORIES } from "@/lib/activities";
@@ -102,8 +100,6 @@ export default function AdminPanel() {
     );
   }
 
-  const activeItem = findAdminNavItem(tab);
-  const activeSection = findAdminSection(tab);
   const showWebsiteSave = usesWebsiteContentSave(tab);
 
   function selectTab(id: AdminTab) {
@@ -150,23 +146,14 @@ export default function AdminPanel() {
       )}
 
       <main className="admin-main">
-        <div className="admin-main__head">
-          <div className="admin-main__head-text">
-            {activeSection && tab !== "dashboard" && (
-              <p className="admin-main__section-label">{activeSection.label}</p>
-            )}
-            <h1 className="admin-main__page-title">{activeItem?.label ?? "Admin"}</h1>
-            {activeItem?.hint && tab !== "dashboard" && (
-              <p className="admin-main__subtitle">{activeItem.hint}</p>
-            )}
-          </div>
-          {showWebsiteSave && (
-            <button type="button" className="btn btn-orange admin-main__save-btn" onClick={save} disabled={saving}>
+        {showWebsiteSave && (
+          <div className="admin-main__save-row">
+            <button type="button" className="btn btn-sm btn-orange" onClick={save} disabled={saving}>
               <i className="fas fa-save me-1" />
               {saving ? "Saving..." : "Save Website"}
             </button>
-          )}
-        </div>
+          </div>
+        )}
         <div className="admin-card">
             {tab === "dashboard" && <AdminDashboard onSelect={selectTab} />}
             {tab === "settings" && (
@@ -223,8 +210,7 @@ function SettingsEditor({ content, setContent }: { content: SiteContent; setCont
     setContent({ ...content, settings: { ...s, [key]: value } });
 
   return (
-    <>
-      <h2 className="admin-section-title">Site Settings</h2>
+    <AdminCollapsibleSection title="Site Settings" hint="Logo, contact details, footer, and map." defaultOpen>
       <div className="row">
         <div className="col-md-6">
           <Field label="School Name"><input className="form-control" value={s.schoolName} onChange={(e) => update("schoolName", e.target.value)} /></Field>
@@ -240,7 +226,7 @@ function SettingsEditor({ content, setContent }: { content: SiteContent; setCont
           <Field label="Map Embed URL"><input className="form-control" value={s.mapEmbedUrl} onChange={(e) => update("mapEmbedUrl", e.target.value)} /></Field>
         </div>
       </div>
-    </>
+    </AdminCollapsibleSection>
   );
 }
 
@@ -250,14 +236,13 @@ function HomepageEditor({ content, setContent }: { content: SiteContent; setCont
     setContent({ ...content, homepage: { ...h, [key]: value } });
 
   return (
-    <>
-      <h2 className="admin-section-title">Homepage Content</h2>
+    <AdminCollapsibleSection title="Homepage" hint="Hero text and admissions banner copy." defaultOpen>
       {(["badge", "heroTitle", "heroHighlight", "heroTagline", "heroDescription", "admissionTitle", "admissionYear", "admissionGrades", "featuredVideoButtonText"] as const).map((key) => (
         <Field key={key} label={key.replace(/([A-Z])/g, " $1").replace(/^./, (s) => s.toUpperCase())}>
           <input className="form-control" value={h[key]} onChange={(e) => update(key, e.target.value)} />
         </Field>
       ))}
-    </>
+    </AdminCollapsibleSection>
   );
 }
 
@@ -309,13 +294,14 @@ function CarouselEditor({ content, setContent, uploadFile, persist }: { content:
 
   return (
     <>
-      <AdminListHeader
+      <AdminCollapsibleSection
         title="Hero Carousel Slides"
         hint="Edit opens a popup with image crop preview. Remember to Save Website when done."
         count={content.carousel.length}
         addLabel="Add Slide"
         onAdd={addSlide}
-      />
+        defaultOpen
+      >
       {content.carousel.length === 0 ? (
         <div className="admin-empty-list">
           <i className="fas fa-images d-block" />
@@ -347,6 +333,7 @@ function CarouselEditor({ content, setContent, uploadFile, persist }: { content:
           </tbody>
         </AdminTable>
       )}
+      </AdminCollapsibleSection>
 
       <AdminEditModal
         open={slide != null && editingIndex >= 0}
@@ -450,7 +437,14 @@ function GalleryEditor({ content, setContent, uploadFile, persist }: { content: 
 
   return (
     <>
-      <AdminListHeader title="Photo Gallery" hint="Upload photos with title, caption, and category. They appear on /gallery and the homepage preview." count={content.gallery.length} addLabel="Add Photo" onAdd={addPhoto} />
+      <AdminCollapsibleSection
+        title="Photo Gallery"
+        hint="Upload photos with title, caption, and category. They appear on /gallery and the homepage preview."
+        count={content.gallery.length}
+        addLabel="Add Photo"
+        onAdd={addPhoto}
+        defaultOpen
+      >
       {content.gallery.length === 0 ? (
         <div className="admin-empty-list">
           <i className="fas fa-camera d-block" />
@@ -480,6 +474,7 @@ function GalleryEditor({ content, setContent, uploadFile, persist }: { content: 
           </tbody>
         </AdminTable>
       )}
+      </AdminCollapsibleSection>
 
       <AdminEditModal
         open={img != null && editingIndex >= 0}
@@ -579,16 +574,27 @@ function ActivitiesEditor({ content, setContent, uploadFile, persist }: { conten
 
   return (
     <>
-      <h2 className="admin-section-title">Section Intro</h2>
-      <p className="admin-hint mb-3">Headline text for the homepage block and /activities page.</p>
-      <div className="row g-2 mb-4">
-        <div className="col-md-6"><Field label="Eyebrow"><input className="form-control" value={section.eyebrow} onChange={(e) => updateSection("eyebrow", e.target.value)} /></Field></div>
-        <div className="col-md-3"><Field label="Title"><input className="form-control" value={section.title} onChange={(e) => updateSection("title", e.target.value)} /></Field></div>
-        <div className="col-md-3"><Field label="Highlight"><input className="form-control" value={section.highlight} onChange={(e) => updateSection("highlight", e.target.value)} /></Field></div>
-        <div className="col-12"><Field label="Subtitle"><textarea className="form-control" rows={2} value={section.subtitle} onChange={(e) => updateSection("subtitle", e.target.value)} /></Field></div>
-      </div>
+      <AdminCollapsibleSection
+        title="Section Intro"
+        hint="Headline text for the homepage block and /activities page."
+        defaultOpen={false}
+      >
+        <div className="row g-2">
+          <div className="col-md-6"><Field label="Eyebrow"><input className="form-control" value={section.eyebrow} onChange={(e) => updateSection("eyebrow", e.target.value)} /></Field></div>
+          <div className="col-md-3"><Field label="Title"><input className="form-control" value={section.title} onChange={(e) => updateSection("title", e.target.value)} /></Field></div>
+          <div className="col-md-3"><Field label="Highlight"><input className="form-control" value={section.highlight} onChange={(e) => updateSection("highlight", e.target.value)} /></Field></div>
+          <div className="col-12"><Field label="Subtitle"><textarea className="form-control" rows={2} value={section.subtitle} onChange={(e) => updateSection("subtitle", e.target.value)} /></Field></div>
+        </div>
+      </AdminCollapsibleSection>
 
-      <AdminListHeader title="Student Activities" hint="Card shows the short summary. View Details opens a photo + article layout with the full story." count={content.activities.length} addLabel="Add Activity" onAdd={addActivity} />
+      <AdminCollapsibleSection
+        title="Student Activities"
+        hint="Card shows the short summary. View Details opens a photo + article layout with the full story."
+        count={content.activities.length}
+        addLabel="Add Activity"
+        onAdd={addActivity}
+        defaultOpen
+      >
       {content.activities.length === 0 ? (
         <div className="admin-empty-list">
           <i className="fas fa-palette d-block" />
@@ -620,6 +626,7 @@ function ActivitiesEditor({ content, setContent, uploadFile, persist }: { conten
           </tbody>
         </AdminTable>
       )}
+      </AdminCollapsibleSection>
 
       <AdminEditModal
         open={activity != null && editingIndex >= 0}
@@ -723,7 +730,14 @@ function VideosEditor({ content, setContent, uploadFile }: { content: SiteConten
 
   return (
     <>
-      <AdminListHeader title="Video Library" hint="Edit opens a popup to manage embed URL, thumbnail, and featured status." count={content.videos.length} addLabel="Add Video" onAdd={addVideo} />
+      <AdminCollapsibleSection
+        title="Video Library"
+        hint="Edit opens a popup to manage embed URL, thumbnail, and featured status."
+        count={content.videos.length}
+        addLabel="Add Video"
+        onAdd={addVideo}
+        defaultOpen
+      >
       {content.videos.length === 0 ? (
         <div className="admin-empty-list">
           <i className="fas fa-video d-block" />
@@ -753,6 +767,7 @@ function VideosEditor({ content, setContent, uploadFile }: { content: SiteConten
           </tbody>
         </AdminTable>
       )}
+      </AdminCollapsibleSection>
 
       <AdminEditModal
         open={video != null && editingIndex >= 0}
@@ -821,13 +836,25 @@ function NewsEditor({ content, setContent }: { content: SiteContent; setContent:
 
   return (
     <>
-      <h2 className="admin-section-title">News & Events</h2>
-      <h3 className="admin-section-subtitle">Main Announcement Banner</h3>
-      <Field label="Title"><input className="form-control" value={ann.title} onChange={(e) => setContent({ ...content, newsAnnouncement: { ...ann, title: e.target.value } })} /></Field>
-      <Field label="Subtitle"><input className="form-control" value={ann.subtitle} onChange={(e) => setContent({ ...content, newsAnnouncement: { ...ann, subtitle: e.target.value } })} /></Field>
-      <Field label="Description"><textarea className="form-control" rows={2} value={ann.description} onChange={(e) => setContent({ ...content, newsAnnouncement: { ...ann, description: e.target.value } })} /></Field>
-      <hr className="admin-divider" />
-      <AdminListHeader title="News Items" hint="Edit opens a popup to update a news card." count={content.news.length} addLabel="Add News Item" onAdd={addItem} />
+      <AdminCollapsibleSection
+        title="Main Announcement Banner"
+        hint="Large banner shown at the top of the news page."
+        level="subsection"
+        defaultOpen={false}
+      >
+        <Field label="Title"><input className="form-control" value={ann.title} onChange={(e) => setContent({ ...content, newsAnnouncement: { ...ann, title: e.target.value } })} /></Field>
+        <Field label="Subtitle"><input className="form-control" value={ann.subtitle} onChange={(e) => setContent({ ...content, newsAnnouncement: { ...ann, subtitle: e.target.value } })} /></Field>
+        <Field label="Description"><textarea className="form-control" rows={2} value={ann.description} onChange={(e) => setContent({ ...content, newsAnnouncement: { ...ann, description: e.target.value } })} /></Field>
+      </AdminCollapsibleSection>
+
+      <AdminCollapsibleSection
+        title="News Items"
+        hint="Edit opens a popup to update a news card."
+        count={content.news.length}
+        addLabel="Add News Item"
+        onAdd={addItem}
+        defaultOpen
+      >
       {content.news.length === 0 ? (
         <div className="admin-empty-list">
           <i className="fas fa-newspaper d-block" />
@@ -857,6 +884,7 @@ function NewsEditor({ content, setContent }: { content: SiteContent; setContent:
           </tbody>
         </AdminTable>
       )}
+      </AdminCollapsibleSection>
 
       <AdminEditModal
         open={item != null && editingIndex >= 0}
@@ -909,7 +937,14 @@ function TeachersEditor({ content, setContent, uploadFile, persist }: { content:
 
   return (
     <>
-      <AdminListHeader title="Teachers" hint="Edit opens a popup to update teacher details and photo." count={content.teachers.length} addLabel="Add Teacher" onAdd={addTeacher} />
+      <AdminCollapsibleSection
+        title="Teachers"
+        hint="Edit opens a popup to update teacher details and photo."
+        count={content.teachers.length}
+        addLabel="Add Teacher"
+        onAdd={addTeacher}
+        defaultOpen
+      >
       {content.teachers.length === 0 ? (
         <div className="admin-empty-list">
           <i className="fas fa-chalkboard-teacher d-block" />
@@ -939,6 +974,7 @@ function TeachersEditor({ content, setContent, uploadFile, persist }: { content:
           </tbody>
         </AdminTable>
       )}
+      </AdminCollapsibleSection>
 
       <AdminEditModal
         open={teacher != null && editingIndex >= 0}
@@ -996,7 +1032,14 @@ function TestimonialsEditor({ content, setContent }: { content: SiteContent; set
 
   return (
     <>
-      <AdminListHeader title="Parent Testimonials" hint="Edit opens a popup to update quote and author details." count={content.testimonials.length} addLabel="Add Testimonial" onAdd={addTestimonial} />
+      <AdminCollapsibleSection
+        title="Parent Testimonials"
+        hint="Edit opens a popup to update quote and author details."
+        count={content.testimonials.length}
+        addLabel="Add Testimonial"
+        onAdd={addTestimonial}
+        defaultOpen
+      >
       {content.testimonials.length === 0 ? (
         <div className="admin-empty-list">
           <i className="fas fa-quote-left d-block" />
@@ -1024,6 +1067,7 @@ function TestimonialsEditor({ content, setContent }: { content: SiteContent; set
           </tbody>
         </AdminTable>
       )}
+      </AdminCollapsibleSection>
 
       <AdminEditModal
         open={testimonial != null && editingIndex >= 0}
@@ -1062,53 +1106,63 @@ function AboutEditor({ content, setContent, uploadFile, persist }: { content: Si
 
   return (
     <>
-      <h2 className="admin-section-title">About Page</h2>
-      <div className="row">
-        <div className="col-md-6">
-          {(["heroTitle", "heroSubtitle", "introTitle", "introLead", "vision", "visionExtra", "mission", "missionExtra"] as const).map((key) => (
-            <Field key={key} label={key}>
-              {key.includes("Extra") || key === "introLead" || key === "vision" || key === "mission" ? (
-                <textarea className="form-control" rows={2} value={a[key]} onChange={(e) => update(key, e.target.value)} />
-              ) : (
-                <input className="form-control" value={a[key]} onChange={(e) => update(key, e.target.value)} />
-              )}
+      <AdminCollapsibleSection title="Hero & story" hint="Titles, vision, mission, and intro copy." defaultOpen>
+        <div className="row">
+          <div className="col-md-6">
+            {(["heroTitle", "heroSubtitle", "introTitle", "introLead", "vision", "visionExtra", "mission", "missionExtra"] as const).map((key) => (
+              <Field key={key} label={key}>
+                {key.includes("Extra") || key === "introLead" || key === "vision" || key === "mission" ? (
+                  <textarea className="form-control" rows={2} value={a[key]} onChange={(e) => update(key, e.target.value)} />
+                ) : (
+                  <input className="form-control" value={a[key]} onChange={(e) => update(key, e.target.value)} />
+                )}
+              </Field>
+            ))}
+          </div>
+          <div className="col-md-6">
+            <Field label="Intro Text"><textarea className="form-control" rows={4} value={a.introText} onChange={(e) => update("introText", e.target.value)} /></Field>
+          </div>
+        </div>
+      </AdminCollapsibleSection>
+
+      <AdminCollapsibleSection title="Page images" hint="Intro and approach photos with crop focus." defaultOpen={false}>
+        <div className="row">
+          <div className="col-md-6">
+            <Field label="Intro Image URL"><input className="form-control" value={a.introImageUrl} onChange={(e) => update("introImageUrl", e.target.value)} /></Field>
+            <input type="file" accept="image/*" className="form-control form-control-sm mb-2" onChange={async (e) => { const f = e.target.files?.[0]; if (f) await uploadAboutImage("introImageUrl", f); }} />
+            <Field label="Intro Image Crop">
+              <ImageCropEditor
+                imageUrl={a.introImageUrl}
+                fit={a.introImageFit}
+                focusX={a.introImageFocusX}
+                focusY={a.introImageFocusY}
+                focus={a.introImageFocus}
+                previewVariant="about"
+                onChange={({ fit, focusX, focusY }) =>
+                  patchAbout({ introImageFit: fit, introImageFocusX: focusX, introImageFocusY: focusY })
+                }
+              />
             </Field>
-          ))}
+          </div>
+          <div className="col-md-6">
+            <Field label="Approach Image URL"><input className="form-control" value={a.approachImageUrl} onChange={(e) => update("approachImageUrl", e.target.value)} /></Field>
+            <input type="file" accept="image/*" className="form-control form-control-sm mb-2" onChange={async (e) => { const f = e.target.files?.[0]; if (f) await uploadAboutImage("approachImageUrl", f); }} />
+            <Field label="Approach Image Crop">
+              <ImageCropEditor
+                imageUrl={a.approachImageUrl}
+                fit={a.approachImageFit}
+                focusX={a.approachImageFocusX}
+                focusY={a.approachImageFocusY}
+                focus={a.approachImageFocus}
+                previewVariant="about"
+                onChange={({ fit, focusX, focusY }) =>
+                  patchAbout({ approachImageFit: fit, approachImageFocusX: focusX, approachImageFocusY: focusY })
+                }
+              />
+            </Field>
+          </div>
         </div>
-        <div className="col-md-6">
-          <Field label="Intro Text"><textarea className="form-control" rows={4} value={a.introText} onChange={(e) => update("introText", e.target.value)} /></Field>
-          <Field label="Intro Image URL"><input className="form-control" value={a.introImageUrl} onChange={(e) => update("introImageUrl", e.target.value)} /></Field>
-          <input type="file" accept="image/*" className="form-control form-control-sm mb-2" onChange={async (e) => { const f = e.target.files?.[0]; if (f) await uploadAboutImage("introImageUrl", f); }} />
-          <Field label="Intro Image Crop">
-            <ImageCropEditor
-              imageUrl={a.introImageUrl}
-              fit={a.introImageFit}
-              focusX={a.introImageFocusX}
-              focusY={a.introImageFocusY}
-              focus={a.introImageFocus}
-              previewVariant="about"
-              onChange={({ fit, focusX, focusY }) =>
-                patchAbout({ introImageFit: fit, introImageFocusX: focusX, introImageFocusY: focusY })
-              }
-            />
-          </Field>
-          <Field label="Approach Image URL"><input className="form-control" value={a.approachImageUrl} onChange={(e) => update("approachImageUrl", e.target.value)} /></Field>
-          <input type="file" accept="image/*" className="form-control form-control-sm mb-2" onChange={async (e) => { const f = e.target.files?.[0]; if (f) await uploadAboutImage("approachImageUrl", f); }} />
-          <Field label="Approach Image Crop">
-            <ImageCropEditor
-              imageUrl={a.approachImageUrl}
-              fit={a.approachImageFit}
-              focusX={a.approachImageFocusX}
-              focusY={a.approachImageFocusY}
-              focus={a.approachImageFocus}
-              previewVariant="about"
-              onChange={({ fit, focusX, focusY }) =>
-                patchAbout({ approachImageFit: fit, approachImageFocusX: focusX, approachImageFocusY: focusY })
-              }
-            />
-          </Field>
-        </div>
-      </div>
+      </AdminCollapsibleSection>
     </>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useId, useState } from "react";
 
 type AdminListHeaderProps = {
   title: string;
@@ -23,6 +23,69 @@ export function AdminListHeader({ title, hint, count, addLabel, onAdd }: AdminLi
         {addLabel}
       </button>
     </div>
+  );
+}
+
+type AdminCollapsibleSectionProps = {
+  title: string;
+  hint?: string;
+  defaultOpen?: boolean;
+  level?: "section" | "subsection";
+  count?: number;
+  addLabel?: string;
+  onAdd?: () => void;
+  children: React.ReactNode;
+};
+
+export function AdminCollapsibleSection({
+  title,
+  hint,
+  defaultOpen = true,
+  level = "section",
+  count,
+  addLabel,
+  onAdd,
+  children,
+}: AdminCollapsibleSectionProps) {
+  const [open, setOpen] = useState(defaultOpen);
+  const panelId = useId();
+
+  return (
+    <section className={`admin-collapse ${open ? "is-open" : ""} ${level === "subsection" ? "admin-collapse--sub" : ""}`}>
+      <div className="admin-collapse__header">
+        <button
+          type="button"
+          className="admin-collapse__toggle"
+          onClick={() => setOpen((v) => !v)}
+          aria-expanded={open}
+          aria-controls={panelId}
+        >
+          {level === "section" ? (
+            <h2 className="admin-section-title admin-collapse__title">{title}</h2>
+          ) : (
+            <h3 className="admin-section-subtitle admin-collapse__title">{title}</h3>
+          )}
+          <i className={`fas fa-chevron-down admin-collapse__chevron${open ? " is-open" : ""}`} aria-hidden="true" />
+        </button>
+        {(count !== undefined || onAdd) && (
+          <div className="admin-collapse__actions">
+            {count !== undefined && (
+              <span className="admin-collapse__count">{count} item{count === 1 ? "" : "s"}</span>
+            )}
+            {onAdd && addLabel && (
+              <button type="button" className="btn btn-orange btn-sm" onClick={onAdd}>
+                <i className="fas fa-plus me-1" />
+                {addLabel}
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+      <div id={panelId} className="admin-collapse__body" hidden={!open}>
+        {hint && <p className="admin-hint admin-collapse__hint">{hint}</p>}
+        {children}
+      </div>
+    </section>
   );
 }
 

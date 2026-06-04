@@ -379,22 +379,10 @@
         padding: 1.5rem 1.5rem 2rem;
     }
 }
-.admin-main__head {
+.admin-main__save-row {
     display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 1rem;
-}
-.admin-main__head-text {
-    flex: 1;
-    min-width: 0;
-}
-.admin-main__save-btn {
-    flex-shrink: 0;
-    font-weight: 700;
-    align-self: flex-start;
+    justify-content: flex-end;
+    margin-bottom: 0.75rem;
 }
 .admin-main__page-title {
     font-family: var(--font-display);
@@ -820,6 +808,81 @@
     font-size: 2rem;
     color: var(--slate-light);
     margin-bottom: 0.75rem;
+}
+
+/* Collapsible admin sections */
+.admin-collapse {
+    border: 1px solid rgba(45, 74, 34, 0.1);
+    border-radius: var(--radius);
+    margin-bottom: 1rem;
+    overflow: hidden;
+    background: white;
+}
+.admin-collapse__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: var(--surface-green);
+    border-bottom: 1px solid transparent;
+}
+.admin-collapse.is-open .admin-collapse__header {
+    border-bottom-color: rgba(255, 140, 0, 0.2);
+}
+.admin-collapse__toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    flex: 1;
+    min-width: 0;
+    border: none;
+    background: none;
+    padding: 0;
+    cursor: pointer;
+    text-align: left;
+}
+.admin-collapse__title {
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    border-image: none !important;
+}
+.admin-collapse--sub .admin-collapse__title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--green-dark);
+}
+.admin-collapse__chevron {
+    color: var(--slate);
+    font-size: 0.75rem;
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+}
+.admin-collapse__chevron.is-open {
+    transform: rotate(180deg);
+}
+.admin-collapse__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+.admin-collapse__count {
+    font-size: 0.8125rem;
+    color: var(--slate);
+    white-space: nowrap;
+}
+.admin-collapse__body {
+    padding: 1rem 1.25rem 1.25rem;
+}
+.admin-collapse__body[hidden] {
+    display: none;
+}
+.admin-collapse__hint {
+    margin-top: 0;
+    margin-bottom: 1rem;
 }
 
 .admin-section-title {
