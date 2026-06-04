@@ -10,6 +10,7 @@ const sizes = [
   { name: "icon-192.png", size: 192 },
   { name: "icon-512.png", size: 512 },
   { name: "icon-512-maskable.png", size: 512, padding: 0.12 },
+  { name: "apple-touch-icon.png", size: 180 },
 ];
 
 await mkdir(outDir, { recursive: true });

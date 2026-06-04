@@ -1855,6 +1855,102 @@ h1, h2, h3, h4, h5, h6 {
     padding: 1rem 1.1rem;
 }
 
+.pwa-install-banner__actions--row {
+    flex-direction: row;
+    justify-content: flex-end;
+    width: 100%;
+}
+.pwa-install-banner__inner--stack {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+}
+.pwa-install-banner__top {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+}
+.pwa-install-banner__close-x {
+    border: none;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.85);
+    padding: 0.25rem;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+.pwa-install-banner__warn {
+    color: #ffe082;
+    margin: 0;
+}
+.pwa-ios-steps {
+    padding-left: 1.15rem;
+    color: rgba(255, 255, 255, 0.92);
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+.pwa-ios-steps li + li { margin-top: 0.35rem; }
+.pwa-ios-share-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.35rem;
+    height: 1.35rem;
+    border-radius: 0.35rem;
+    background: rgba(255, 255, 255, 0.2);
+    font-weight: 800;
+    font-size: 0.75rem;
+}
+
+.install-ios-panel {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 1.35rem 1.25rem;
+    box-shadow: var(--shadow-sm);
+    border: 2px solid var(--blue-light);
+}
+.install-ios-panel__badge {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--blue);
+    background: var(--blue-light);
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    margin-bottom: 0.65rem;
+}
+.install-ios-panel__steps {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+.install-ios-panel__steps li {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+}
+.install-ios-panel__step-icon {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: var(--orange-light);
+    color: var(--orange-dark);
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.install-ios-panel__step-icon--share {
+    background: var(--blue-light);
+    color: var(--blue);
+    font-size: 1rem;
+}
+
 .student-portal-gate {
     min-height: 100vh;
     display: flex;

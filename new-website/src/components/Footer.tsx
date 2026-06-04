@@ -10,6 +10,7 @@ const quickLinks = [
   { href: "/activities", label: "Student Activities" },
   { href: "/videos", label: "Video Library" },
   { href: "/contact", label: "Contact Us" },
+  { href: "/install-app", label: "Install App" },
 ];
 
 export default function Footer({ settings }: { settings: SiteSettings }) {

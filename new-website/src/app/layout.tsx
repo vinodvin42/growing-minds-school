@@ -46,7 +46,7 @@ export const metadata: Metadata = {
   icons: {
     icon: images.favicon,
     shortcut: images.favicon,
-    apple: "/icons/icon-192.png",
+    apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
   },
 };
 
@@ -70,6 +70,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
         />
         <link rel="stylesheet" href="/assets/css/style.css" />
+        <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" sizes="180x180" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-title" content={PWA.shortName} />
+        <meta name="mobile-web-app-capable" content="yes" />
       </head>
       <body className="min-h-screen d-flex flex-column">
         <AppProviders>
