@@ -1,6 +1,12 @@
+import { unstable_noStore as noStore } from "next/cache";
 import { get, put } from "@vercel/blob";
 import { hashPassword } from "@/lib/password";
-import { blobStorageErrorMessage, blobAccess, isBlobStorageConfigured } from "@/lib/blob-storage";
+import {
+  blobAccess,
+  blobReadAccessModes,
+  blobStorageErrorMessage,
+  isBlobStorageConfigured,
+} from "@/lib/blob-storage";
 import type { StudentAdminInput, StudentRecord, StudentsRegistry } from "@/types/student";
 import { DEFAULT_STUDENT_LOGIN_ID, DEFAULT_STUDENT_PASSWORD } from "@/types/student";
 
@@ -8,6 +14,10 @@ export const STUDENTS_BLOB_PATH = "students-registry.json";
 
 const DEFAULT_LOGIN_ID = DEFAULT_STUDENT_LOGIN_ID;
 const DEFAULT_PASSWORD = DEFAULT_STUDENT_PASSWORD;
+const MEMORY_TTL_MS = 2 * 60 * 1000;
+
+let memoryRegistry: StudentsRegistry | null = null;
+let memoryRegistryAt = 0;
 
 async function buildDefaultRegistry(): Promise<StudentsRegistry> {
   const now = new Date().toISOString();
@@ -32,28 +42,52 @@ async function buildDefaultRegistry(): Promise<StudentsRegistry> {
   };
 }
 
+async function readStudentsBlob(): Promise<string | null> {
+  for (const access of blobReadAccessModes()) {
+    try {
+      const result = await get(STUDENTS_BLOB_PATH, { access });
+      if (result?.statusCode === 200 && result.stream) {
+        return await new Response(result.stream).text();
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      if (!message.toLowerCase().includes("not found")) {
+        console.error(`Failed to load students registry (${access}):`, error);
+      }
+    }
+  }
+  return null;
+}
+
 export async function getStudentsRegistry(): Promise<StudentsRegistry> {
+  noStore();
+
+  if (memoryRegistry && Date.now() - memoryRegistryAt < MEMORY_TTL_MS) {
+    return memoryRegistry;
+  }
+
   if (!isBlobStorageConfigured()) {
     return buildDefaultRegistry();
   }
 
   try {
-    const result = await get(STUDENTS_BLOB_PATH, { access: blobAccess() });
-    if (!result || result.statusCode !== 200 || !result.stream) {
-      return buildDefaultRegistry();
+    const text = await readStudentsBlob();
+    if (text === null) {
+      return process.env.NODE_ENV === "development" ? buildDefaultRegistry() : { students: [] };
     }
-    const text = await new Response(result.stream).text();
-    if (!text.trim()) return buildDefaultRegistry();
+    if (!text.trim()) {
+      return { students: [] };
+    }
     const data = JSON.parse(text) as StudentsRegistry;
-    if (!Array.isArray(data.students)) return buildDefaultRegistry();
+    if (!Array.isArray(data.students)) {
+      return { students: [] };
+    }
+    memoryRegistry = data;
+    memoryRegistryAt = Date.now();
     return data;
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    if (message.toLowerCase().includes("not found")) {
-      return buildDefaultRegistry();
-    }
     console.error("Failed to load students registry:", error);
-    return buildDefaultRegistry();
+    return { students: [] };
   }
 }
 
@@ -69,6 +103,9 @@ export async function saveStudentsRegistry(registry: StudentsRegistry): Promise<
     contentType: "application/json",
     cacheControlMaxAge: 60,
   });
+
+  memoryRegistry = registry;
+  memoryRegistryAt = Date.now();
 }
 
 export async function findStudentByLoginId(loginId: string): Promise<StudentRecord | null> {

@@ -36,7 +36,8 @@ export async function POST(request: Request) {
       path: "/",
     });
     return response;
-  } catch {
+  } catch (err) {
+    console.error("Student login error:", err);
     return NextResponse.json({ success: false, message: "Login failed" }, { status: 500 });
   }
 }

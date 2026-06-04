@@ -134,7 +134,7 @@ export default function StudentsEditor() {
     <>
       <AdminCollapsibleSection
         title="Student Management"
-        hint="Create student IDs and passwords for the PWA student app. Data is stored securely (private blob)."
+        hint="Create student IDs and passwords for the student app. Save after adding or editing — students sign in at /student/login."
         count={students.length}
         addLabel="Add Student"
         onAdd={addStudent}
@@ -193,7 +193,15 @@ export default function StudentsEditor() {
         onClose={() => setEditingId(null)}
         onDelete={editing ? () => removeStudent(editing.id!) : undefined}
         footer={
-          <button type="button" className="btn btn-orange" disabled={saving} onClick={() => save()}>
+          <button
+            type="button"
+            className="btn btn-orange"
+            disabled={saving}
+            onClick={async () => {
+              const ok = await save();
+              if (ok) setEditingId(null);
+            }}
+          >
             {saving ? "Saving…" : "Save Students"}
           </button>
         }

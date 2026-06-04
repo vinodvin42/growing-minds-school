@@ -1811,6 +1811,11 @@ h1, h2, h3, h4, h5, h6 {
 .student-portal {
     background: linear-gradient(180deg, var(--surface-green) 0%, var(--white) 40%);
 }
+.student-install-banner {
+    background: #fff7ed;
+    border-bottom: 1px solid rgba(255, 140, 0, 0.2);
+    color: var(--green-darker);
+}
 .student-portal__header {
     background: white;
     border-bottom: 1px solid rgba(45, 74, 34, 0.08);
