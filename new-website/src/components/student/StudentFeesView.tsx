@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useMarkSectionSeen } from "@/components/student/StudentNotificationProvider";
 import FeeCollapsible from "@/components/student/FeeCollapsible";
-import { openFeeReceiptPrint } from "@/lib/fee-receipt";
+import { openFeeReceiptPrint, openPaymentReceiptPrint } from "@/lib/fee-receipt";
 import {
   FEE_CATEGORIES,
   FEE_PAYMENT_MODES,
@@ -201,9 +201,23 @@ export default function StudentFeesView() {
                     <strong>{formatInr(payment.amount)}</strong>
                     <span className="student-fee-list__category">{modeLabel(payment.mode)}</span>
                   </div>
-                  <div className="student-fee-list__meta">
-                    <span>{formatDate(payment.date)}</span>
-                    {payment.reference && <span className="student-fee-list__ref">Ref: {payment.reference}</span>}
+                  <div className="student-fee-list__aside">
+                    <div className="student-fee-list__meta">
+                      <span>{formatDate(payment.date)}</span>
+                      {payment.reference && (
+                        <span className="student-fee-list__ref">Ref: {payment.reference}</span>
+                      )}
+                    </div>
+                    {student && (
+                      <button
+                        type="button"
+                        className="student-fee-list__receipt-btn"
+                        onClick={() => openPaymentReceiptPrint(account, payment, student, academicYear)}
+                      >
+                        <i className="fas fa-file-pdf" aria-hidden="true" />
+                        Receipt
+                      </button>
+                    )}
                   </div>
                 </li>
               ))}

@@ -1199,6 +1199,76 @@ h1, h2, h3, h4, h5, h6 {
 .admission-checklist__tip strong {
     color: var(--ink);
 }
+.admission-checklist--modal {
+    box-shadow: none;
+    border: none;
+    border-radius: 0;
+}
+.admission-help-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 2;
+    width: 2.5rem;
+    height: 2.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.18);
+    color: white;
+    font-size: 1.125rem;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+.admission-help-btn:hover {
+    background: rgba(255, 255, 255, 0.28);
+    transform: scale(1.05);
+}
+.admission-help-btn:focus-visible {
+    outline: 2px solid white;
+    outline-offset: 2px;
+}
+.admission-help-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1050;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.25rem;
+    background: rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(4px);
+}
+.admission-help-modal__dialog {
+    position: relative;
+    width: min(100%, 440px);
+    max-height: min(90vh, 640px);
+    overflow: auto;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+}
+.admission-help-modal__close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    z-index: 2;
+    width: 2rem;
+    height: 2rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+.admission-help-modal__close:hover {
+    background: rgba(255, 255, 255, 0.32);
+}
 .admission-form-card {
     background: white;
     border-radius: var(--radius-lg);
@@ -3349,6 +3419,35 @@ a.student-quick-card:active {
     flex-shrink: 0;
     font-size: 0.75rem;
     color: var(--ink-muted);
+}
+.student-fee-list__aside {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+.student-fee-list__receipt-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.65rem;
+    border: 1px solid rgba(255, 140, 0, 0.35);
+    border-radius: 999px;
+    background: var(--orange-light);
+    color: var(--orange-dark, #c46800);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+.student-fee-list__receipt-btn:hover {
+    background: #ffe8cc;
+    border-color: rgba(255, 140, 0, 0.55);
+}
+.student-fee-list__receipt-btn i {
+    font-size: 0.75rem;
 }
 .student-fee-list__amount {
     font-size: 0.9375rem;
