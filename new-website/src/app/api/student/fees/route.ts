@@ -21,6 +21,10 @@ export async function GET() {
       loginId: student.loginId,
       standard: student.standard,
       section: student.section,
+      rollNumber: student.rollNumber,
+      parentName: student.parentName,
+      parentPhone: student.parentPhone,
+      parentEmail: student.parentEmail,
     },
   });
 }

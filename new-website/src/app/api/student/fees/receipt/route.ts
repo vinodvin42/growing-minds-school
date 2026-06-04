@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getStudentFeeSummary } from "@/lib/student-fees-store";
 import { getCurrentStudentProfile } from "@/lib/student-auth";
 import { buildFeeReceiptHtml } from "@/lib/fee-receipt";
+import { getEmbeddedReceiptLogoUrl } from "@/lib/fee-receipt-server";
 import { academicYear } from "@/lib/portal-storage-paths";
 
 export async function GET() {
@@ -13,7 +14,8 @@ export async function GET() {
   const year = academicYear();
   const account = await getStudentFeeSummary(student.id, year);
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "");
-  const html = buildFeeReceiptHtml(account, student, year, { baseUrl });
+  const logoUrl = await getEmbeddedReceiptLogoUrl();
+  const html = buildFeeReceiptHtml(account, student, year, { baseUrl, logoUrl });
 
   return new NextResponse(html, {
     headers: {

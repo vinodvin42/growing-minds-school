@@ -1,21 +1,30 @@
 import { NextResponse } from "next/server";
+import { isAuthenticated } from "@/lib/auth";
 import { getStudentFeeSummary } from "@/lib/student-fees-store";
-import { getCurrentStudentProfile } from "@/lib/student-auth";
 import { buildPaymentReceiptHtml } from "@/lib/fee-receipt";
-import { getEmbeddedReceiptLogoUrl } from "@/lib/fee-receipt-server";
+import { getEmbeddedReceiptLogoUrl, getFeeReceiptStudent } from "@/lib/fee-receipt-server";
 import { academicYear } from "@/lib/portal-storage-paths";
 
 type RouteContext = { params: Promise<{ paymentId: string }> };
 
-export async function GET(_request: Request, context: RouteContext) {
-  const student = await getCurrentStudentProfile();
+export async function GET(request: Request, context: RouteContext) {
+  if (!(await isAuthenticated())) {
+    return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+  }
+
+  const studentId = new URL(request.url).searchParams.get("studentId")?.trim();
+  if (!studentId) {
+    return NextResponse.json({ success: false, message: "studentId is required" }, { status: 400 });
+  }
+
+  const student = await getFeeReceiptStudent(studentId);
   if (!student) {
-    return NextResponse.json({ success: false, message: "Not signed in" }, { status: 401 });
+    return NextResponse.json({ success: false, message: "Student not found" }, { status: 404 });
   }
 
   const { paymentId } = await context.params;
   const year = academicYear();
-  const account = await getStudentFeeSummary(student.id, year);
+  const account = await getStudentFeeSummary(studentId, year);
   const payment = account.payments.find((p) => p.id === paymentId);
 
   if (!payment) {

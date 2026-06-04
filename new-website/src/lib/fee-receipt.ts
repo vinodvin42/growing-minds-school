@@ -11,9 +11,16 @@ import {
 } from "@/types/student-fees";
 import type { StudentProfile } from "@/types/student";
 
+export type FeeReceiptStudent = Pick<
+  StudentProfile,
+  "name" | "loginId" | "standard" | "section" | "rollNumber" | "parentName" | "parentPhone" | "parentEmail"
+>;
+
 export type FeeReceiptBuildOptions = {
   /** Origin for logo URL, e.g. https://www.growingmindsschool.org */
   baseUrl?: string;
+  /** Data URI or absolute URL — preferred for print/PDF */
+  logoUrl?: string;
 };
 
 function categoryLabel(value: string): string {
@@ -43,9 +50,40 @@ function escapeHtml(text: string): string {
     .replace(/"/g, "&quot;");
 }
 
-function receiptLogoUrl(baseUrl?: string): string {
-  const origin = (baseUrl || process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, "");
+function resolveLogoUrl(options?: FeeReceiptBuildOptions): string {
+  if (options?.logoUrl) return options.logoUrl;
+  const origin = (options?.baseUrl || process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, "");
   return `${origin}${images.logo}`;
+}
+
+function studentDetailsGridHtml(
+  student: FeeReceiptStudent,
+  extras: { label: string; value: string }[] = []
+): string {
+  const classLabel = `${student.standard}${student.section ? ` · Section ${student.section}` : ""}`;
+  const rows: { label: string; value: string }[] = [
+    { label: "Student name", value: student.name },
+    { label: "Student ID", value: student.loginId },
+    { label: "Class", value: classLabel },
+  ];
+  if (student.rollNumber?.trim()) {
+    rows.push({ label: "Roll number", value: student.rollNumber.trim() });
+  }
+  rows.push(
+    { label: "Parent / guardian", value: student.parentName },
+    { label: "Contact phone", value: student.parentPhone }
+  );
+  if (student.parentEmail?.trim()) {
+    rows.push({ label: "Parent email", value: student.parentEmail.trim() });
+  }
+  rows.push(...extras);
+
+  return `<dl class="info-grid">${rows
+    .map(
+      (row) =>
+        `<div><dt>${escapeHtml(row.label)}</dt><dd>${escapeHtml(row.value)}</dd></div>`
+    )
+    .join("")}</dl>`;
 }
 
 function receiptNumber(student: Pick<StudentProfile, "loginId">, academicYear: string): string {
@@ -457,14 +495,27 @@ function receiptFooterHtml(legalTitle: string, legalBody: string): string {
   </footer>`;
 }
 
-function openReceiptHtml(html: string): void {
-  const win = window.open("", "_blank", "noopener,noreferrer");
+export function openReceiptInNewTab(url: string): void {
+  const win = window.open(url, "_blank");
   if (!win) {
-    alert("Please allow pop-ups to download or print the receipt.");
-    return;
+    alert("Please allow pop-ups to view or download the receipt.");
   }
-  win.document.write(html);
-  win.document.close();
+}
+
+export function studentFeeStatementReceiptUrl(): string {
+  return "/api/student/fees/receipt";
+}
+
+export function studentPaymentReceiptUrl(paymentId: string): string {
+  return `/api/student/fees/receipt/${encodeURIComponent(paymentId)}`;
+}
+
+export function adminFeeStatementReceiptUrl(studentId: string): string {
+  return `/api/admin/student-fees/receipt?studentId=${encodeURIComponent(studentId)}`;
+}
+
+export function adminPaymentReceiptUrl(studentId: string, paymentId: string): string {
+  return `/api/admin/student-fees/receipt/${encodeURIComponent(paymentId)}?studentId=${encodeURIComponent(studentId)}`;
 }
 
 function statusBadgeClass(status: StudentFeeSummary["status"]): string {
@@ -476,11 +527,11 @@ function statusBadgeClass(status: StudentFeeSummary["status"]): string {
 
 export function buildFeeReceiptHtml(
   account: StudentFeeSummary,
-  student: Pick<StudentProfile, "name" | "loginId" | "standard" | "section">,
+  student: FeeReceiptStudent,
   academicYear: string,
   options?: FeeReceiptBuildOptions
 ): string {
-  const logoUrl = receiptLogoUrl(options?.baseUrl);
+  const logoUrl = resolveLogoUrl(options);
   const issued = new Date().toLocaleDateString("en-IN", {
     day: "numeric",
     month: "long",
@@ -579,12 +630,7 @@ export function buildFeeReceiptHtml(
         </div>
       </div>
 
-      <dl class="info-grid">
-        <div><dt>Student name</dt><dd>${escapeHtml(student.name)}</dd></div>
-        <div><dt>Student ID</dt><dd>${escapeHtml(student.loginId)}</dd></div>
-        <div><dt>Class</dt><dd>${escapeHtml(student.standard)}${student.section ? ` · Section ${escapeHtml(student.section)}` : ""}</dd></div>
-        <div><dt>Document</dt><dd>Official fee statement</dd></div>
-      </dl>
+      ${studentDetailsGridHtml(student, [{ label: "Document", value: "Official fee statement" }])}
 
       <div class="summary">
         <div class="summary-card summary-card--due">
@@ -616,11 +662,11 @@ export function buildFeeReceiptHtml(
 export function buildPaymentReceiptHtml(
   account: StudentFeeSummary,
   payment: FeePayment,
-  student: Pick<StudentProfile, "name" | "loginId" | "standard" | "section">,
+  student: FeeReceiptStudent,
   academicYear: string,
   options?: FeeReceiptBuildOptions
 ): string {
-  const logoUrl = receiptLogoUrl(options?.baseUrl);
+  const logoUrl = resolveLogoUrl(options);
   const issued = new Date().toLocaleDateString("en-IN", {
     day: "numeric",
     month: "long",
@@ -648,12 +694,7 @@ export function buildPaymentReceiptHtml(
         </div>
       </div>
 
-      <dl class="info-grid">
-        <div><dt>Student name</dt><dd>${escapeHtml(student.name)}</dd></div>
-        <div><dt>Student ID</dt><dd>${escapeHtml(student.loginId)}</dd></div>
-        <div><dt>Class</dt><dd>${escapeHtml(student.standard)}${student.section ? ` · Section ${escapeHtml(student.section)}` : ""}</dd></div>
-        <div><dt>Academic year</dt><dd>${escapeHtml(academicYear)}</dd></div>
-      </dl>
+      ${studentDetailsGridHtml(student, [{ label: "Academic year", value: academicYear }])}
 
       <div class="amount-hero">
         <span>Amount received</span>
@@ -714,23 +755,10 @@ export function buildPaymentReceiptHtml(
   );
 }
 
-export function openFeeReceiptPrint(
-  account: StudentFeeSummary,
-  student: Pick<StudentProfile, "name" | "loginId" | "standard" | "section">,
-  academicYear: string
-): void {
-  const baseUrl = typeof window !== "undefined" ? window.location.origin : undefined;
-  const html = buildFeeReceiptHtml(account, student, academicYear, { baseUrl });
-  openReceiptHtml(html);
+export function openFeeReceiptPrint(): void {
+  openReceiptInNewTab(studentFeeStatementReceiptUrl());
 }
 
-export function openPaymentReceiptPrint(
-  account: StudentFeeSummary,
-  payment: FeePayment,
-  student: Pick<StudentProfile, "name" | "loginId" | "standard" | "section">,
-  academicYear: string
-): void {
-  const baseUrl = typeof window !== "undefined" ? window.location.origin : undefined;
-  const html = buildPaymentReceiptHtml(account, payment, student, academicYear, { baseUrl });
-  openReceiptHtml(html);
+export function openPaymentReceiptPrint(paymentId: string): void {
+  openReceiptInNewTab(studentPaymentReceiptUrl(paymentId));
 }

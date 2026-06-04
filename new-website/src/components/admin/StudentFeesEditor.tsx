@@ -11,6 +11,11 @@ import {
   AdminTableActions,
 } from "@/components/admin/AdminListUi";
 import {
+  openReceiptInNewTab,
+  adminFeeStatementReceiptUrl,
+  adminPaymentReceiptUrl,
+} from "@/lib/fee-receipt";
+import {
   emptyFeeAccount,
   FEE_CATEGORIES,
   FEE_PAYMENT_MODES,
@@ -29,6 +34,10 @@ type StudentRow = {
   name: string;
   standard: string;
   section?: string;
+  rollNumber?: string;
+  parentName: string;
+  parentPhone: string;
+  parentEmail?: string;
 };
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
@@ -267,6 +276,14 @@ export default function StudentFeesEditor() {
                     onDelete={() => patchAccount(student.id, emptyFeeAccount(student.id, academicYear))}
                     editLabel="Manage"
                   />
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-outline-secondary ms-1"
+                    title="Download fee statement"
+                    onClick={() => openReceiptInNewTab(adminFeeStatementReceiptUrl(student.id))}
+                  >
+                    <i className="fas fa-file-pdf" aria-hidden="true" />
+                  </button>
                 </tr>
               ))}
             </tbody>
@@ -308,6 +325,16 @@ export default function StudentFeesEditor() {
                   <span className="admin-fee-summary__label">Balance</span>
                   <strong className="text-orange">{formatInr(editingBalance)}</strong>
                 </div>
+              </div>
+              <div className="mt-2">
+                <button
+                  type="button"
+                  className="btn btn-sm btn-outline-secondary"
+                  onClick={() => openReceiptInNewTab(adminFeeStatementReceiptUrl(editing.studentId))}
+                >
+                  <i className="fas fa-file-pdf me-1" aria-hidden="true" />
+                  Download fee statement
+                </button>
               </div>
             </div>
 
@@ -438,7 +465,20 @@ export default function StudentFeesEditor() {
                         placeholder="Receipt / UPI ref"
                       />
                     </div>
-                    <div className="col-md-1 d-flex align-items-center">
+                    <div className="col-md-2 d-flex align-items-center gap-2">
+                      {payment.amount > 0 && (
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-link text-secondary p-0"
+                          onClick={() =>
+                            openReceiptInNewTab(adminPaymentReceiptUrl(editing.studentId, payment.id))
+                          }
+                          title="Download payment receipt"
+                          aria-label="Download payment receipt"
+                        >
+                          <i className="fas fa-file-pdf" aria-hidden="true" />
+                        </button>
+                      )}
                       <button
                         type="button"
                         className="btn btn-sm btn-link text-danger p-0"

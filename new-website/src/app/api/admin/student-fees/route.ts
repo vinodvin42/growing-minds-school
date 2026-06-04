@@ -26,6 +26,10 @@ export async function GET() {
       name: s.name,
       standard: s.standard,
       section: s.section,
+      rollNumber: s.rollNumber,
+      parentName: s.parentName,
+      parentPhone: s.parentPhone,
+      parentEmail: s.parentEmail,
     })),
     storage: {
       layout: `${PORTAL_ROOT}/{year}/accounts/{studentId}.json`,

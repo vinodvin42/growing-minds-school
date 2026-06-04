@@ -3,7 +3,12 @@
 import { useEffect, useState } from "react";
 import { useMarkSectionSeen } from "@/components/student/StudentNotificationProvider";
 import FeeCollapsible from "@/components/student/FeeCollapsible";
-import { openFeeReceiptPrint, openPaymentReceiptPrint } from "@/lib/fee-receipt";
+import {
+  openReceiptInNewTab,
+  studentFeeStatementReceiptUrl,
+  studentPaymentReceiptUrl,
+  type FeeReceiptStudent,
+} from "@/lib/fee-receipt";
 import {
   FEE_CATEGORIES,
   FEE_PAYMENT_MODES,
@@ -11,9 +16,6 @@ import {
   feeStatusLabel,
   type StudentFeeSummary,
 } from "@/types/student-fees";
-import type { StudentProfile } from "@/types/student";
-
-type FeeStudent = Pick<StudentProfile, "name" | "loginId" | "standard" | "section">;
 
 function categoryLabel(value: string): string {
   return FEE_CATEGORIES.find((c) => c.value === value)?.label ?? value;
@@ -37,7 +39,7 @@ function formatDate(iso: string): string {
 export default function StudentFeesView() {
   useMarkSectionSeen("fees");
   const [account, setAccount] = useState<StudentFeeSummary | null>(null);
-  const [student, setStudent] = useState<FeeStudent | null>(null);
+  const [student, setStudent] = useState<FeeReceiptStudent | null>(null);
   const [academicYear, setAcademicYear] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -118,7 +120,7 @@ export default function StudentFeesView() {
           <button
             type="button"
             className="btn btn-outline-secondary btn-sm w-100"
-            onClick={() => openFeeReceiptPrint(account, student, academicYear)}
+            onClick={() => openReceiptInNewTab(studentFeeStatementReceiptUrl())}
           >
             <i className="fas fa-file-pdf me-2" aria-hidden="true" />
             Download / print fee statement
@@ -212,7 +214,7 @@ export default function StudentFeesView() {
                       <button
                         type="button"
                         className="student-fee-list__receipt-btn"
-                        onClick={() => openPaymentReceiptPrint(account, payment, student, academicYear)}
+                        onClick={() => openReceiptInNewTab(studentPaymentReceiptUrl(payment.id))}
                       >
                         <i className="fas fa-file-pdf" aria-hidden="true" />
                         Receipt
