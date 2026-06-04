@@ -18,6 +18,7 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: PWA.themeColor,
+  viewportFit: "cover",
 };
 
 export const dynamic = "force-dynamic";
@@ -27,20 +28,23 @@ export default function StudentPortalLayout({ children }: { children: React.Reac
     <StudentPortalGate>
       <StudentAuthBootstrap />
       <div className="student-portal min-vh-100 d-flex flex-column">
-        <header className="student-portal__header">
-          <div className="container d-flex align-items-center justify-content-between py-3">
+        <header className="student-portal__header student-portal__header--public">
+          <div className="student-portal__header-inner">
             <div className="student-portal__brand">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={images.favicon} alt="" className="student-portal__logo" />
-              <span>Student Portal</span>
+              <div className="student-portal__brand-text">
+                <span className="student-portal__brand-name">Growing Minds</span>
+                <span className="student-portal__brand-sub">Student App</span>
+              </div>
             </div>
-            <Link href="/install-app" className="student-portal__home-link">
-              <i className="fas fa-info-circle" aria-hidden="true" />
-              <span className="d-none d-sm-inline">App help</span>
+            <Link href="/install-app" className="student-portal__help-btn">
+              <i className="fas fa-circle-info" aria-hidden="true" />
+              <span>Help</span>
             </Link>
           </div>
         </header>
-        <main className="student-portal__main flex-grow-1 d-flex flex-column">{children}</main>
+        <main className="student-portal__main flex-grow-1">{children}</main>
       </div>
     </StudentPortalGate>
   );

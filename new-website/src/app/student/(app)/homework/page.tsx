@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import StudentHomeworkList from "@/components/student/StudentHomeworkList";
+import StudentPageHeader from "@/components/student/StudentPageHeader";
 
 export const metadata: Metadata = {
   title: "Homework",
@@ -7,8 +8,8 @@ export const metadata: Metadata = {
 
 export default function StudentHomeworkPage() {
   return (
-    <div className="container py-4">
-      <h1 className="h4 fw-bold mb-3">Homework</h1>
+    <div className="student-page">
+      <StudentPageHeader title="Homework" subtitle="Assignments and worksheets from your teachers" />
       <StudentHomeworkList />
     </div>
   );

@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { getCurrentStudentProfile } from "@/lib/student-auth";
-import StudentNav from "@/components/student/StudentNav";
+import StudentAppShell from "@/components/student/StudentAppShell";
 
 export default async function StudentAppLayout({ children }: { children: React.ReactNode }) {
   const student = await getCurrentStudentProfile();
@@ -8,10 +8,5 @@ export default async function StudentAppLayout({ children }: { children: React.R
     redirect("/student/login");
   }
 
-  return (
-    <>
-      <StudentNav student={student} />
-      {children}
-    </>
-  );
+  return <StudentAppShell student={student}>{children}</StudentAppShell>;
 }

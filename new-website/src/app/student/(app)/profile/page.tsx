@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import { getCurrentStudentProfile } from "@/lib/student-auth";
+import StudentPageHeader from "@/components/student/StudentPageHeader";
 
 export const metadata: Metadata = {
   title: "My Profile",
@@ -9,54 +11,35 @@ export default async function StudentProfilePage() {
   const student = await getCurrentStudentProfile();
   if (!student) return null;
 
+  const rows: { label: string; value: ReactNode }[] = [
+    { label: "Student ID", value: student.loginId },
+    { label: "Full name", value: student.name },
+    { label: "Standard", value: student.standard },
+  ];
+  if (student.section) rows.push({ label: "Section", value: student.section });
+  if (student.rollNumber) rows.push({ label: "Roll number", value: student.rollNumber });
+  rows.push({ label: "Parent / guardian", value: student.parentName });
+  rows.push({
+    label: "Parent phone",
+    value: <a href={`tel:${student.parentPhone.replace(/\s/g, "")}`}>{student.parentPhone}</a>,
+  });
+  if (student.parentEmail) {
+    rows.push({
+      label: "Parent email",
+      value: <a href={`mailto:${student.parentEmail}`}>{student.parentEmail}</a>,
+    });
+  }
+
   return (
-    <div className="container py-4">
-      <div className="student-profile-card">
-        <h1 className="h4 fw-bold mb-3">My Profile</h1>
-        <dl className="student-profile-list">
-          <div>
-            <dt>Student ID</dt>
-            <dd>{student.loginId}</dd>
+    <div className="student-page">
+      <StudentPageHeader title="My Profile" subtitle="Your class and family contact details" />
+      <div className="student-profile-grid">
+        {rows.map((row) => (
+          <div key={row.label} className="student-profile-grid__item">
+            <span className="student-profile-grid__label">{row.label}</span>
+            <span className="student-profile-grid__value">{row.value}</span>
           </div>
-          <div>
-            <dt>Name</dt>
-            <dd>{student.name}</dd>
-          </div>
-          <div>
-            <dt>Standard</dt>
-            <dd>{student.standard}</dd>
-          </div>
-          {student.section && (
-            <div>
-              <dt>Section</dt>
-              <dd>{student.section}</dd>
-            </div>
-          )}
-          {student.rollNumber && (
-            <div>
-              <dt>Roll Number</dt>
-              <dd>{student.rollNumber}</dd>
-            </div>
-          )}
-          <div>
-            <dt>Parent / Guardian</dt>
-            <dd>{student.parentName}</dd>
-          </div>
-          <div>
-            <dt>Parent Phone</dt>
-            <dd>
-              <a href={`tel:${student.parentPhone.replace(/\s/g, "")}`}>{student.parentPhone}</a>
-            </dd>
-          </div>
-          {student.parentEmail && (
-            <div>
-              <dt>Parent Email</dt>
-              <dd>
-                <a href={`mailto:${student.parentEmail}`}>{student.parentEmail}</a>
-              </dd>
-            </div>
-          )}
-        </dl>
+        ))}
       </div>
     </div>
   );

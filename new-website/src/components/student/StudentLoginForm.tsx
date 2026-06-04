@@ -114,9 +114,9 @@ export default function StudentLoginForm() {
 
   if (checkingSession) {
     return (
-      <div className="container py-5 text-center">
+      <div className="student-login-page student-login-page--loading">
         <div className="spinner-border text-orange" role="status" aria-label="Loading" />
-        <p className="text-muted small mt-3 mb-0">Opening student app…</p>
+        <p className="student-login-page__loading-text">Opening student app…</p>
       </div>
     );
   }
@@ -124,123 +124,114 @@ export default function StudentLoginForm() {
   const showSavedCard = savedAccount && useSavedAccount;
 
   return (
-    <div className="container py-4 py-md-5">
-      <div className="row justify-content-center">
-        <div className="col-md-8 col-lg-5">
-          <div className="student-portal-card">
-            <div className="text-center mb-4">
-              <div className="student-portal-card__badge" aria-hidden="true">
-                🎓
-              </div>
-              <h1 className="h3 fw-bold mb-1">{showSavedCard ? "Welcome back" : "Student Login"}</h1>
-              <p className="text-muted mb-0 small">
-                {showSavedCard ? "Enter your password to continue" : "Sign in with your student ID and password"}
-              </p>
-            </div>
-
-            {showSavedCard && (
-              <div className="student-saved-account mb-4">
-                <div className="student-saved-account__avatar" aria-hidden="true">
-                  {savedAccount.name.charAt(0).toUpperCase()}
-                </div>
-                <div className="student-saved-account__body">
-                  <strong>{savedAccount.name}</strong>
-                  <span>
-                    {savedAccount.loginId}
-                    {" · "}
-                    {savedAccount.standard}
-                    {savedAccount.section ? ` · ${savedAccount.section}` : ""}
-                  </span>
-                </div>
-                <button type="button" className="student-saved-account__switch btn btn-link btn-sm" onClick={switchAccount}>
-                  Switch account
-                </button>
-              </div>
-            )}
-
-            <form onSubmit={onSubmit} className="student-login-form">
-              {error && (
-                <div ref={errorRef} className="alert alert-danger py-2 small mb-3" role="alert">
-                  <i className="fas fa-exclamation-circle me-2" aria-hidden="true" />
-                  {error}
-                </div>
-              )}
-
-              {!showSavedCard && (
-                <div className="mb-3">
-                  <label htmlFor="loginId" className="form-label fw-semibold">
-                    Student ID
-                  </label>
-                  <input
-                    id="loginId"
-                    className="form-control form-control-lg"
-                    value={loginId}
-                    onChange={(e) => setLoginId(e.target.value)}
-                    autoComplete="username"
-                    autoCapitalize="none"
-                    autoCorrect="off"
-                    spellCheck={false}
-                    inputMode="text"
-                    placeholder="e.g. GMS2026001"
-                    required
-                  />
-                </div>
-              )}
-
-              <div className="mb-4">
-                <label htmlFor="password" className="form-label fw-semibold">
-                  Password
-                </label>
-                <div className="student-password-field">
-                  <input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    className="form-control form-control-lg"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    autoComplete="current-password"
-                    autoCapitalize="none"
-                    autoCorrect="off"
-                    autoFocus={!!showSavedCard}
-                    required
-                  />
-                  <button
-                    type="button"
-                    className="student-password-field__toggle"
-                    onClick={() => setShowPassword((v) => !v)}
-                    aria-label={showPassword ? "Hide password" : "Show password"}
-                    aria-pressed={showPassword}
-                  >
-                    <i className={`fas ${showPassword ? "fa-eye-slash" : "fa-eye"}`} aria-hidden="true" />
-                  </button>
-                </div>
-              </div>
-
-              <button type="submit" className="btn btn-orange btn-lg w-100" disabled={loading}>
-                {loading ? (
-                  <>
-                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" />
-                    Signing in…
-                  </>
-                ) : showSavedCard ? (
-                  "Continue"
-                ) : (
-                  "Sign In"
-                )}
-              </button>
-            </form>
-
-            {showSavedCard && (
-              <p className="text-muted small text-center mt-3 mb-0">
-                Your login stays saved on this device for 30 days.
-              </p>
-            )}
-
-            <p className="text-muted small text-center mt-4 mb-0">
-              Password trouble? Contact your class teacher or school office.
-            </p>
+    <div className="student-login-page">
+      <div className="student-login-card">
+        <div className="student-login-card__head">
+          <div className="student-login-card__logo" aria-hidden="true">
+            🎓
           </div>
+          <h1 className="student-login-card__title">{showSavedCard ? "Welcome back" : "Sign in"}</h1>
+          <p className="student-login-card__subtitle">
+            {showSavedCard ? "Enter your password to continue" : "Use your student ID and password"}
+          </p>
         </div>
+
+        {showSavedCard && (
+          <div className="student-saved-account">
+            <div className="student-saved-account__avatar" aria-hidden="true">
+              {savedAccount.name.charAt(0).toUpperCase()}
+            </div>
+            <div className="student-saved-account__body">
+              <strong>{savedAccount.name}</strong>
+              <span>
+                {savedAccount.loginId}
+                {savedAccount.standard ? ` · ${savedAccount.standard}` : ""}
+                {savedAccount.section ? ` · ${savedAccount.section}` : ""}
+              </span>
+            </div>
+            <button type="button" className="student-saved-account__switch" onClick={switchAccount}>
+              Switch
+            </button>
+          </div>
+        )}
+
+        <form onSubmit={onSubmit} className="student-login-form">
+          {error && (
+            <div ref={errorRef} className="student-login-alert" role="alert">
+              <i className="fas fa-exclamation-circle" aria-hidden="true" />
+              <span>{error}</span>
+            </div>
+          )}
+
+          {!showSavedCard && (
+            <div className="student-field">
+              <label htmlFor="loginId" className="student-field__label">
+                Student ID
+              </label>
+              <input
+                id="loginId"
+                className="form-control student-field__input"
+                value={loginId}
+                onChange={(e) => setLoginId(e.target.value)}
+                autoComplete="username"
+                autoCapitalize="none"
+                autoCorrect="off"
+                spellCheck={false}
+                inputMode="text"
+                placeholder="e.g. GMS2026001"
+                required
+              />
+            </div>
+          )}
+
+          <div className="student-field">
+            <label htmlFor="password" className="student-field__label">
+              Password
+            </label>
+            <div className="student-password-field">
+              <input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                className="form-control student-field__input"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+                autoCapitalize="none"
+                autoCorrect="off"
+                autoFocus={!!showSavedCard}
+                required
+              />
+              <button
+                type="button"
+                className="student-password-field__toggle"
+                onClick={() => setShowPassword((v) => !v)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                aria-pressed={showPassword}
+              >
+                <i className={`fas ${showPassword ? "fa-eye-slash" : "fa-eye"}`} aria-hidden="true" />
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" className="btn btn-orange btn-lg w-100 student-login-card__submit" disabled={loading}>
+            {loading ? (
+              <>
+                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" />
+                Signing in…
+              </>
+            ) : showSavedCard ? (
+              "Continue"
+            ) : (
+              "Sign In"
+            )}
+          </button>
+        </form>
+
+        {showSavedCard && (
+          <p className="student-login-card__footnote">Your account stays saved on this device for 30 days.</p>
+        )}
+
+        <p className="student-login-card__help">Password trouble? Ask your teacher or school office.</p>
       </div>
     </div>
   );
