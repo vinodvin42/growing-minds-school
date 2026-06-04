@@ -6,6 +6,7 @@ export const PWA = {
     "Growing Minds English School — Nursery to 8th Standard in Malad West, Mumbai. Admissions, activities, and student portal.",
   themeColor: "#2D6A4F",
   backgroundColor: "#ffffff",
-  /** Installed app opens the student portal (PWA-only routes). */
+  /** Installed app opens the student login (session restores dashboard automatically). */
   startUrl: "/student/login",
+  scope: "/student/",
 } as const;

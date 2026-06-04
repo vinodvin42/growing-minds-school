@@ -3,6 +3,7 @@ import Link from "next/link";
 import { images } from "@/data/images";
 import { PWA } from "@/lib/pwa";
 import StudentPortalGate from "@/components/StudentPortalGate";
+import StudentAuthBootstrap from "@/components/student/StudentAuthBootstrap";
 
 export const metadata: Metadata = {
   title: "Student Portal",
@@ -19,9 +20,12 @@ export const viewport: Viewport = {
   themeColor: PWA.themeColor,
 };
 
+export const dynamic = "force-dynamic";
+
 export default function StudentPortalLayout({ children }: { children: React.ReactNode }) {
   return (
     <StudentPortalGate>
+      <StudentAuthBootstrap />
       <div className="student-portal min-vh-100 d-flex flex-column">
         <header className="student-portal__header">
           <div className="container d-flex align-items-center justify-content-between py-3">

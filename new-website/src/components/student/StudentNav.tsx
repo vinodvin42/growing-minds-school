@@ -3,12 +3,14 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { StudentProfile } from "@/types/student";
+import { clearSavedStudentAccount } from "@/lib/student-account-client";
 
 export default function StudentNav({ student }: { student: StudentProfile }) {
   const router = useRouter();
 
   async function logout() {
-    await fetch("/api/student/auth/logout", { method: "POST" });
+    await fetch("/api/student/auth/logout", { method: "POST", credentials: "same-origin" });
+    clearSavedStudentAccount();
     router.replace("/student/login");
     router.refresh();
   }

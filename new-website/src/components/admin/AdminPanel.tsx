@@ -67,6 +67,9 @@ export default function AdminPanel() {
       }
       setStatus(data.message || "Save failed");
       return false;
+    } catch {
+      setStatus("Save failed — check your connection and try again.");
+      return false;
     } finally {
       setSaving(false);
     }

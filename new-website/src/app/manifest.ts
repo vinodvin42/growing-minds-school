@@ -7,7 +7,7 @@ export default function manifest(): MetadataRoute.Manifest {
     short_name: PWA.shortName,
     description: PWA.description,
     start_url: PWA.startUrl,
-    scope: "/",
+    scope: PWA.scope,
     display: "standalone",
     orientation: "portrait-primary",
     theme_color: PWA.themeColor,

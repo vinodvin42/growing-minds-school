@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { getSiteContent, saveSiteContent } from "@/lib/content";
+import { CONTENT_REVALIDATE_PATHS, getSiteContent, saveSiteContent } from "@/lib/content";
 import { isAuthenticated } from "@/lib/auth";
 import type { SiteContent } from "@/types/content";
-
-const CONTENT_PATHS = ["/", "/about", "/gallery", "/news", "/videos", "/contact", "/admissions"] as const;
 
 export async function GET() {
   const content = await getSiteContent();
@@ -20,9 +18,8 @@ export async function PUT(request: Request) {
 
   try {
     const content = (await request.json()) as SiteContent;
-    await saveSiteContent(content);
-    const saved = await getSiteContent();
-    for (const path of CONTENT_PATHS) {
+    const saved = await saveSiteContent(content);
+    for (const path of CONTENT_REVALIDATE_PATHS) {
       revalidatePath(path);
     }
     return NextResponse.json({

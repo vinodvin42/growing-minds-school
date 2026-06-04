@@ -9,10 +9,11 @@ async function main() {
   }
 
   const blob = await put(CONTENT_BLOB_PATH, JSON.stringify(defaultContent, null, 2), {
-    access: "public",
+    access: "private",
     addRandomSuffix: false,
     allowOverwrite: true,
     contentType: "application/json",
+    cacheControlMaxAge: 60,
   });
 
   console.log("Content seeded to Vercel Blob!");

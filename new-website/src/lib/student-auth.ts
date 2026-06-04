@@ -4,7 +4,7 @@ import { findStudentById } from "@/lib/student-store";
 import { toStudentProfile, type StudentProfile } from "@/types/student";
 
 const COOKIE_NAME = "gms_student_session";
-const SESSION_DURATION = 60 * 60 * 24 * 14; // 14 days
+const SESSION_DURATION = 60 * 60 * 24 * 30; // 30 days
 
 function getSecret() {
   const secret =
@@ -62,7 +62,13 @@ export async function setStudentSessionCookie(token: string) {
 
 export async function clearStudentSessionCookie() {
   const cookieStore = await cookies();
-  cookieStore.delete(COOKIE_NAME);
+  cookieStore.set(COOKIE_NAME, "", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 0,
+    path: "/",
+  });
 }
 
-export { COOKIE_NAME };
+export { COOKIE_NAME, SESSION_DURATION };
