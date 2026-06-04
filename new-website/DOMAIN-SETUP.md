@@ -6,12 +6,17 @@ Your **new website is live on Vercel**, but the custom domain still points to **
 
 | Check | Result |
 |-------|--------|
-| `growing-minds-school.vercel.app` | ✅ New Next.js site (Vercel) |
-| `www.growingmindsschool.org` | ❌ Old site (LiteSpeed / Terabytes) |
-| Domain nameservers | `ns1.terabytesserver.com` / `ns2.terabytesserver.com` |
-| Should be | Vercel nameservers **or** Vercel A/CNAME records |
+| `growing-minds-school.vercel.app` | ✅ New Next.js site (Vercel) — **use this until DNS is fixed** |
+| `growingmindsschool.org` | ❌ Points to `160.153.0.150` (old hosting / parking) |
+| `www.growingmindsschool.org` | ❌ Same IP — **not Vercel** |
+| HTTPS on custom domain | ❌ `SSL_ERROR_NO_CYPHER_OVERLAP` in Firefox (TLS too old on old server) |
+| Should point to | Vercel (`76.76.21.21` for `@`, `cname.vercel-dns.com` for `www`) |
 
-Until DNS is fixed, browsers will keep showing the **old HTML site**. Contact form email (Resend) only works on the **new** Vercel site.
+Until DNS is fixed, browsers may show **“Not Secure”**, **SSL errors**, or the **old HTML site**. Student login, admin, and email only work on the **new** Vercel deployment.
+
+### Firefox: `SSL_ERROR_NO_CYPHER_OVERLAP`
+
+This means the server at your domain does **not** support modern HTTPS. It is **not** a student-app bug. Fix **DNS** (below) so the domain points to Vercel, which provides current TLS automatically.
 
 ---
 
