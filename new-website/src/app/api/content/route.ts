@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getSiteContent, saveSiteContent } from "@/lib/content";
 import { isAuthenticated } from "@/lib/auth";
 import type { SiteContent } from "@/types/content";
+
+const CONTENT_PATHS = ["/", "/about", "/gallery", "/news", "/videos", "/contact", "/admissions"] as const;
 
 export async function GET() {
   const content = await getSiteContent();
@@ -16,6 +19,9 @@ export async function PUT(request: Request) {
   try {
     const content = (await request.json()) as SiteContent;
     await saveSiteContent(content);
+    for (const path of CONTENT_PATHS) {
+      revalidatePath(path);
+    }
     return NextResponse.json({ success: true, message: "Content saved successfully" });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Failed to save content";

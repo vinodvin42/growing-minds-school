@@ -40,7 +40,7 @@ export default function AdminPanel() {
       body: JSON.stringify(content),
     });
     const data = await res.json();
-    setStatus(data.success ? "Saved successfully!" : data.message || "Save failed");
+    setStatus(data.success ? "Saved! Refresh the public site to see crop/image changes." : data.message || "Save failed");
     setSaving(false);
   }
 
