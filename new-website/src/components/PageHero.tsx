@@ -12,7 +12,7 @@ export default function PageHero({
   return (
     <section className="page-hero-pro">
       <div className="page-hero-pro__pattern" />
-      <div className="container position-relative">
+      <div className="container position-relative page-hero-pro__inner">
         {breadcrumb && breadcrumb.length > 0 && (
           <nav aria-label="breadcrumb" className="page-hero-pro__breadcrumb">
             {breadcrumb.map((item, i) => (
