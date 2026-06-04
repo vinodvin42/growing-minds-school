@@ -61,7 +61,7 @@ In Vercel → **Settings** → **Environment Variables**, add:
 | `NEXT_PUBLIC_SITE_URL` | `https://your-project.vercel.app` | Yes |
 | `BLOB_READ_WRITE_TOKEN` | Auto-set by Blob store | Yes |
 
----
+--- 
 
 ## Step 5: Deploy
 
