@@ -1,128 +1,153 @@
 # Domain Setup — growingmindsschool.org → Vercel
 
-Your **new website is live on Vercel**, but the custom domain still points to **old Terabytes/LiteSpeed hosting** for most visitors.
+The **new site runs on Vercel**. The custom domain must point DNS to Vercel (not the old Terabytes/GoDaddy parking server).
 
-## Current problem (verified)
+## Status (check anytime)
 
-| Check | Result |
-|-------|--------|
-| `growing-minds-school.vercel.app` | ✅ New Next.js site (Vercel) — **use this until DNS is fixed** |
-| `growingmindsschool.org` | ❌ Points to `160.153.0.150` (old hosting / parking) |
-| `www.growingmindsschool.org` | ❌ Same IP — **not Vercel** |
-| HTTPS on custom domain | ❌ `SSL_ERROR_NO_CYPHER_OVERLAP` in Firefox (TLS too old on old server) |
-| Should point to | Vercel (`76.76.21.21` for `@`, `cname.vercel-dns.com` for `www`) |
+| URL | Expected |
+|-----|----------|
+| `https://growing-minds-school.vercel.app` | ✅ New Next.js site (`Server: Vercel`) |
+| `https://www.growingmindsschool.org` | Must show same site + `Server: Vercel` |
+| `https://growingmindsschool.org` | Same (apex) |
 
-Until DNS is fixed, browsers may show **“Not Secure”**, **SSL errors**, or the **old HTML site**. Student login, admin, and email only work on the **new** Vercel deployment.
+**If the custom domain fails or shows the old site:** DNS still points to the wrong IP.
 
-### Firefox: `SSL_ERROR_NO_CYPHER_OVERLAP`
-
-This means the server at your domain does **not** support modern HTTPS. It is **not** a student-app bug. Fix **DNS** (below) so the domain points to Vercel, which provides current TLS automatically.
+Your domain uses **GoDaddy** nameservers (`ns11.domaincontrol.com`, `ns12.domaincontrol.com`). DNS is edited in **GoDaddy**, not in Terabytes.
 
 ---
 
-## Fix — Option A: Vercel nameservers (recommended)
+## Step 1 — Add domains in Vercel (if not done)
 
-Do this where you **bought the domain** (GoDaddy, Namecheap, etc.) — not in Terabytes hosting.
-
-### 1. Get Vercel nameservers
-
-1. [vercel.com](https://vercel.com) → your project **growing-minds-school**
+1. [vercel.com](https://vercel.com) → project **growing-minds-school**
 2. **Settings** → **Domains**
-3. Add `growingmindsschool.org` and `www.growingmindsschool.org` if not already added
-4. Click **Set up Vercel DNS** (or open domain → DNS)
-5. Copy the two nameservers, usually:
-   - `ns1.vercel-dns.com`
-   - `ns2.vercel-dns.com`
+3. Add:
+   - `growingmindsschool.org`
+   - `www.growingmindsschool.org`
+4. Vercel shows **Valid Configuration** when DNS is correct (can take up to 48 hours)
 
-### 2. Change nameservers at your registrar
+**Project settings (same screen):**
 
-1. Log in where you registered `growingmindsschool.org`
-2. Open **Domain** → **DNS** or **Nameservers**
-3. Change from **Custom / Terabytes** (`terabytesserver.com`) to **Custom**
-4. Enter Vercel’s nameservers above
-5. **Save**
+| Setting | Value |
+|---------|--------|
+| Root Directory | `new-website` |
+| `NEXT_PUBLIC_SITE_URL` | `https://www.growingmindsschool.org` |
 
-### 3. Remove old hosting DNS (important)
+Redeploy after changing env vars.
 
-- In **Terabytes** (or old cPanel) hosting panel: stop using this domain for the old site, or delete old A records if you keep Terabytes NS (Option B)
-- Old files on Terabytes will **not** be used once DNS points to Vercel
+---
 
-### 4. Wait and verify
+## Step 2 — Fix DNS at GoDaddy (choose one)
+
+### Option A — Vercel nameservers (easiest long-term)
+
+1. In Vercel → **Domains** → `growingmindsschool.org` → **DNS Records** / **Set up Vercel DNS**
+2. Copy nameservers (usually `ns1.vercel-dns.com`, `ns2.vercel-dns.com`)
+3. [GoDaddy](https://dcc.godaddy.com/) → **My Products** → **DNS** next to your domain
+4. **Nameservers** → **Change** → **Enter my own nameservers**
+5. Paste Vercel’s two nameservers → **Save**
+6. Vercel manages all records automatically
+
+### Option B — Keep GoDaddy DNS, change records only
+
+1. GoDaddy → domain → **DNS** → **DNS Records**
+
+2. **Delete** old records that point away from Vercel, for example:
+   - **A** `@` → `160.153.0.150` or any Terabytes IP
+   - **A** `@` → `216.198.79.x`, `64.29.17.x`, `209.42.28.x`
+   - **CNAME** `www` → anything except Vercel
+
+3. **Add or update:**
+
+| Type | Name | Value | TTL |
+|------|------|--------|-----|
+| **A** | `@` | `76.76.21.21` | 600 (or default) |
+| **CNAME** | `www` | `cname.vercel-dns.com` | 600 |
+
+4. **Save**
+
+> GoDaddy sometimes shows Name as `@` or blank for the root domain.  
+> For `www`, Name is `www` only (not `www.growingmindsschool.org`).
+
+---
+
+## Step 3 — Remove old hosting (optional but recommended)
+
+- In **Terabytes** / old cPanel: remove this domain or stop using it for the old HTML site
+- Old files on Terabytes are **not** used once DNS points to Vercel
+
+---
+
+## Step 4 — Wait and verify
 
 DNS can take **15 minutes to 48 hours**.
 
-Check propagation: [whatsmydns.net](https://www.whatsmydns.net/#A/www.growingmindsschool.org)
+### Check propagation
 
-When correct, `www.growingmindsschool.org` should resolve to Vercel (not `216.198.79.x` or LiteSpeed).
+- [whatsmydns.net — A record for growingmindsschool.org](https://www.whatsmydns.net/#A/growingmindsschool.org)  
+  Should show **`76.76.21.21`** (not `160.153.0.150`)
 
-### 5. Vercel project settings
+### Check the live site (incognito / private window)
 
-- **Root Directory:** `new-website`
-- **Environment variable:** `NEXT_PUBLIC_SITE_URL` = `https://www.growingmindsschool.org`
-- **Redeploy** after DNS propagates
-
----
-
-## Fix — Option B: Keep Terabytes nameservers, change records only
-
-If you **cannot** change nameservers, log into **Terabytes hosting DNS** and set:
-
-| Type | Name | Value |
-|------|------|--------|
-| **A** | `@` (root) | `76.76.21.21` |
-| **CNAME** | `www` | `cname.vercel-dns.com` |
-
-**Delete** old A records pointing to:
-- `216.198.79.1`
-- `216.198.79.65`
-- `64.29.17.1`
-- `209.42.28.136`
-
-Save and wait for DNS propagation.
-
----
-
-## How to know it’s fixed
-
-Open **Incognito / Private** window (avoids cache):
-
-```
-https://www.growingmindsschool.org
-```
+Open: `https://www.growingmindsschool.org`
 
 You should see:
-- New Growing Minds design (carousel, orange/lime theme)
-- URL paths like `/contact`, `/gallery` (not `contact.html`)
 
-Or run in terminal:
-```bash
-curl -I https://www.growingmindsschool.org
+- New Growing Minds design (carousel, orange/lime theme)
+- URLs like `/contact`, `/student/login` (not `contact.html`)
+
+### Check headers (PowerShell)
+
+```powershell
+curl -sI https://www.growingmindsschool.org
 ```
-Response should include **`Server: Vercel`** — not `LiteSpeed`.
+
+Look for: **`Server: Vercel`** — not `LiteSpeed` or SSL errors.
+
+### Check DNS (PowerShell)
+
+```powershell
+nslookup growingmindsschool.org 8.8.8.8
+nslookup www.growingmindsschool.org 8.8.8.8
+```
+
+After fix: apex may show `76.76.21.21`; `www` may CNAME to `cname.vercel-dns.com`.
 
 ---
 
-## Contact form email (after DNS is fixed)
+## Errors you may see before DNS is fixed
 
-Gmail App Passwords don’t work on your account. On the **new** Vercel site:
+| Error | Cause | Fix |
+|-------|--------|-----|
+| `SSL_ERROR_NO_CYPHER_OVERLAP` (Firefox) | Old server at domain IP | Point DNS to Vercel |
+| Old HTML site / “Not Secure” | DNS → Terabytes / parking | Update GoDaddy records |
+| Vercel “Invalid Configuration” | DNS not matching Vercel | Complete Step 2 |
 
-1. Sign up at [resend.com](https://resend.com) with `growingminds2025@gmail.com`
-2. Create API key → add to Vercel:
-   - `RESEND_API_KEY` = `re_...`
-   - `ADMIN_EMAIL` = `growingminds2025@gmail.com`
-3. Remove `GMAIL_USER`, `GMAIL_PASSWORD`, `GMAIL_APP_PASSWORD`
-4. **Redeploy**
+---
 
-See **`new-website/EMAIL-SETUP.md`** for full steps.
+## After DNS works
+
+1. Set `NEXT_PUBLIC_SITE_URL=https://www.growingmindsschool.org` on Vercel → **Redeploy**
+2. Email: see **`EMAIL-SETUP.md`** (`GMAIL_USER`, `GMAIL_APP_PASSWORD`, `ADMIN_EMAIL`)
+3. Blob store connected for admin + student portal
 
 ---
 
 ## Quick checklist
 
-- [ ] Nameservers → Vercel **OR** A/CNAME → Vercel IPs
-- [ ] Old Terabytes A records removed
-- [ ] Vercel Root Directory = `new-website`
-- [ ] `NEXT_PUBLIC_SITE_URL` updated
+- [ ] Domains added in Vercel project
+- [ ] GoDaddy: Vercel nameservers **OR** A `@` = `76.76.21.21` + CNAME `www` = `cname.vercel-dns.com`
+- [ ] Old A records (`160.153.0.150`, etc.) **deleted**
+- [ ] Root Directory = `new-website`
+- [ ] `NEXT_PUBLIC_SITE_URL` = `https://www.growingmindsschool.org`
 - [ ] Redeploy on Vercel
-- [ ] Test in incognito — `Server: Vercel`
-- [ ] Add `RESEND_API_KEY` for contact/admission forms
+- [ ] Test incognito — `Server: Vercel` on www
+- [ ] whatsmydns shows `76.76.21.21` globally
+
+---
+
+## Registrar login
+
+Domain appears registered via **GoDaddy** (`domaincontrol.com` nameservers).  
+Log in: [https://sso.godaddy.com](https://sso.godaddy.com) → **My Products** → **DNS**.
+
+If you use a different GoDaddy account or reseller, use the panel where you renew `growingmindsschool.org` each year.

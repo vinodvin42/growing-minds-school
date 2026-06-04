@@ -35,6 +35,7 @@ export default function StudentFeesView() {
   const [academicYear, setAcademicYear] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [breakdownOpen, setBreakdownOpen] = useState(false);
 
   useEffect(() => {
     fetch("/api/student/fees", { cache: "no-store" })
@@ -110,24 +111,54 @@ export default function StudentFeesView() {
       )}
 
       <section className="student-fees-section">
-        <h2 className="student-fees-section__title">Fee breakdown</h2>
         {account.lineItems.length === 0 ? (
-          <p className="text-muted small mb-0">No fee items posted yet.</p>
+          <>
+            <h2 className="student-fees-section__title">Fee breakdown</h2>
+            <p className="text-muted small mb-0">No fee items posted yet.</p>
+          </>
         ) : (
-          <ul className="student-fee-list">
-            {account.lineItems.map((item) => (
-              <li key={item.id} className="student-fee-list__item">
-                <div className="student-fee-list__main">
-                  <strong>{item.label || categoryLabel(item.category)}</strong>
-                  <span className="student-fee-list__category">{categoryLabel(item.category)}</span>
-                </div>
-                <div className="student-fee-list__meta">
-                  <span className="student-fee-list__amount">{formatInr(item.amount)}</span>
-                  {item.dueDate && <span className="student-fee-list__due">Due {formatDate(item.dueDate)}</span>}
-                </div>
-              </li>
-            ))}
-          </ul>
+          <div className={`student-fee-collapsible${breakdownOpen ? " student-fee-collapsible--open" : ""}`}>
+            <button
+              type="button"
+              className="student-fee-collapsible__trigger"
+              onClick={() => setBreakdownOpen((o) => !o)}
+              aria-expanded={breakdownOpen}
+              aria-controls="student-fee-breakdown"
+            >
+              <span className="student-fee-collapsible__trigger-main">
+                <span className="student-fee-collapsible__label">Fee breakdown</span>
+                <span className="student-fee-collapsible__hint">
+                  {account.lineItems.length} item{account.lineItems.length === 1 ? "" : "s"} · Tap to{" "}
+                  {breakdownOpen ? "hide" : "view"} details
+                </span>
+              </span>
+              <span className="student-fee-collapsible__total">{formatInr(account.totalDue)}</span>
+              <i
+                className={`fas fa-chevron-down student-fee-collapsible__chevron${breakdownOpen ? " student-fee-collapsible__chevron--open" : ""}`}
+                aria-hidden="true"
+              />
+            </button>
+            <div id="student-fee-breakdown" className="student-fee-collapsible__panel" hidden={!breakdownOpen}>
+              <ul className="student-fee-list student-fee-list--nested">
+                {account.lineItems.map((item) => (
+                  <li key={item.id} className="student-fee-list__item">
+                    <div className="student-fee-list__main">
+                      <strong>{item.label || categoryLabel(item.category)}</strong>
+                      <span className="student-fee-list__category">{categoryLabel(item.category)}</span>
+                    </div>
+                    <div className="student-fee-list__meta">
+                      <span className="student-fee-list__amount">{formatInr(item.amount)}</span>
+                      {item.dueDate && <span className="student-fee-list__due">Due {formatDate(item.dueDate)}</span>}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+              <div className="student-fee-collapsible__footer">
+                <span>Total</span>
+                <strong>{formatInr(account.totalDue)}</strong>
+              </div>
+            </div>
+          </div>
         )}
       </section>
 

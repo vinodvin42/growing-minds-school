@@ -2810,6 +2810,85 @@ a.student-quick-card:active {
     background: var(--surface-green);
     color: var(--green-darker);
 }
+.student-fee-collapsible {
+    background: white;
+    border-radius: 16px;
+    border: 1px solid rgba(45, 74, 34, 0.08);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
+.student-fee-collapsible--open {
+    border-top: 3px solid var(--orange);
+}
+.student-fee-collapsible__trigger {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: 0.65rem;
+    width: 100%;
+    padding: 0.95rem 1rem;
+    border: none;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+    color: inherit;
+}
+.student-fee-collapsible__trigger-main {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+}
+.student-fee-collapsible__label {
+    font-size: 0.9375rem;
+    font-weight: 800;
+    color: var(--green-darker);
+}
+.student-fee-collapsible__hint {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--ink-muted);
+}
+.student-fee-collapsible__total {
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--green-darker);
+    white-space: nowrap;
+}
+.student-fee-collapsible__chevron {
+    font-size: 0.75rem;
+    color: var(--ink-muted);
+    transition: transform 0.2s ease;
+}
+.student-fee-collapsible__chevron--open {
+    transform: rotate(180deg);
+}
+.student-fee-collapsible__panel {
+    padding: 0 0.65rem 0.65rem;
+    border-top: 1px solid rgba(45, 74, 34, 0.06);
+}
+.student-fee-list--nested {
+    padding-top: 0.5rem;
+}
+.student-fee-list--nested .student-fee-list__item {
+    box-shadow: none;
+    background: var(--surface-green);
+    border-color: rgba(45, 74, 34, 0.06);
+}
+.student-fee-collapsible__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.65rem 0.35rem 0.25rem;
+    margin-top: 0.25rem;
+    border-top: 1px dashed rgba(45, 74, 34, 0.12);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--green-darker);
+}
+.student-fee-collapsible__footer strong {
+    font-size: 0.9375rem;
+}
 .student-fee-list {
     list-style: none;
     margin: 0;
