@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { sendAdminEmail, sendAcknowledgmentEmail, getPublicEmailError } from "@/lib/email";
-import { contactAcknowledgment } from "@/lib/email-templates";
+import { contactAcknowledgment, contactAdminNotification } from "@/lib/email-templates";
 
 const contactSchema = z.object({
   name: z.string().min(1),
@@ -16,24 +16,9 @@ export async function POST(request: Request) {
     const body = await request.json();
     const data = contactSchema.parse(body);
 
-    const html = `
-      <html><body style="font-family: Arial, sans-serif;">
-        <h2 style="color: #FF8C00;">New Contact Form Submission</h2>
-        <table style="width:100%; border-collapse: collapse;">
-          <tr><td style="padding:8px;border-bottom:1px solid #ddd;"><strong>Name:</strong></td><td style="padding:8px;border-bottom:1px solid #ddd;">${escapeHtml(data.name)}</td></tr>
-          <tr><td style="padding:8px;border-bottom:1px solid #ddd;"><strong>Email:</strong></td><td style="padding:8px;border-bottom:1px solid #ddd;">${escapeHtml(data.email)}</td></tr>
-          <tr><td style="padding:8px;border-bottom:1px solid #ddd;"><strong>Phone:</strong></td><td style="padding:8px;border-bottom:1px solid #ddd;">${escapeHtml(data.phone)}</td></tr>
-          <tr><td style="padding:8px;border-bottom:1px solid #ddd;"><strong>Subject:</strong></td><td style="padding:8px;border-bottom:1px solid #ddd;">${escapeHtml(data.subject)}</td></tr>
-        </table>
-        <div style="margin-top:20px;padding:15px;background:#f9f9f9;border-left:4px solid #AACC00;">
-          <h3>Message:</h3>
-          <p style="white-space:pre-wrap;">${escapeHtml(data.message)}</p>
-        </div>
-      </body></html>`;
-
     const adminResult = await sendAdminEmail({
       subject: `Contact Form: ${data.subject}`,
-      html,
+      html: contactAdminNotification(data),
       replyTo: data.email,
     });
 
@@ -62,12 +47,4 @@ export async function POST(request: Request) {
     }
     return NextResponse.json({ success: false, message: "Failed to send message." }, { status: 500 });
   }
-}
-
-function escapeHtml(text: string): string {
-  return text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
 }

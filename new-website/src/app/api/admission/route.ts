@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { sendAdminEmail, sendAcknowledgmentEmail, getPublicEmailError } from "@/lib/email";
-import { admissionAcknowledgment } from "@/lib/email-templates";
+import { admissionAcknowledgment, admissionAdminNotification } from "@/lib/email-templates";
 
 const admissionSchema = z.object({
   studentName: z.string().min(1),
@@ -55,39 +55,25 @@ export async function POST(request: Request) {
 
     const standardLabel = STANDARD_LABELS[data.applyingForStandard] || data.applyingForStandard;
 
-    const fileLinksHtml = Object.entries(data.files)
-      .map(([k, url]) => `<li><strong>${k}:</strong> <a href="${esc(url)}">${esc(url)}</a></li>`)
-      .join("");
-
-    const html = `
-      <html><body style="font-family: Arial, sans-serif;">
-        <h2 style="color: #FF8C00; border-bottom: 3px solid #AACC00; padding-bottom: 10px;">
-          New Admission Application
-        </h2>
-        <h3>Student Details</h3>
-        <table style="width:100%; border-collapse: collapse;">
-          <tr><td style="padding:8px;border-bottom:1px solid #ddd;"><strong>Name:</strong></td><td>${esc(data.studentName)}</td></tr>
-          <tr><td style="padding:8px;border-bottom:1px solid #ddd;"><strong>DOB:</strong></td><td>${esc(data.dateOfBirth)}</td></tr>
-          <tr><td style="padding:8px;border-bottom:1px solid #ddd;"><strong>Gender:</strong></td><td>${esc(data.gender)}</td></tr>
-          <tr><td style="padding:8px;border-bottom:1px solid #ddd;"><strong>Standard:</strong></td><td>${esc(standardLabel)}</td></tr>
-        </table>
-        <h3>Parent Details</h3>
-        <table style="width:100%; border-collapse: collapse;">
-          <tr><td style="padding:8px;border-bottom:1px solid #ddd;"><strong>Email:</strong></td><td>${esc(data.parentEmail)}</td></tr>
-          <tr><td style="padding:8px;border-bottom:1px solid #ddd;"><strong>Father:</strong></td><td>${esc(data.fatherName)} (${esc(data.fatherContact)})</td></tr>
-          <tr><td style="padding:8px;border-bottom:1px solid #ddd;"><strong>Mother:</strong></td><td>${esc(data.motherName)} (${esc(data.motherContact)})</td></tr>
-        </table>
-        <h3>Address</h3>
-        <p><strong>Current:</strong> ${esc(data.currentAddress)}</p>
-        <p><strong>Permanent:</strong> ${esc(data.permanentAddress)}</p>
-        ${data.siblingName ? `<p><strong>Sibling:</strong> ${esc(data.siblingName)} - ${esc(data.siblingSchool || "")} (${esc(data.siblingStandard || "")})</p>` : ""}
-        <h3>Uploaded Documents</h3>
-        <ul>${fileLinksHtml}</ul>
-      </body></html>`;
-
     const adminResult = await sendAdminEmail({
-      subject: `New Admission Application - ${data.studentName}`,
-      html,
+      subject: `New Admission Application — ${data.studentName} (${standardLabel})`,
+      html: admissionAdminNotification({
+        studentName: data.studentName,
+        dateOfBirth: data.dateOfBirth,
+        gender: data.gender,
+        standardLabel,
+        parentEmail: data.parentEmail,
+        fatherName: data.fatherName,
+        motherName: data.motherName,
+        fatherContact: data.fatherContact,
+        motherContact: data.motherContact,
+        currentAddress: data.currentAddress,
+        permanentAddress: data.permanentAddress,
+        siblingName: data.siblingName,
+        siblingSchool: data.siblingSchool,
+        siblingStandard: data.siblingStandard,
+        files: data.files,
+      }),
       replyTo: data.parentEmail,
     });
 
@@ -120,8 +106,4 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
-}
-
-function esc(text: string): string {
-  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
