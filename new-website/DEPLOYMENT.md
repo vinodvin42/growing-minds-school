@@ -60,11 +60,11 @@ In Vercel → **Settings** → **Environment Variables**, add:
 | Variable | Value | Required |
 |----------|-------|----------|
 | `ADMIN_PASSWORD` | Strong password for `/admin` | Yes |
-| `GMAIL_USER` | `growingminds2025@gmail.com` | Yes (for email) |
-| `GMAIL_PASSWORD` | Normal Gmail password (if App Password unavailable) | Yes* |
-| `GMAIL_APP_PASSWORD` | Google App Password (alternative to GMAIL_PASSWORD) | Yes* |
+| `RESEND_API_KEY` | From [resend.com](https://resend.com) — **use this if Gmail App Password unavailable** | Yes (email) |
 | `ADMIN_EMAIL` | `growingminds2025@gmail.com` (where forms are received) | Yes |
 | `EMAIL_FROM_NAME` | `Growing Minds English School` | Yes |
+| `FROM_EMAIL` | `Growing Minds <noreply@growingmindsschool.org>` (after domain verify in Resend) | Optional |
+| `GMAIL_USER` / `GMAIL_APP_PASSWORD` | Gmail SMTP — only if App Passwords work on your account | Optional |
 | `NEXT_PUBLIC_SITE_URL` | `https://your-project.vercel.app` | Yes |
 | `BLOB_READ_WRITE_TOKEN` or `BLOB_STORE_ID` | Auto-set when Blob store is connected | Yes |
 

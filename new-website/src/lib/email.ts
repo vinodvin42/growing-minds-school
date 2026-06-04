@@ -11,6 +11,8 @@ type SendToOptions = SendOptions & {
   to: string | string[];
 };
 
+type SendResult = { success: boolean; message: string };
+
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 function getAdminEmail() {
@@ -42,6 +44,10 @@ function getGmailTransporter() {
   });
 }
 
+function getResendFromAddress() {
+  return process.env.FROM_EMAIL || `${getFromName()} <onboarding@resend.dev>`;
+}
+
 /** Hide SMTP/auth details from visitors — show a helpful message instead. */
 export function getPublicEmailError(internal?: string): string {
   if (
@@ -54,54 +60,74 @@ export function getPublicEmailError(internal?: string): string {
   return "We could not send your message right now. Please try again or contact us by phone or email.";
 }
 
-async function deliver(options: SendToOptions): Promise<{ success: boolean; message: string }> {
+async function sendViaResend(options: SendToOptions): Promise<SendResult> {
+  if (!resend) {
+    return { success: false, message: "Resend not configured" };
+  }
+
   const to = Array.isArray(options.to) ? options.to : [options.to];
 
-  if (useGmail()) {
-    try {
-      const transporter = getGmailTransporter();
-      await transporter.sendMail({
-        from: `"${getFromName()}" <${process.env.GMAIL_USER?.trim()}>`,
-        to: to.join(", "),
-        subject: options.subject,
-        html: options.html,
-        replyTo: options.replyTo || process.env.GMAIL_USER?.trim(),
-      });
-      return { success: true, message: "Email sent via Gmail" };
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Gmail send failed";
-      console.error("Gmail error:", message);
-      return { success: false, message };
+  try {
+    const { error } = await resend.emails.send({
+      from: getResendFromAddress(),
+      to,
+      subject: options.subject,
+      html: options.html,
+      replyTo: options.replyTo,
+    });
+    if (error) {
+      console.error("Resend error:", error);
+      return { success: false, message: error.message };
     }
+    return { success: true, message: "Email sent via Resend" };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Resend send failed";
+    return { success: false, message };
+  }
+}
+
+async function sendViaGmail(options: SendToOptions): Promise<SendResult> {
+  const to = Array.isArray(options.to) ? options.to : [options.to];
+
+  try {
+    const transporter = getGmailTransporter();
+    await transporter.sendMail({
+      from: `"${getFromName()}" <${process.env.GMAIL_USER?.trim()}>`,
+      to: to.join(", "),
+      subject: options.subject,
+      html: options.html,
+      replyTo: options.replyTo || process.env.GMAIL_USER?.trim(),
+    });
+    return { success: true, message: "Email sent via Gmail" };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Gmail send failed";
+    console.error("Gmail error:", message);
+    return { success: false, message };
+  }
+}
+
+async function deliver(options: SendToOptions): Promise<SendResult> {
+  // Resend first — Gmail App Passwords are unavailable on many accounts.
+  const attempts: Array<() => Promise<SendResult>> = [];
+  if (resend) attempts.push(() => sendViaResend(options));
+  if (useGmail()) attempts.push(() => sendViaGmail(options));
+
+  let lastError = "No email provider configured";
+  for (const attempt of attempts) {
+    const result = await attempt();
+    if (result.success) return result;
+    lastError = result.message;
   }
 
-  if (resend) {
-    try {
-      const from =
-        process.env.FROM_EMAIL || `${getFromName()} <onboarding@resend.dev>`;
-      const { error } = await resend.emails.send({
-        from,
-        to,
-        subject: options.subject,
-        html: options.html,
-        replyTo: options.replyTo,
-      });
-      if (error) {
-        console.error("Resend error:", error);
-        return { success: false, message: error.message };
-      }
-      return { success: true, message: "Email sent via Resend" };
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Resend send failed";
-      return { success: false, message };
-    }
+  if (attempts.length === 0) {
+    console.log("[Email - dev mode]", { to: options.to, subject: options.subject });
+    return {
+      success: true,
+      message: "Email logged (configure RESEND_API_KEY or Gmail for production)",
+    };
   }
 
-  console.log("[Email - dev mode]", { to, subject: options.subject });
-  return {
-    success: true,
-    message: "Email logged (configure GMAIL_USER + GMAIL_PASSWORD for production)",
-  };
+  return { success: false, message: lastError };
 }
 
 /** Notify school admin (inbox: growingminds2025@gmail.com) */
@@ -123,8 +149,8 @@ export async function sendEmail(options: SendOptions) {
   return sendAdminEmail(options);
 }
 
-export function getEmailProvider(): "gmail" | "resend" | "dev" {
-  if (useGmail()) return "gmail";
+export function getEmailProvider(): "resend" | "gmail" | "dev" {
   if (resend) return "resend";
+  if (useGmail()) return "gmail";
   return "dev";
 }

@@ -1,82 +1,70 @@
-# Gmail Email Setup — Growing Minds English School
+# Email Setup — Growing Minds English School
 
-The website sends:
-
-1. **Admin notifications** → `growingminds2025@gmail.com` (contact + admission forms)
-2. **Acknowledgment emails** → visitor / parent email
+Gmail **App Passwords are not available** on your account, and normal Gmail passwords are blocked by Google for websites. Use **Resend** instead (5 minutes).
 
 ---
 
-## Option A — Gmail password (simplest if App Password is unavailable)
+## Quick fix — Resend (recommended)
 
-Google no longer shows **App Passwords** on every account. You can use your **normal Gmail sign-in password** instead.
+### 1. Create Resend account
+1. Go to [resend.com](https://resend.com) → sign up with **`growingminds2025@gmail.com`**
+2. Dashboard → **API Keys** → **Create API Key** → copy `re_...`
 
-### Vercel environment variables
-
-In Vercel → Project → **Settings** → **Environment Variables**:
+### 2. Add to Vercel
+**Settings → Environment Variables:**
 
 | Variable | Value |
 |----------|-------|
-| `GMAIL_USER` | `growingminds2025@gmail.com` |
-| `GMAIL_PASSWORD` | Your normal Gmail password for this account |
+| `RESEND_API_KEY` | `re_...` (paste your key) |
 | `ADMIN_EMAIL` | `growingminds2025@gmail.com` |
 | `EMAIL_FROM_NAME` | `Growing Minds English School` |
 
-You can **remove** `GMAIL_APP_PASSWORD` if it was set incorrectly.
+You can **remove** `GMAIL_USER`, `GMAIL_PASSWORD`, and `GMAIL_APP_PASSWORD` (Gmail will not work without App Passwords).
 
-Click **Save**, then **Redeploy** the project.
+Click **Save** → **Deployments** → **Redeploy**.
 
-### If Gmail still rejects the password (535 error)
+### 3. Test
+Submit the contact form at `/contact`. You should receive the message at `growingminds2025@gmail.com`.
 
-Google often blocks normal passwords for website SMTP. Try these in order:
-
-1. **Turn on 2-Step Verification**, then open [App Passwords](https://myaccount.google.com/apppasswords) directly and create one → use it in `GMAIL_APP_PASSWORD` (remove `GMAIL_PASSWORD`).
-2. **Use Resend instead** (Option B below) — works without Gmail App Passwords.
+> **Note:** With only `onboarding@resend.dev` (default), Resend delivers admin notifications to your signup email. To send **acknowledgment emails to visitors**, verify your domain (step below).
 
 ---
 
-## Option B — Gmail App Password (more reliable long-term)
+## Verify domain (for visitor acknowledgment emails)
 
-1. Enable [2-Step Verification](https://myaccount.google.com/security) on `growingminds2025@gmail.com`
-2. Create an app password at [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)
-3. In Vercel set:
-
-| Variable | Value |
-|----------|-------|
-| `GMAIL_USER` | `growingminds2025@gmail.com` |
-| `GMAIL_APP_PASSWORD` | 16-character app password (spaces optional) |
-
-Remove `GMAIL_PASSWORD` when using an app password.
-
----
-
-## Option C — Resend (no Gmail SMTP)
-
-If Gmail keeps failing:
-
-1. Sign up at [resend.com](https://resend.com) with `growingminds2025@gmail.com`
-2. Add domain `growingmindsschool.org` in Resend → copy the DNS records → add them in **Vercel → Domains → DNS**
-3. Create an API key in Resend
-4. In Vercel, **remove** `GMAIL_USER`, `GMAIL_PASSWORD`, and `GMAIL_APP_PASSWORD`
-5. Add:
+1. Resend → **Domains** → **Add** → `growingmindsschool.org`
+2. Copy the DNS records Resend shows (SPF, DKIM)
+3. Vercel → **Domains** → `growingmindsschool.org` → **DNS Records** → add them
+4. Wait for verification (usually 5–30 minutes)
+5. In Vercel add:
 
 | Variable | Value |
 |----------|-------|
-| `RESEND_API_KEY` | `re_...` from Resend |
 | `FROM_EMAIL` | `Growing Minds English School <noreply@growingmindsschool.org>` |
-| `ADMIN_EMAIL` | `growingminds2025@gmail.com` |
 
 6. Redeploy
 
 ---
 
+## Gmail (only if App Passwords become available)
+
+App Passwords require [2-Step Verification](https://myaccount.google.com/security) and must appear at [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords).
+
+If unavailable on your account, use Resend above.
+
+| Variable | Value |
+|----------|-------|
+| `GMAIL_USER` | `growingminds2025@gmail.com` |
+| `GMAIL_APP_PASSWORD` | 16-character app password |
+
+The site tries **Resend first**, then Gmail as fallback.
+
+---
+
 ## Local testing
 
-Create `new-website/.env.local`:
-
 ```env
-GMAIL_USER=growingminds2025@gmail.com
-GMAIL_PASSWORD=your-gmail-password
+RESEND_API_KEY=re_your_key
 ADMIN_EMAIL=growingminds2025@gmail.com
 EMAIL_FROM_NAME=Growing Minds English School
 ```
@@ -86,23 +74,19 @@ cd new-website
 npm run dev
 ```
 
-Submit the contact form and check the admin inbox.
-
 ---
 
 ## Troubleshooting
 
 | Problem | Solution |
 |---------|----------|
-| No **App Passwords** menu in Google | Use `GMAIL_PASSWORD` (Option A) or Resend (Option C) |
-| `535` / Invalid login | Wrong password, or Google blocked SMTP — try App Password or Resend |
-| Works locally, not on Vercel | Redeploy after changing env vars |
+| Contact form still fails | Confirm `RESEND_API_KEY` is set for **Production** and redeploy |
+| Admin email works, visitor ack fails | Verify domain in Resend + set `FROM_EMAIL` |
 | Emails in spam | Mark as “Not spam” in Gmail |
 
 ---
 
 ## Security
 
-- Never commit passwords to GitHub
-- Store values only in Vercel **Environment Variables**
-- Revoke app passwords anytime in Google Account settings
+- Never commit API keys to GitHub
+- Store values only in Vercel Environment Variables
