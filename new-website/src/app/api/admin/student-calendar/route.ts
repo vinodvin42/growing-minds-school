@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { isAuthenticated } from "@/lib/auth";
 import { getStudentCalendarData, saveStudentCalendarData } from "@/lib/student-calendar-store";
+import { sendStudentPush } from "@/lib/web-push";
 import { academicYear, PORTAL_ROOT } from "@/lib/portal-storage-paths";
 import type { StudentCalendarData } from "@/types/student-calendar";
 
@@ -40,6 +41,12 @@ export async function PUT(request: Request) {
       },
       year
     );
+
+    void sendStudentPush({
+      title: "Calendar updated",
+      body: "New holiday or reminder — tap to view",
+      url: "/student/calendar",
+    });
 
     return NextResponse.json({ success: true, academicYear: year, ...saved });
   } catch (err) {

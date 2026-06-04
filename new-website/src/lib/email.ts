@@ -112,9 +112,19 @@ async function sendViaGmail(options: SendToOptions): Promise<SendResult> {
 
 async function deliver(options: SendToOptions): Promise<SendResult> {
   const attempts: Array<() => Promise<SendResult>> = [];
-  // Prefer Gmail when configured — school uses their own inbox.
-  if (useGmail()) attempts.push(() => sendViaGmail(options));
-  if (resend) attempts.push(() => sendViaResend(options));
+  const prefer = process.env.EMAIL_PREFER?.trim().toLowerCase();
+
+  if (prefer === "resend") {
+    if (resend) attempts.push(() => sendViaResend(options));
+    if (useGmail()) attempts.push(() => sendViaGmail(options));
+  } else if (prefer === "gmail") {
+    if (useGmail()) attempts.push(() => sendViaGmail(options));
+    if (resend) attempts.push(() => sendViaResend(options));
+  } else {
+    // Default: Gmail first (school inbox), then Resend fallback
+    if (useGmail()) attempts.push(() => sendViaGmail(options));
+    if (resend) attempts.push(() => sendViaResend(options));
+  }
 
   let lastError = "No email provider configured";
   for (const attempt of attempts) {
@@ -166,6 +176,7 @@ export function getEmailProvider(): "resend" | "gmail" | "dev" {
 export function getEmailConfigStatus() {
   return {
     provider: getEmailProvider(),
+    prefer: process.env.EMAIL_PREFER?.trim() || "gmail",
     adminEmail: getAdminEmail(),
     gmailUser: process.env.GMAIL_USER?.trim() || null,
     gmailConfigured: useGmail(),

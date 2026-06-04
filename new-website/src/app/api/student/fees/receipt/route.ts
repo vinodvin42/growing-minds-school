@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
-import { getCurrentStudentProfile } from "@/lib/student-auth";
 import { getStudentFeeSummary } from "@/lib/student-fees-store";
+import { getCurrentStudentProfile } from "@/lib/student-auth";
+import { buildFeeReceiptHtml } from "@/lib/fee-receipt";
 import { academicYear } from "@/lib/portal-storage-paths";
 
 export async function GET() {
@@ -11,16 +12,12 @@ export async function GET() {
 
   const year = academicYear();
   const account = await getStudentFeeSummary(student.id, year);
+  const html = buildFeeReceiptHtml(account, student, year);
 
-  return NextResponse.json({
-    success: true,
-    academicYear: year,
-    account,
-    student: {
-      name: student.name,
-      loginId: student.loginId,
-      standard: student.standard,
-      section: student.section,
+  return new NextResponse(html, {
+    headers: {
+      "Content-Type": "text/html; charset=utf-8",
+      "Cache-Control": "no-store",
     },
   });
 }

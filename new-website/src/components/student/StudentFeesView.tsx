@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useMarkSectionSeen } from "@/components/student/StudentNotificationProvider";
+import FeeCollapsible from "@/components/student/FeeCollapsible";
+import { openFeeReceiptPrint } from "@/lib/fee-receipt";
 import {
   FEE_CATEGORIES,
   FEE_PAYMENT_MODES,
@@ -9,6 +11,9 @@ import {
   feeStatusLabel,
   type StudentFeeSummary,
 } from "@/types/student-fees";
+import type { StudentProfile } from "@/types/student";
+
+type FeeStudent = Pick<StudentProfile, "name" | "loginId" | "standard" | "section">;
 
 function categoryLabel(value: string): string {
   return FEE_CATEGORIES.find((c) => c.value === value)?.label ?? value;
@@ -32,10 +37,12 @@ function formatDate(iso: string): string {
 export default function StudentFeesView() {
   useMarkSectionSeen("fees");
   const [account, setAccount] = useState<StudentFeeSummary | null>(null);
+  const [student, setStudent] = useState<FeeStudent | null>(null);
   const [academicYear, setAcademicYear] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [breakdownOpen, setBreakdownOpen] = useState(false);
+  const [paymentsOpen, setPaymentsOpen] = useState(false);
 
   useEffect(() => {
     fetch("/api/student/fees", { cache: "no-store" })
@@ -43,6 +50,7 @@ export default function StudentFeesView() {
       .then((data) => {
         if (data.success) {
           setAccount(data.account ?? null);
+          setStudent(data.student ?? null);
           setAcademicYear(data.academicYear ?? "");
         } else {
           setError(data.message || "Could not load fee account");
@@ -84,6 +92,8 @@ export default function StudentFeesView() {
           ? "student-fee-status--partial"
           : "student-fee-status--pending";
 
+  const sortedPayments = [...account.payments].sort((a, b) => b.date.localeCompare(a.date));
+
   return (
     <div className="student-fees">
       <div className="student-fee-summary-grid">
@@ -103,6 +113,19 @@ export default function StudentFeesView() {
         </div>
       </div>
 
+      {student && (account.lineItems.length > 0 || account.payments.length > 0) && (
+        <div className="student-fee-actions mb-3">
+          <button
+            type="button"
+            className="btn btn-outline-secondary btn-sm w-100"
+            onClick={() => openFeeReceiptPrint(account, student, academicYear)}
+          >
+            <i className="fas fa-file-pdf me-2" aria-hidden="true" />
+            Download / print fee statement
+          </button>
+        </div>
+      )}
+
       {account.notes?.trim() && (
         <div className="student-tip-card mb-3">
           <i className="fas fa-info-circle student-tip-card__icon" aria-hidden="true" />
@@ -117,60 +140,62 @@ export default function StudentFeesView() {
             <p className="text-muted small mb-0">No fee items posted yet.</p>
           </>
         ) : (
-          <div className={`student-fee-collapsible${breakdownOpen ? " student-fee-collapsible--open" : ""}`}>
-            <button
-              type="button"
-              className="student-fee-collapsible__trigger"
-              onClick={() => setBreakdownOpen((o) => !o)}
-              aria-expanded={breakdownOpen}
-              aria-controls="student-fee-breakdown"
-            >
-              <span className="student-fee-collapsible__trigger-main">
-                <span className="student-fee-collapsible__label">Fee breakdown</span>
-                <span className="student-fee-collapsible__hint">
-                  {account.lineItems.length} item{account.lineItems.length === 1 ? "" : "s"} · Tap to{" "}
-                  {breakdownOpen ? "hide" : "view"} details
-                </span>
-              </span>
-              <span className="student-fee-collapsible__total">{formatInr(account.totalDue)}</span>
-              <i
-                className={`fas fa-chevron-down student-fee-collapsible__chevron${breakdownOpen ? " student-fee-collapsible__chevron--open" : ""}`}
-                aria-hidden="true"
-              />
-            </button>
-            <div id="student-fee-breakdown" className="student-fee-collapsible__panel" hidden={!breakdownOpen}>
-              <ul className="student-fee-list student-fee-list--nested">
-                {account.lineItems.map((item) => (
-                  <li key={item.id} className="student-fee-list__item">
-                    <div className="student-fee-list__main">
-                      <strong>{item.label || categoryLabel(item.category)}</strong>
-                      <span className="student-fee-list__category">{categoryLabel(item.category)}</span>
-                    </div>
-                    <div className="student-fee-list__meta">
-                      <span className="student-fee-list__amount">{formatInr(item.amount)}</span>
-                      {item.dueDate && <span className="student-fee-list__due">Due {formatDate(item.dueDate)}</span>}
-                    </div>
-                  </li>
-                ))}
-              </ul>
+          <FeeCollapsible
+            id="student-fee-breakdown"
+            label="Fee breakdown"
+            hint={`${account.lineItems.length} item${account.lineItems.length === 1 ? "" : "s"} · Tap to ${breakdownOpen ? "hide" : "view"} details`}
+            totalLabel={formatInr(account.totalDue)}
+            open={breakdownOpen}
+            onToggle={() => setBreakdownOpen((o) => !o)}
+            footer={
               <div className="student-fee-collapsible__footer">
                 <span>Total</span>
                 <strong>{formatInr(account.totalDue)}</strong>
               </div>
-            </div>
-          </div>
+            }
+          >
+            <ul className="student-fee-list student-fee-list--nested">
+              {account.lineItems.map((item) => (
+                <li key={item.id} className="student-fee-list__item">
+                  <div className="student-fee-list__main">
+                    <strong>{item.label || categoryLabel(item.category)}</strong>
+                    <span className="student-fee-list__category">{categoryLabel(item.category)}</span>
+                  </div>
+                  <div className="student-fee-list__meta">
+                    <span className="student-fee-list__amount">{formatInr(item.amount)}</span>
+                    {item.dueDate && <span className="student-fee-list__due">Due {formatDate(item.dueDate)}</span>}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </FeeCollapsible>
         )}
       </section>
 
       <section className="student-fees-section">
-        <h2 className="student-fees-section__title">Payment history</h2>
         {account.payments.length === 0 ? (
-          <p className="text-muted small mb-0">No payments recorded yet.</p>
+          <>
+            <h2 className="student-fees-section__title">Payment history</h2>
+            <p className="text-muted small mb-0">No payments recorded yet.</p>
+          </>
         ) : (
-          <ul className="student-fee-list student-fee-list--payments">
-            {[...account.payments]
-              .sort((a, b) => b.date.localeCompare(a.date))
-              .map((payment) => (
+          <FeeCollapsible
+            id="student-fee-payments"
+            label="Payment history"
+            hint={`${sortedPayments.length} payment${sortedPayments.length === 1 ? "" : "s"} · Tap to ${paymentsOpen ? "hide" : "view"}`}
+            totalLabel={formatInr(account.totalPaid)}
+            open={paymentsOpen}
+            onToggle={() => setPaymentsOpen((o) => !o)}
+            variant="paid"
+            footer={
+              <div className="student-fee-collapsible__footer">
+                <span>Total paid</span>
+                <strong>{formatInr(account.totalPaid)}</strong>
+              </div>
+            }
+          >
+            <ul className="student-fee-list student-fee-list--nested">
+              {sortedPayments.map((payment) => (
                 <li key={payment.id} className="student-fee-list__item">
                   <div className="student-fee-list__main">
                     <strong>{formatInr(payment.amount)}</strong>
@@ -182,7 +207,8 @@ export default function StudentFeesView() {
                   </div>
                 </li>
               ))}
-          </ul>
+            </ul>
+          </FeeCollapsible>
         )}
       </section>
 

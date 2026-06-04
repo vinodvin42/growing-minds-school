@@ -8,6 +8,7 @@ import StudentBottomNav from "@/components/student/StudentBottomNav";
 import StudentBrand from "@/components/student/StudentBrand";
 import { StudentNotificationProvider } from "@/components/student/StudentNotificationProvider";
 import StudentReminderBanner from "@/components/student/StudentReminderBanner";
+import StudentPushEnable from "@/components/student/StudentPushEnable";
 
 export default function StudentAppShell({
   student,
@@ -58,6 +59,7 @@ export default function StudentAppShell({
         </header>
 
         <div className="student-app__body">
+          <StudentPushEnable />
           <StudentReminderBanner />
           {children}
         </div>

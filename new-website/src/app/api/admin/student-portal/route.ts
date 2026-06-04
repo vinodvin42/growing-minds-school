@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { isAuthenticated } from "@/lib/auth";
 import { getStudentPortalData, saveStudentPortalData } from "@/lib/student-portal-store";
+import { sendStudentPush } from "@/lib/web-push";
 import { PORTAL_ROOT } from "@/lib/portal-storage-paths";
 import type { HomeworkItem, StudentPortalData, TeacherMessage } from "@/types/student-portal";
 
@@ -34,6 +35,21 @@ export async function PUT(request: Request) {
     const messages = Array.isArray(body.messages) ? body.messages : existing.messages;
 
     const saved = await saveStudentPortalData({ homework, messages });
+
+    if (Array.isArray(body.homework)) {
+      void sendStudentPush({
+        title: "New homework",
+        body: "Your teacher posted homework — tap to view",
+        url: "/student/homework",
+      });
+    }
+    if (Array.isArray(body.messages)) {
+      void sendStudentPush({
+        title: "New school message",
+        body: "Tap to read the latest notice",
+        url: "/student/messages",
+      });
+    }
 
     return NextResponse.json({ success: true, ...saved });
   } catch (err) {

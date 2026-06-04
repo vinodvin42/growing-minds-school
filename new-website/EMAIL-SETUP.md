@@ -62,6 +62,8 @@ Or submit the contact form at `/contact`.
 
 4. Redeploy and test `/contact`
 
+**Prefer Resend over Gmail** (optional): set `EMAIL_PREFER=resend` so Resend is tried first when both are configured.
+
 For **visitor confirmation emails**, verify your domain in Resend and set:
 `FROM_EMAIL=Growing Minds English School <noreply@growingmindsschool.org>`
 
