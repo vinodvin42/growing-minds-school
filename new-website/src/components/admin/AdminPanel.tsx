@@ -16,6 +16,8 @@ import {
 import StudentsEditor from "@/components/admin/StudentsEditor";
 import HomeworkEditor from "@/components/admin/HomeworkEditor";
 import StudentMessagesEditor from "@/components/admin/StudentMessagesEditor";
+import StudentFeesEditor from "@/components/admin/StudentFeesEditor";
+import CalendarRemindersEditor from "@/components/admin/CalendarRemindersEditor";
 import AdminTopNav from "@/components/admin/AdminTopNav";
 import AdminDashboard from "@/components/admin/AdminDashboard";
 import {
@@ -190,7 +192,9 @@ export default function AdminPanel() {
               <AboutEditor content={content} setContent={setContent} uploadFile={uploadFile} persist={persist} />
             )}
             {tab === "students" && <StudentsEditor />}
+            {tab === "fees" && <StudentFeesEditor />}
             {tab === "homework" && <HomeworkEditor uploadFile={uploadFile} />}
+            {tab === "calendar" && <CalendarRemindersEditor />}
             {tab === "messages" && <StudentMessagesEditor uploadFile={uploadFile} />}
         </div>
       </main>

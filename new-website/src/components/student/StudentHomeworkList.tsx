@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from "react";
 import PortalAttachments from "@/components/student/PortalAttachments";
+import { useMarkSectionSeen } from "@/components/student/StudentNotificationProvider";
 import { homeworkDueDisplay, type HomeworkItem } from "@/types/student-portal";
 
 export default function StudentHomeworkList() {
+  useMarkSectionSeen("homework");
   const [items, setItems] = useState<HomeworkItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");

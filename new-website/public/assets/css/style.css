@@ -2300,6 +2300,152 @@ h1, h2, h3, h4, h5, h6 {
     padding-bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px));
 }
 
+/* New-update reminder banner */
+.student-reminder-banner {
+    margin: 0.75rem 1rem 0;
+    padding: 0.85rem 1rem;
+    background: linear-gradient(135deg, #fff8eb 0%, #fff 100%);
+    border: 1px solid rgba(255, 140, 0, 0.25);
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(255, 140, 0, 0.12);
+}
+.student-reminder-banner__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.65rem;
+}
+.student-reminder-banner__head > div {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.student-reminder-banner__badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.35rem;
+    height: 1.35rem;
+    padding: 0 0.35rem;
+    border-radius: 999px;
+    background: var(--orange);
+    color: white;
+    font-size: 0.6875rem;
+    font-weight: 800;
+}
+.student-reminder-banner__title {
+    font-size: 0.875rem;
+    font-weight: 800;
+    color: var(--green-darker);
+}
+.student-reminder-banner__close {
+    border: none;
+    background: transparent;
+    color: var(--ink-muted);
+    padding: 0.35rem;
+    cursor: pointer;
+    line-height: 1;
+}
+.student-reminder-banner__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+.student-reminder-banner__item {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 0.65rem;
+    align-items: start;
+    padding: 0.55rem 0.5rem;
+    border-radius: 10px;
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.15s ease;
+}
+.student-reminder-banner__item:hover {
+    background: rgba(255, 140, 0, 0.08);
+}
+.student-reminder-banner__icon {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    flex-shrink: 0;
+}
+.student-reminder-banner__icon--homework { background: var(--lime-light); color: var(--lime-dark); }
+.student-reminder-banner__icon--message { background: var(--orange-light); color: var(--orange-dark); }
+.student-reminder-banner__icon--fees { background: var(--purple-light); color: var(--purple); }
+.student-reminder-banner__icon--holiday { background: var(--yellow-light); color: var(--orange-dark); }
+.student-reminder-banner__icon--reminder { background: var(--blue-light); color: var(--blue); }
+.student-reminder-banner__text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 0;
+}
+.student-reminder-banner__kind {
+    font-size: 0.625rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--orange-dark);
+}
+.student-reminder-banner__text strong {
+    font-size: 0.8125rem;
+    color: var(--green-darker);
+    line-height: 1.3;
+}
+.student-reminder-banner__sub {
+    font-size: 0.6875rem;
+    color: var(--ink-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.student-reminder-banner__time {
+    font-size: 0.625rem;
+    font-weight: 600;
+    color: var(--ink-muted);
+    white-space: nowrap;
+    padding-top: 0.15rem;
+}
+.student-reminder-banner__more {
+    font-size: 0.6875rem;
+    color: var(--ink-muted);
+    margin-top: 0.5rem;
+    text-align: center;
+}
+
+.student-bottom-nav__icon-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.student-bottom-nav__badge {
+    position: absolute;
+    top: -5px;
+    right: -8px;
+    min-width: 14px;
+    height: 14px;
+    padding: 0 3px;
+    border-radius: 999px;
+    background: var(--red);
+    color: white;
+    font-size: 0.5rem;
+    font-weight: 800;
+    line-height: 14px;
+    text-align: center;
+    border: 1.5px solid white;
+}
+
 .student-page {
     padding: 1rem 1rem 1.25rem;
 }
@@ -2371,6 +2517,14 @@ a.student-quick-card:active {
 .student-quick-card--blue .student-quick-card__icon {
     background: var(--blue-light);
     color: var(--blue);
+}
+.student-quick-card--purple .student-quick-card__icon {
+    background: var(--purple-light);
+    color: var(--purple);
+}
+.student-quick-card--yellow .student-quick-card__icon {
+    background: var(--yellow-light);
+    color: var(--orange-dark);
 }
 .student-quick-card--muted .student-quick-card__icon {
     background: white;
@@ -2466,7 +2620,7 @@ a.student-quick-card:active {
 }
 .student-bottom-nav__inner {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     gap: 0;
 }
 .student-bottom-nav__item {
@@ -2474,12 +2628,12 @@ a.student-quick-card:active {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 0.2rem;
-    padding: 0.55rem 0.25rem 0.5rem;
-    min-height: 56px;
+    gap: 0.1rem;
+    padding: 0.45rem 0.1rem 0.4rem;
+    min-height: 52px;
     text-decoration: none;
     color: var(--ink-muted);
-    font-size: 0.625rem;
+    font-size: 0.5rem;
     font-weight: 700;
     text-align: center;
     border: none;
@@ -2487,7 +2641,7 @@ a.student-quick-card:active {
     transition: color 0.15s ease, background 0.15s ease;
 }
 .student-bottom-nav__item i {
-    font-size: 1.125rem;
+    font-size: 0.9375rem;
 }
 .student-bottom-nav__item--active {
     color: var(--orange-dark);
@@ -2580,6 +2734,352 @@ a.student-quick-card:active {
     font-size: 2.5rem;
     display: block;
     margin-bottom: 0.5rem;
+}
+
+/* Student fees & account */
+.student-fees-section {
+    margin-bottom: 1.25rem;
+}
+.student-fees-section__title {
+    font-size: 0.9375rem;
+    font-weight: 800;
+    color: var(--green-darker);
+    margin: 0 0 0.65rem;
+}
+.student-fee-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.65rem;
+    margin-bottom: 1rem;
+}
+.student-fee-summary-card {
+    background: white;
+    border-radius: 14px;
+    padding: 0.85rem 0.65rem;
+    border: 1px solid rgba(45, 74, 34, 0.08);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.15rem;
+}
+.student-fee-summary-card--paid {
+    border-top: 3px solid var(--lime);
+}
+.student-fee-summary-card--balance {
+    border-top: 3px solid var(--orange);
+}
+.student-fee-summary-card__label {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+.student-fee-summary-card__value {
+    font-size: 0.9375rem;
+    font-weight: 800;
+    color: var(--green-darker);
+    line-height: 1.2;
+}
+.student-fee-summary-card__hint {
+    font-size: 0.625rem;
+    color: var(--ink-muted);
+}
+.student-fee-status {
+    font-size: 0.625rem;
+    font-weight: 700;
+    padding: 0.15rem 0.45rem;
+    border-radius: 999px;
+    margin-top: 0.15rem;
+}
+.student-fee-status--paid {
+    background: var(--lime-light);
+    color: var(--lime-dark);
+}
+.student-fee-status--partial {
+    background: var(--orange-light);
+    color: var(--orange-dark);
+}
+.student-fee-status--overdue {
+    background: var(--red-light);
+    color: var(--red);
+}
+.student-fee-status--pending {
+    background: var(--surface-green);
+    color: var(--green-darker);
+}
+.student-fee-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.student-fee-list__item {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    background: white;
+    border-radius: 14px;
+    border: 1px solid rgba(45, 74, 34, 0.08);
+    box-shadow: var(--shadow-sm);
+}
+.student-fee-list__main {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+}
+.student-fee-list__main strong {
+    font-size: 0.9375rem;
+    color: var(--green-darker);
+}
+.student-fee-list__category {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--ink-muted);
+}
+.student-fee-list__meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.15rem;
+    text-align: right;
+    flex-shrink: 0;
+    font-size: 0.75rem;
+    color: var(--ink-muted);
+}
+.student-fee-list__amount {
+    font-size: 0.9375rem;
+    font-weight: 800;
+    color: var(--green-darker);
+}
+.student-fee-list__due,
+.student-fee-list__ref {
+    font-size: 0.6875rem;
+}
+.student-fees-footnote {
+    font-size: 0.75rem;
+    color: var(--ink-muted);
+    text-align: center;
+    margin: 0.5rem 0 0;
+    line-height: 1.5;
+}
+
+/* School calendar & reminders */
+.student-cal-tabs {
+    display: flex;
+    gap: 0.35rem;
+    margin-bottom: 1rem;
+    padding: 0.25rem;
+    background: white;
+    border-radius: 12px;
+    border: 1px solid rgba(45, 74, 34, 0.08);
+}
+.student-cal-tabs__btn {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 0.5rem 0.35rem;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--ink-muted);
+    cursor: pointer;
+}
+.student-cal-tabs__btn--active {
+    background: var(--orange-light);
+    color: var(--orange-dark);
+}
+.student-cal-section {
+    margin-bottom: 1.25rem;
+}
+.student-cal-section__title {
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--green-darker);
+    margin: 0 0 0.75rem;
+}
+.student-cal-month-block {
+    margin-bottom: 1rem;
+}
+.student-cal-month-block__title {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 0.5rem;
+}
+.student-cal-grid {
+    background: white;
+    border-radius: 14px;
+    padding: 0.75rem;
+    border: 1px solid rgba(45, 74, 34, 0.08);
+    margin-bottom: 0.75rem;
+}
+.student-cal-grid__weekdays,
+.student-cal-grid__days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.2rem;
+    text-align: center;
+}
+.student-cal-grid__weekdays {
+    font-size: 0.625rem;
+    font-weight: 700;
+    color: var(--ink-muted);
+    margin-bottom: 0.35rem;
+}
+.student-cal-grid__day {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.35rem 0;
+    border-radius: 8px;
+    color: var(--green-darker);
+}
+.student-cal-grid__day--empty {
+    visibility: hidden;
+}
+.student-cal-grid__day--holiday {
+    background: var(--orange-light);
+    color: var(--orange-dark);
+    font-weight: 800;
+}
+.student-cal-grid__day--today {
+    box-shadow: inset 0 0 0 2px var(--orange);
+}
+.student-cal-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.student-cal-list__item {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    background: white;
+    border-radius: 14px;
+    border: 1px solid rgba(45, 74, 34, 0.08);
+    box-shadow: var(--shadow-sm);
+    border-left: 3px solid var(--lime);
+}
+.student-cal-list__item--half_day { border-left-color: var(--yellow); }
+.student-cal-list__item--ptm { border-left-color: var(--blue); }
+.student-cal-list__item--event { border-left-color: var(--purple); }
+.student-cal-list__item--rem-fees { border-left-color: var(--purple); }
+.student-cal-list__item--rem-homework { border-left-color: var(--lime); }
+.student-cal-list__item--rem-ptm { border-left-color: var(--blue); }
+.student-cal-list__item--rem-general { border-left-color: var(--orange); }
+.student-cal-list__date {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.5rem;
+    text-align: center;
+    flex-shrink: 0;
+}
+.student-cal-list__date-day {
+    font-size: 1.125rem;
+    font-weight: 800;
+    color: var(--green-darker);
+    line-height: 1;
+}
+.student-cal-list__date-mon {
+    font-size: 0.625rem;
+    font-weight: 700;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+}
+.student-cal-list__icon {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.9375rem;
+}
+.student-cal-list__icon--fees { background: var(--purple-light); color: var(--purple); }
+.student-cal-list__icon--homework { background: var(--lime-light); color: var(--lime-dark); }
+.student-cal-list__icon--ptm { background: var(--blue-light); color: var(--blue); }
+.student-cal-list__icon--general { background: var(--orange-light); color: var(--orange-dark); }
+.student-cal-list__body {
+    min-width: 0;
+    flex: 1;
+}
+.student-cal-list__body strong {
+    display: block;
+    font-size: 0.9375rem;
+    color: var(--green-darker);
+    margin-bottom: 0.15rem;
+}
+.student-cal-list__meta {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--ink-muted);
+}
+.student-cal-list__desc {
+    font-size: 0.8125rem;
+    color: var(--ink-muted);
+    margin: 0.35rem 0 0;
+    line-height: 1.45;
+}
+.student-upcoming-cal {
+    margin-bottom: 1rem;
+    padding: 0.9rem 1rem;
+    background: white;
+    border-radius: 16px;
+    border: 1px solid rgba(45, 74, 34, 0.08);
+    box-shadow: var(--shadow-sm);
+    border-top: 3px solid var(--yellow);
+}
+.student-upcoming-cal__title {
+    font-size: 0.875rem;
+    font-weight: 800;
+    color: var(--green-darker);
+    margin: 0 0 0.65rem;
+}
+.student-upcoming-cal__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.student-upcoming-cal__item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+    gap: 0.5rem;
+    align-items: start;
+    font-size: 0.8125rem;
+}
+.student-upcoming-cal__date {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    color: var(--orange-dark);
+    line-height: 1.3;
+}
+.student-upcoming-cal__item strong {
+    display: block;
+    font-size: 0.8125rem;
+    color: var(--green-darker);
+}
+.student-upcoming-cal__sub {
+    font-size: 0.625rem;
+    font-weight: 600;
+    color: var(--ink-muted);
 }
 
 .portal-student-pick {

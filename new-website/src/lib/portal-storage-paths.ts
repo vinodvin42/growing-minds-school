@@ -48,6 +48,21 @@ export function classStudentsBlobPath(year: string, slug: string): string {
   return `${PORTAL_ROOT}/${year}/classes/${slug}/students.json`;
 }
 
+/** Fees: portal/2026/accounts/stu_abc123.json */
+export function studentFeesBlobPath(year: string, studentId: string): string {
+  return `${PORTAL_ROOT}/${year}/accounts/${studentId}.json`;
+}
+
+/** Holidays: portal/2026/calendar/holidays.json */
+export function holidaysBlobPath(year: string): string {
+  return `${PORTAL_ROOT}/${year}/calendar/holidays.json`;
+}
+
+/** Reminders: portal/2026/calendar/reminders.json */
+export function remindersBlobPath(year: string): string {
+  return `${PORTAL_ROOT}/${year}/calendar/reminders.json`;
+}
+
 export function parseClassHomeworkPath(pathname: string): { year: string; slug: string } | null {
   const match = pathname.match(new RegExp(`^${PORTAL_ROOT}/(\\d{4})/classes/([^/]+)/homework\\.json$`));
   if (!match) return null;

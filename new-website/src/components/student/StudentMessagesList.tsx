@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from "react";
 import PortalAttachments from "@/components/student/PortalAttachments";
+import { useMarkSectionSeen } from "@/components/student/StudentNotificationProvider";
 import type { TeacherMessage } from "@/types/student-portal";
 
 export default function StudentMessagesList() {
+  useMarkSectionSeen("messages");
   const [items, setItems] = useState<TeacherMessage[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");

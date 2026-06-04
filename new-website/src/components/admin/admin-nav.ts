@@ -12,7 +12,9 @@ export type AdminTab =
   | "about"
   | "students"
   | "homework"
-  | "messages";
+  | "messages"
+  | "fees"
+  | "calendar";
 
 export type AdminNavItem = {
   id: AdminTab;
@@ -67,7 +69,9 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
     label: "Student App",
     items: [
       { id: "students", label: "Student Accounts", icon: "fa-user-graduate", hint: "Login IDs & passwords" },
+      { id: "fees", label: "Fees & Accounts", icon: "fa-wallet", hint: "Tuition, payments & balance" },
       { id: "homework", label: "Homework", icon: "fa-book", hint: "Assignments & files" },
+      { id: "calendar", label: "Calendar", icon: "fa-calendar-alt", hint: "Holidays & reminders (fees, PTM)" },
       { id: "messages", label: "Messages", icon: "fa-bullhorn", hint: "Broadcast & individual" },
     ],
   },
