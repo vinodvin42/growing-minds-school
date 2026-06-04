@@ -101,13 +101,19 @@ Your site will be live at `https://your-project.vercel.app`
 
 ---
 
-## Step 7: Custom Domain (Optional)
+## Step 7: Custom Domain
 
-1. Vercel → **Settings** → **Domains**
-2. Add your domain (e.g. `growingminds.com`)
-3. Update DNS as instructed by Vercel
-4. Update `NEXT_PUBLIC_SITE_URL` to your custom domain
+**If the domain shows the old LiteSpeed site**, DNS still points to previous hosting — see **`DOMAIN-SETUP.md`** (full guide).
+
+Quick summary:
+
+1. Vercel → **Settings** → **Domains** → add `growingmindsschool.org` + `www.growingmindsschool.org`
+2. **Change nameservers** at your domain registrar to Vercel (`ns1.vercel-dns.com`, `ns2.vercel-dns.com`)  
+   - Your domain currently uses **Terabytes** nameservers — that serves the **old** site
+3. Or update A/CNAME at Terabytes DNS to Vercel (`76.76.21.21` + `cname.vercel-dns.com`)
+4. Set `NEXT_PUBLIC_SITE_URL` = `https://www.growingmindsschool.org`
 5. Redeploy
+6. Verify in **incognito**: response header should say `Server: Vercel`, not `LiteSpeed`
 
 ---
 
@@ -123,8 +129,9 @@ For Resend instead: sign up at [resend.com](https://resend.com), set `RESEND_API
 
 | Issue | Fix |
 |-------|-----|
+| **Domain shows old LiteSpeed site** | DNS still on Terabytes hosting — follow **`DOMAIN-SETUP.md`** |
 | Admin save / upload fails | Connect Blob store, confirm `BLOB_STORE_ID` or `BLOB_READ_WRITE_TOKEN` is set, then **redeploy** |
-| Forms don't send email | Check `RESEND_API_KEY` and verify `FROM_EMAIL` domain |
+| Forms don't send email | Add `RESEND_API_KEY` on Vercel (Gmail won't work without App Password) + redeploy |
 | Admission upload fails | Blob store required; files upload one at a time (max 5MB each) |
 | Images not loading | Local images are in `public/assets/images/` — no external deps needed |
 | 401 on admin | Clear cookies, log in again with correct `ADMIN_PASSWORD` |

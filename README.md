@@ -19,6 +19,8 @@ If the live site shows **404: NOT_FOUND**, Vercel is almost certainly building t
 
 Full env vars and post-deploy steps: [`new-website/DEPLOYMENT.md`](new-website/DEPLOYMENT.md)
 
+**Domain still shows old site?** See [`new-website/DOMAIN-SETUP.md`](new-website/DOMAIN-SETUP.md)
+
 ## Local development
 
 ```bash
