@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.*
+
+# Next.js
+new-website/.next/
+new-website/out/
+
+# Env files
+.env
+.env.local
+.env*.local
+
+# Debug
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts

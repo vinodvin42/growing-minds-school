@@ -1,0 +1,169 @@
+import type { SiteContent } from "@/types/content";
+import { images } from "@/data/images";
+
+export const defaultContent: SiteContent = {
+  settings: {
+    schoolName: "Growing Minds English School",
+    tagline: "Where Little Steps Lead to Bigger Dreams",
+    logoUrl: images.logo,
+    phone: "+91 97685 32431",
+    email: "growingminds2025@gmail.com",
+    address:
+      "Shop No. D1, Plot No. 17, Malwani Ashwamegh CHS LTD., RSC 08, Mhada, Malwani, Malad West, Mumbai - 400095",
+    officeHours: "Monday - Saturday: 9:00 AM - 5:00 PM\nSunday: Closed",
+    mapEmbedUrl:
+      "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3768.0!2d72.8!3d19.17!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTnCsDEwJzEyLjAiTiA3MsKwNDgnMDAuMCJF!5e0!3m2!1sen!2sin!4v1234567890",
+    footerDescription:
+      "Where Little Steps Lead to Bigger Dreams. Nurturing curiosity, confidence, and holistic development in every child.",
+  },
+  homepage: {
+    badge: "🎓 Preschool & Primary Education",
+    heroTitle: "Growing Minds",
+    heroHighlight: "English School",
+    heroTagline: "Where Little Steps Lead to Bigger Dreams 🌈",
+    heroDescription:
+      "Nurturing curiosity, confidence, discipline, and holistic child development through quality English-medium education.",
+    admissionTitle: "🎉 Admissions Open!",
+    admissionYear: "Academic Year 2026-2027",
+    admissionGrades: "Nursery to 8th Standard",
+    featuredVideoButtonText: "Watch Our School Tour",
+  },
+  about: {
+    heroTitle: "About Growing Minds",
+    heroSubtitle: "Where Little Steps Lead to Bigger Dreams",
+    introTitle: "Welcome to Growing Minds",
+    introLead:
+      "Growing Minds English School is a newly opened English-medium, co-educational institution dedicated to providing quality education from Nursery to 8th Standard.",
+    introText:
+      "We believe in nurturing curiosity, confidence, and discipline in every child through a holistic approach to learning. Our school is built on the foundation of creating a safe, caring, and stimulating environment where children can explore, learn, and grow into responsible, ethical, and confident individuals.",
+    introImageUrl: images.schoolBuilding,
+    introImageFit: "cover",
+    introImageFocusX: 50,
+    introImageFocusY: 35,
+    vision:
+      "To be a leading educational institution that empowers young minds to become confident, compassionate, and capable individuals who contribute positively to society.",
+    visionExtra:
+      "We envision a learning environment where every child's unique talents are discovered and nurtured, preparing them for a successful future.",
+    mission:
+      "To provide quality English-medium education that focuses on academic excellence, character development, and holistic growth.",
+    missionExtra:
+      "We strive to create a nurturing environment where children feel safe, valued, and inspired to reach their full potential.",
+    values: [
+      { icon: "fa-heart", title: "Care & Compassion", description: "We treat every child with love, respect, and understanding, creating a warm and supportive atmosphere.", colorClass: "bg-orange-light text-orange" },
+      { icon: "fa-book-open", title: "Academic Excellence", description: "We maintain high educational standards while making learning engaging, interactive, and meaningful.", colorClass: "bg-lime text-white" },
+      { icon: "fa-star", title: "Character Building", description: "We instill strong moral values, ethics, discipline, and confidence in every student.", colorClass: "bg-yellow text-dark" },
+      { icon: "fa-users", title: "Inclusivity", description: "We celebrate diversity and create an environment where every child feels welcomed and valued.", colorClass: "bg-blue text-white" },
+      { icon: "fa-seedling", title: "Holistic Growth", description: "We focus on developing academic, physical, social, and emotional well-being.", colorClass: "bg-purple text-white" },
+      { icon: "fa-lightbulb", title: "Innovation", description: "We encourage creativity, curiosity, and critical thinking to prepare students for the future.", colorClass: "bg-red text-white" },
+    ],
+    approachTitle: "Our Child-Centric Approach",
+    approachLead:
+      "At Growing Minds, we place the child at the center of everything we do. Our educational approach is designed to:",
+    approachPoints: [
+      { title: "Recognize Individual Potential", description: "Every child is unique, and we tailor our teaching methods to suit different learning styles." },
+      { title: "Foster Curiosity", description: "We encourage questions, exploration, and discovery-based learning." },
+      { title: "Build Confidence", description: "Through positive reinforcement and supportive guidance, we help children believe in themselves." },
+      { title: "Develop Life Skills", description: "Beyond textbooks, we focus on communication, teamwork, problem-solving, and emotional intelligence." },
+      { title: "Promote Ethics & Values", description: "We integrate moral education into daily learning, teaching respect, honesty, and responsibility." },
+    ],
+    approachImageUrl: images.schoolActivity,
+    approachImageFit: "cover",
+    approachImageFocusX: 50,
+    approachImageFocusY: 22,
+  },
+  carousel: [
+    {
+      id: "1",
+      imageUrl: images.schoolBuilding,
+      caption: "Welcome to Growing Minds English School",
+      alt: "Growing Minds English School building",
+      eyebrow: "Welcome",
+      title: "Growing Minds English School",
+      description:
+        "A newly opened English-medium school in Malad West, nurturing curiosity, confidence, and holistic development from Nursery to 8th Standard.",
+      linkUrl: "/about",
+      linkText: "About Our School",
+      imagePosition: "right",
+      imageFit: "cover",
+      imageFocusX: 50,
+      imageFocusY: 40,
+    },
+    {
+      id: "2",
+      imageUrl: images.schoolActivity,
+      caption: "Creating a Happy Learning Environment",
+      alt: "Children learning at school",
+      eyebrow: "Our Environment",
+      title: "Creating a Happy Learning Environment",
+      description:
+        "Bright classrooms, caring teachers, and engaging activities help every child feel safe, inspired, and excited to learn every day.",
+      linkUrl: "/admissions",
+      linkText: "Apply for Admission",
+      imagePosition: "left",
+      imageFit: "cover",
+      imageFocusX: 52,
+      imageFocusY: 18,
+    },
+    {
+      id: "3",
+      imageUrl: images.schoolStudents,
+      caption: "Where Little Steps Lead to Bigger Dreams",
+      alt: "Students at Growing Minds",
+      eyebrow: "Our Students",
+      title: "Where Little Steps Lead to Bigger Dreams",
+      description:
+        "We celebrate every milestone — from first words and numbers to confidence, character, and lifelong love for learning.",
+      linkUrl: "/contact",
+      linkText: "Schedule a Visit",
+      imagePosition: "right",
+      imageFit: "cover",
+      imageFocusX: 50,
+      imageFocusY: 25,
+    },
+  ],
+  programs: [
+    { id: "1", icon: "🎨", title: "Nursery", ageRange: "2.5 - 3.5 years", description: "Foundation stage focused on sensory development, social skills, and basic learning concepts." },
+    { id: "2", icon: "📚", title: "LKG", ageRange: "3.5 - 4.5 years", description: "Lower Kindergarten with structured learning, literacy basics, and creative exploration." },
+    { id: "3", icon: "✏️", title: "UKG", ageRange: "4.5 - 5.5 years", description: "Upper Kindergarten preparing for primary school with advanced concepts and skills." },
+    { id: "4", icon: "🎓", title: "1st Standard", ageRange: "5.5 - 6.5 years", description: "Formal education begins with comprehensive curriculum and structured learning." },
+    { id: "5", icon: "🌟", title: "2nd - 8th Standard", ageRange: "6.5+ years", description: "Progressive learning with focus on academics, values, and holistic development." },
+  ],
+  enrollmentSteps: [
+    { number: 1, icon: "📝", title: "Fill Application", description: "Complete our online admission form with all required details", colorClass: "bg-orange" },
+    { number: 2, icon: "📄", title: "Submit Documents", description: "Upload all mandatory documents as per requirements", colorClass: "bg-lime" },
+    { number: 3, icon: "✅", title: "Verification", description: "Our team reviews and verifies your application", colorClass: "bg-blue" },
+    { number: 4, icon: "🎊", title: "Confirmation", description: "Receive confirmation and welcome to our family!", colorClass: "bg-purple" },
+  ],
+  teachers: [
+    { id: "1", name: "Mrs. Priya Sharma", role: "Head Teacher", experience: "15+ years experience", photoUrl: images.teacher1 },
+    { id: "2", name: "Ms. Anjali Patel", role: "Senior Teacher", experience: "10+ years experience", photoUrl: images.teacher2 },
+    { id: "3", name: "Ms. Meera Reddy", role: "Primary Teacher", experience: "8+ years experience", photoUrl: images.teacher3 },
+    { id: "4", name: "Ms. Kavita Singh", role: "Activities Coordinator", experience: "12+ years experience", photoUrl: images.teacher4 },
+  ],
+  testimonials: [
+    { id: "1", quote: "Growing Minds has been a blessing for our daughter! The teachers are caring and the environment is perfect for learning. She loves going to school every day!", author: "Rajesh & Priya Kumar", subtitle: "Happy Parents", stars: 5 },
+    { id: "2", quote: "Excellent school with amazing faculty. Our son has shown tremendous growth in confidence and academics. Highly recommend to all parents!", author: "Amit & Sneha Desai", subtitle: "Happy Parents", stars: 5 },
+    { id: "3", quote: "The holistic approach to education at Growing Minds is commendable. Our twins are thriving here and we couldn't be happier with our choice!", author: "Vikram & Nisha Reddy", subtitle: "Happy Parents", stars: 5 },
+  ],
+  gallery: [
+    { id: "1", imageUrl: images.schoolBuilding, alt: "School campus building", title: "Our Campus", caption: "A welcoming, modern campus designed for safe and joyful learning.", category: "Campus" },
+    { id: "2", imageUrl: images.schoolActivity, alt: "Students in classroom activities", title: "Hands-On Learning", caption: "Interactive lessons that spark curiosity and build confidence every day.", category: "Activities" },
+    { id: "3", imageUrl: images.schoolStudents, alt: "Happy students at school", title: "Happy Learners", caption: "Students thrive in a nurturing environment with caring teachers.", category: "Campus" },
+  ],
+  videos: [],
+  newsAnnouncement: {
+    title: "🎉 Admissions Open!",
+    subtitle: "Academic Year 2026-2027",
+    description: "We are excited to announce that admissions are now open for Nursery to 8th Standard",
+  },
+  news: [
+    { id: "1", title: "Admissions Open for 2026-2027", excerpt: "We are now accepting applications for all standards from Nursery to 8th. Early bird registrations encouraged!", category: "ADMISSION", dateLabel: "January 2026", icon: "fa-graduation-cap", headerColor: "bg-orange", linkUrl: "/admissions", linkText: "Apply Now" },
+    { id: "2", title: "Grand Opening Ceremony", excerpt: "Join us for our grand opening ceremony. Details will be announced soon. Stay tuned for this exciting celebration!", category: "EVENT", dateLabel: "Coming Soon", icon: "fa-trophy", headerColor: "bg-lime" },
+    { id: "3", title: "Parent-Teacher Meeting", excerpt: "Our first parent-teacher meeting will be scheduled after the admission process. We look forward to meeting all parents.", category: "MEETING", dateLabel: "After Admissions", icon: "fa-users", headerColor: "bg-blue" },
+    { id: "4", title: "Extra-Curricular Enrollment", excerpt: "Enroll your child in various activities including music, dance, arts, and sports. More details will be shared soon.", category: "ACTIVITIES", dateLabel: "Coming Soon", icon: "fa-music", headerColor: "bg-purple" },
+    { id: "5", title: "State-of-the-Art Facilities", excerpt: "Our newly opened campus features modern classrooms, library, computer lab, and play areas designed for optimal learning.", category: "FACILITY", dateLabel: "Available Now", icon: "fa-building", headerColor: "bg-yellow text-dark" },
+    { id: "6", title: "Experienced Faculty", excerpt: "Our team of qualified and experienced teachers are ready to provide quality education and nurture your child's growth.", category: "UPDATE", dateLabel: "Ongoing", icon: "fa-chalkboard-teacher", headerColor: "bg-red" },
+  ],
+};
+
+export const CONTENT_BLOB_PATH = "site-content.json";

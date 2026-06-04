@@ -1,0 +1,410 @@
+/* Custom Colors */
+:root {
+    --orange: #FF8C00;
+    --lime: #AACC00;
+    --orange-light: #FFE5CC;
+}
+
+/* Icon Circles */
+.icon-circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-circle-large {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Hover Effects */
+.hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+}
+
+/* Outline Button */
+.btn-outline-orange {
+    border: 2px solid var(--orange);
+    color: var(--orange);
+    background: transparent;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-orange:hover {
+    background: var(--orange);
+    color: white;
+    border-color: var(--orange);
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Utility Classes */
+.text-orange { color: var(--orange) !important; }
+.text-lime { color: var(--lime) !important; }
+.bg-orange { background-color: var(--orange) !important; }
+.bg-lime { background-color: var(--lime) !important; }
+.bg-orange-light { background-color: var(--orange-light) !important; }
+.border-orange { border-color: var(--orange) !important; }
+.border-lime { border-color: var(--lime) !important; }
+
+/* Buttons */
+.btn-orange {
+    background-color: var(--orange);
+    color: white;
+    border: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-orange:hover {
+    background-color: #E67E00;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 140, 0, 0.3);
+}
+
+.btn-gradient-orange {
+    background: linear-gradient(135deg, var(--orange), var(--lime));
+    color: white;
+    border: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-gradient-orange:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 140, 0, 0.4);
+}
+
+/* Navbar */
+.navbar-nav .nav-link {
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    transition: color 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active {
+    color: var(--orange) !important;
+}
+
+/* Floating Decorative Elements */
+.floating-element {
+    position: fixed;
+    font-size: 3rem;
+    opacity: 0.15;
+    pointer-events: none;
+    z-index: 1;
+    animation: float 3s ease-in-out infinite;
+}
+
+.floating-element.pencil {
+    top: 10%;
+    left: 5%;
+    animation-duration: 3s;
+}
+
+.floating-element.book {
+    top: 20%;
+    right: 8%;
+    animation-duration: 4s;
+    animation-delay: 1s;
+}
+
+.floating-element.palette {
+    bottom: 25%;
+    left: 8%;
+    animation-duration: 5s;
+    animation-delay: 2s;
+}
+
+.floating-element.star {
+    bottom: 15%;
+    right: 5%;
+    animation-duration: 3.5s;
+    animation-delay: 0.5s;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
+
+/* Carousel */
+.carousel-caption {
+    background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+    padding: 30px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.carousel-caption h3 {
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, #FFF5E6, #FFFFFF, #F0FFE6);
+    position: relative;
+    overflow: hidden;
+}
+
+.badge.bg-orange-light {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+/* Admission Banner */
+.admission-banner {
+    background: linear-gradient(135deg, var(--orange), var(--lime));
+    color: white;
+    padding: 2.5rem;
+    border-radius: 1.5rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    max-width: 800px;
+    transition: transform 0.3s ease;
+}
+
+.admission-banner:hover {
+    transform: scale(1.02);
+}
+
+/* Video Play Button */
+.btn-video-play {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 2rem;
+    background: white;
+    border: none;
+    border-radius: 50px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-video-play:hover {
+    box-shadow: 0 6px 25px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+}
+
+.btn-video-play i {
+    width: 3.5rem;
+    height: 3.5rem;
+    background: var(--orange);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+    padding-left: 3px;
+    transition: background 0.3s ease;
+}
+
+.btn-video-play:hover i {
+    background: #E67E00;
+}
+
+.btn-video-play span {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+}
+
+/* Programs Section */
+.program-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    border: 2px solid #f0f0f0;
+    text-align: center;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.program-card:hover {
+    border-color: var(--orange);
+    transform: translateY(-10px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.program-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.program-card h3 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+/* Enrollment Steps */
+.enrollment-step {
+    text-align: center;
+    position: relative;
+}
+
+.step-number {
+    width: 5rem;
+    height: 5rem;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.enrollment-step h4 {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 0.75rem;
+}
+
+/* Teachers Section */
+.teacher-card {
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.teacher-card:hover {
+    transform: translateY(-10px);
+}
+
+.teacher-card img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 1rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    margin-bottom: 1rem;
+}
+
+.teacher-info h5 {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+}
+
+/* Testimonials */
+.testimonial-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    border: 2px solid #e0e0e0;
+    height: 100%;
+    transition: all 0.3s ease;
+}
+
+.testimonial-card:hover {
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transform: translateY(-5px);
+}
+
+.stars i {
+    color: #FFD700;
+    font-size: 1.2rem;
+}
+
+/* Gallery */
+.gallery-item {
+    position: relative;
+    overflow: hidden;
+    border-radius: 1rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.gallery-item:hover {
+    transform: scale(1.05);
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    display: block;
+}
+
+/* CTA Section */
+.cta-section {
+    background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Page Hero */
+.page-hero {
+    padding: 4rem 0;
+}
+
+.bg-gradient-orange {
+    background: linear-gradient(135deg, var(--orange), var(--lime));
+}
+
+/* Form Styling */
+.card-header.bg-gradient-orange {
+    background: linear-gradient(135deg, var(--orange), var(--lime)) !important;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--orange);
+    box-shadow: 0 0 0 0.2rem rgba(255, 140, 0, 0.25);
+}
+
+/* Footer */
+footer a {
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+footer a:hover {
+    color: var(--orange) !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .floating-element {
+        font-size: 2rem;
+    }
+    
+    .program-icon {
+        font-size: 3rem;
+    }
+    
+    .admission-banner {
+        padding: 1.5rem;
+    }
+    
+    .btn-video-play {
+        padding: 0.75rem 1.5rem;
+    }
+    
+    .btn-video-play i {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+}
