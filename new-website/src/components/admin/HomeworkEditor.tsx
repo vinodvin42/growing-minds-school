@@ -16,7 +16,13 @@ import {
   audienceLabel,
   portalUid,
 } from "@/components/admin/PortalTargetingFields";
-import type { HomeworkItem, StudentPortalData } from "@/types/student-portal";
+import {
+  formatHomeworkDueDate,
+  homeworkDueDisplay,
+  homeworkDueInputValue,
+  type HomeworkItem,
+  type StudentPortalData,
+} from "@/types/student-portal";
 import type { StudentProfile } from "@/types/student";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
@@ -83,7 +89,7 @@ export default function HomeworkEditor({ uploadFile }: { uploadFile: (f: File) =
       const res = await fetch("/api/admin/student-portal", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ homework: payload.homework }),
       });
       const data = await res.json();
       if (data.success) {
@@ -130,7 +136,7 @@ export default function HomeworkEditor({ uploadFile }: { uploadFile: (f: File) =
     <>
       <AdminCollapsibleSection
         title="Homework"
-        hint="Assign homework with PDF/worksheets. Target all students, a class, or individuals."
+        hint="Saved class-wise in Blob: portal/2026/classes/3rd-standard/homework.json (by target class). All-school → all-classes folder."
         count={portal.homework.length}
         addLabel="Add Homework"
         onAdd={addItem}
@@ -157,7 +163,7 @@ export default function HomeworkEditor({ uploadFile }: { uploadFile: (f: File) =
             {portal.homework.map((h) => (
               <tr key={h.id}>
                 <AdminCellText primary={h.title || "Untitled"} secondary={h.description} />
-                <td>{h.dueDateLabel || "—"}</td>
+                <td>{homeworkDueDisplay(h) || "—"}</td>
                 <td>{audienceLabel(h)}</td>
                 <td>{h.attachments.length}</td>
                 <td>
@@ -197,12 +203,18 @@ export default function HomeworkEditor({ uploadFile }: { uploadFile: (f: File) =
               </Field>
             </div>
             <div className="col-md-4">
-              <Field label="Due date label">
+              <Field label="Due date">
                 <input
-                  className="form-control"
-                  value={editing.dueDateLabel ?? ""}
-                  onChange={(e) => patch(editing.id, { dueDateLabel: e.target.value })}
-                  placeholder="e.g. Monday, 10 June"
+                  type="date"
+                  className="form-control admin-date-input"
+                  value={homeworkDueInputValue(editing)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    patch(editing.id, {
+                      dueDate: value || undefined,
+                      dueDateLabel: value ? formatHomeworkDueDate(value) : "",
+                    });
+                  }}
                 />
               </Field>
             </div>

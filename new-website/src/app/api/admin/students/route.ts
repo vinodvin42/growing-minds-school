@@ -5,6 +5,7 @@ import {
   mergeStudentInputs,
   saveStudentsRegistry,
 } from "@/lib/student-store";
+import { academicYear, PORTAL_ROOT } from "@/lib/portal-storage-paths";
 import { toStudentProfile, type StudentAdminInput } from "@/types/student";
 
 export async function GET() {
@@ -16,6 +17,10 @@ export async function GET() {
   return NextResponse.json({
     success: true,
     students: registry.students.map(toStudentProfile),
+    storage: {
+      layout: `${PORTAL_ROOT}/{year}/classes/{class}/students.json`,
+      example: `${PORTAL_ROOT}/${academicYear()}/classes/3rd-standard/students.json`,
+    },
   });
 }
 

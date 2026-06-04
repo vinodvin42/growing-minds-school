@@ -1,16 +1,18 @@
 import { unstable_noStore as noStore } from "next/cache";
-import { put } from "@vercel/blob";
+import { listBlobPathnames, readBlobJson, writeBlobJson } from "@/lib/blob-json";
 import { readBlobJsonText } from "@/lib/blob-read";
 import { hashPassword } from "@/lib/password";
 import {
-  blobAccess,
-  blobStorageErrorMessage,
-  isBlobStorageConfigured,
-} from "@/lib/blob-storage";
+  academicYear,
+  classSlug,
+  classStudentsBlobPath,
+  LEGACY_STUDENTS_BLOB_PATH,
+  PORTAL_ROOT,
+  parseClassSlugFromStudentsPath,
+} from "@/lib/portal-storage-paths";
+import { blobStorageErrorMessage, isBlobStorageConfigured } from "@/lib/blob-storage";
 import type { StudentAdminInput, StudentRecord, StudentsRegistry } from "@/types/student";
 import { DEFAULT_STUDENT_LOGIN_ID, DEFAULT_STUDENT_PASSWORD } from "@/types/student";
-
-export const STUDENTS_BLOB_PATH = "students-registry.json";
 
 const DEFAULT_LOGIN_ID = DEFAULT_STUDENT_LOGIN_ID;
 const DEFAULT_PASSWORD = DEFAULT_STUDENT_PASSWORD;
@@ -26,6 +28,7 @@ export function clearStudentsRegistryCache(): void {
 
 async function buildDefaultRegistry(): Promise<StudentsRegistry> {
   const now = new Date().toISOString();
+  const year = academicYear();
   return {
     students: [
       {
@@ -47,6 +50,33 @@ async function buildDefaultRegistry(): Promise<StudentsRegistry> {
   };
 }
 
+async function loadLegacyRegistry(): Promise<StudentsRegistry | null> {
+  const text = await readBlobJsonText(LEGACY_STUDENTS_BLOB_PATH);
+  if (!text?.trim()) return null;
+  try {
+    const data = JSON.parse(text) as StudentsRegistry;
+    if (!Array.isArray(data.students)) return null;
+    return data;
+  } catch {
+    return null;
+  }
+}
+
+async function loadStudentsFromClassFolders(): Promise<StudentRecord[]> {
+  const pathnames = await listBlobPathnames(`${PORTAL_ROOT}/`);
+  const studentPaths = pathnames.filter((p) => /\/classes\/[^/]+\/students\.json$/.test(p));
+  const students: StudentRecord[] = [];
+
+  for (const path of studentPaths) {
+    const file = await readBlobJson<{ students?: StudentRecord[] }>(path);
+    if (file?.students?.length) {
+      students.push(...file.students);
+    }
+  }
+
+  return students;
+}
+
 export async function getStudentsRegistry(options?: { fresh?: boolean }): Promise<StudentsRegistry> {
   noStore();
 
@@ -59,20 +89,16 @@ export async function getStudentsRegistry(options?: { fresh?: boolean }): Promis
   }
 
   try {
-    const text = await readBlobJsonText(STUDENTS_BLOB_PATH);
-    if (text === null) {
-      return process.env.NODE_ENV === "development" ? buildDefaultRegistry() : { students: [] };
+    let students = await loadStudentsFromClassFolders();
+    if (students.length === 0) {
+      const legacy = await loadLegacyRegistry();
+      students = legacy?.students ?? [];
     }
-    if (!text.trim()) {
-      return { students: [] };
-    }
-    const data = JSON.parse(text) as StudentsRegistry;
-    if (!Array.isArray(data.students)) {
-      return { students: [] };
-    }
-    memoryRegistry = data;
+
+    const registry = { students };
+    memoryRegistry = registry;
     memoryRegistryAt = Date.now();
-    return data;
+    return registry;
   } catch (error) {
     console.error("Failed to load students registry:", error);
     return { students: [] };
@@ -84,13 +110,34 @@ export async function saveStudentsRegistry(registry: StudentsRegistry): Promise<
     throw new Error(blobStorageErrorMessage());
   }
 
-  await put(STUDENTS_BLOB_PATH, JSON.stringify(registry, null, 2), {
-    access: blobAccess(),
-    addRandomSuffix: false,
-    allowOverwrite: true,
-    contentType: "application/json",
-    cacheControlMaxAge: 60,
-  });
+  const year = academicYear();
+  const byClass = new Map<string, StudentRecord[]>();
+
+  for (const student of registry.students) {
+    const slug = classSlug(student.standard);
+    const list = byClass.get(slug) ?? [];
+    list.push(student);
+    byClass.set(slug, list);
+  }
+
+  const existingPaths = (await listBlobPathnames(`${PORTAL_ROOT}/${year}/classes/`)).filter((p) =>
+    p.endsWith("/students.json")
+  );
+  const written = new Set<string>();
+
+  for (const [slug, students] of byClass) {
+    const path = classStudentsBlobPath(year, slug);
+    await writeBlobJson(path, { students });
+    written.add(path);
+  }
+
+  for (const path of existingPaths) {
+    if (written.has(path)) continue;
+    const parsed = parseClassSlugFromStudentsPath(path);
+    if (parsed?.year === year) {
+      await writeBlobJson(path, { students: [] });
+    }
+  }
 
   memoryRegistry = registry;
   memoryRegistryAt = Date.now();

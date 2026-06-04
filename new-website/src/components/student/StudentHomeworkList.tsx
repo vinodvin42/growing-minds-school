@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import PortalAttachments from "@/components/student/PortalAttachments";
-import type { HomeworkItem } from "@/types/student-portal";
+import { homeworkDueDisplay, type HomeworkItem } from "@/types/student-portal";
 
 export default function StudentHomeworkList() {
   const [items, setItems] = useState<HomeworkItem[]>([]);
@@ -49,10 +49,10 @@ export default function StudentHomeworkList() {
         <article key={item.id} className="portal-feed-card">
           <div className="portal-feed-card__head">
             <h2 className="h5 fw-bold mb-1">{item.title}</h2>
-            {item.dueDateLabel && (
+            {homeworkDueDisplay(item) && (
               <span className="portal-feed-card__due">
                 <i className="fas fa-clock me-1" aria-hidden="true" />
-                Due: {item.dueDateLabel}
+                Due: {homeworkDueDisplay(item)}
               </span>
             )}
           </div>

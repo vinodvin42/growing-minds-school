@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentStudentProfile } from "@/lib/student-auth";
-import { getStudentPortalData, sortByNewest } from "@/lib/student-portal-store";
-import { matchesStudentAudience } from "@/types/student-portal";
+import { getStudentPortalDataForStudent, sortByNewest } from "@/lib/student-portal-store";
 
 export async function GET() {
   const student = await getCurrentStudentProfile();
@@ -9,9 +8,9 @@ export async function GET() {
     return NextResponse.json({ success: false, message: "Not signed in" }, { status: 401 });
   }
 
-  const data = await getStudentPortalData();
-  const homework = sortByNewest(data.homework.filter((h) => matchesStudentAudience(h, student)));
-  const messages = sortByNewest(data.messages.filter((m) => matchesStudentAudience(m, student)));
+  const data = await getStudentPortalDataForStudent(student);
+  const homework = sortByNewest(data.homework);
+  const messages = sortByNewest(data.messages);
 
   return NextResponse.json({ success: true, homework, messages });
 }

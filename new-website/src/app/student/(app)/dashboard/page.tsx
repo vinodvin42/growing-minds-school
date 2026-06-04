@@ -1,8 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { getCurrentStudentProfile } from "@/lib/student-auth";
-import { getStudentPortalData } from "@/lib/student-portal-store";
-import { matchesStudentAudience } from "@/types/student-portal";
+import { getStudentPortalDataForStudent } from "@/lib/student-portal-store";
 import StudentPageHeader from "@/components/student/StudentPageHeader";
 
 export const metadata: Metadata = {
@@ -13,9 +12,9 @@ export default async function StudentDashboardPage() {
   const student = await getCurrentStudentProfile();
   if (!student) return null;
 
-  const portal = await getStudentPortalData();
-  const homeworkCount = portal.homework.filter((h) => matchesStudentAudience(h, student)).length;
-  const messageCount = portal.messages.filter((m) => matchesStudentAudience(m, student)).length;
+  const portal = await getStudentPortalDataForStudent(student);
+  const homeworkCount = portal.homework.length;
+  const messageCount = portal.messages.length;
 
   return (
     <div className="student-page">

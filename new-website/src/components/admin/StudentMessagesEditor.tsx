@@ -83,7 +83,7 @@ export default function StudentMessagesEditor({ uploadFile }: { uploadFile: (f: 
       const res = await fetch("/api/admin/student-portal", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ messages: payload.messages }),
       });
       const data = await res.json();
       if (data.success) {
@@ -136,7 +136,7 @@ export default function StudentMessagesEditor({ uploadFile }: { uploadFile: (f: 
     <>
       <AdminCollapsibleSection
         title="Teacher Messages"
-        hint="Broadcast notices to a class or send individual messages with PDF/files attached."
+        hint="Saved per month in Blob: portal/2026/06/messages.json (by created date). Broadcast or individual messages with attachments."
         count={portal.messages.length}
         addLabel="New Message"
         onAdd={addItem}
