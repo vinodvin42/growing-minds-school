@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { sendAdminEmail, sendAcknowledgmentEmail } from "@/lib/email";
+import { sendAdminEmail, sendAcknowledgmentEmail, getPublicEmailError } from "@/lib/email";
 import { admissionAcknowledgment } from "@/lib/email-templates";
 
 const admissionSchema = z.object({
@@ -92,7 +92,7 @@ export async function POST(request: Request) {
     });
 
     if (!adminResult.success) {
-      return NextResponse.json({ success: false, message: adminResult.message }, { status: 500 });
+      return NextResponse.json({ success: false, message: getPublicEmailError(adminResult.message) }, { status: 500 });
     }
 
     const ackResult = await sendAcknowledgmentEmail({

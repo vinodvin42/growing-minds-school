@@ -21,18 +21,37 @@ function getFromName() {
   return process.env.EMAIL_FROM_NAME || "Growing Minds English School";
 }
 
+function getGmailPassword() {
+  const raw = process.env.GMAIL_APP_PASSWORD || process.env.GMAIL_PASSWORD;
+  return raw?.replace(/\s/g, "");
+}
+
 function useGmail() {
-  return Boolean(process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD);
+  return Boolean(process.env.GMAIL_USER?.trim() && getGmailPassword());
 }
 
 function getGmailTransporter() {
-  const user = process.env.GMAIL_USER?.trim();
-  // Google displays app passwords in groups of 4 — strip spaces if pasted that way.
-  const pass = process.env.GMAIL_APP_PASSWORD?.replace(/\s/g, "");
   return nodemailer.createTransport({
-    service: "gmail",
-    auth: { user, pass },
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false,
+    auth: {
+      user: process.env.GMAIL_USER?.trim(),
+      pass: getGmailPassword(),
+    },
   });
+}
+
+/** Hide SMTP/auth details from visitors — show a helpful message instead. */
+export function getPublicEmailError(internal?: string): string {
+  if (
+    internal?.includes("535") ||
+    internal?.includes("Invalid login") ||
+    internal?.includes("BadCredentials")
+  ) {
+    return "We could not send email from the website right now. Please email growingminds2025@gmail.com or call +91 97685 32431.";
+  }
+  return "We could not send your message right now. Please try again or contact us by phone or email.";
 }
 
 async function deliver(options: SendToOptions): Promise<{ success: boolean; message: string }> {
@@ -42,11 +61,11 @@ async function deliver(options: SendToOptions): Promise<{ success: boolean; mess
     try {
       const transporter = getGmailTransporter();
       await transporter.sendMail({
-        from: `"${getFromName()}" <${process.env.GMAIL_USER}>`,
+        from: `"${getFromName()}" <${process.env.GMAIL_USER?.trim()}>`,
         to: to.join(", "),
         subject: options.subject,
         html: options.html,
-        replyTo: options.replyTo || process.env.GMAIL_USER,
+        replyTo: options.replyTo || process.env.GMAIL_USER?.trim(),
       });
       return { success: true, message: "Email sent via Gmail" };
     } catch (err) {
@@ -81,7 +100,7 @@ async function deliver(options: SendToOptions): Promise<{ success: boolean; mess
   console.log("[Email - dev mode]", { to, subject: options.subject });
   return {
     success: true,
-    message: "Email logged (configure GMAIL_USER + GMAIL_APP_PASSWORD for production)",
+    message: "Email logged (configure GMAIL_USER + GMAIL_PASSWORD for production)",
   };
 }
 

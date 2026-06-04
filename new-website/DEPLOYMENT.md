@@ -61,7 +61,8 @@ In Vercel → **Settings** → **Environment Variables**, add:
 |----------|-------|----------|
 | `ADMIN_PASSWORD` | Strong password for `/admin` | Yes |
 | `GMAIL_USER` | `growingminds2025@gmail.com` | Yes (for email) |
-| `GMAIL_APP_PASSWORD` | Google App Password (see `EMAIL-SETUP.md`) | Yes (for email) |
+| `GMAIL_PASSWORD` | Normal Gmail password (if App Password unavailable) | Yes* |
+| `GMAIL_APP_PASSWORD` | Google App Password (alternative to GMAIL_PASSWORD) | Yes* |
 | `ADMIN_EMAIL` | `growingminds2025@gmail.com` (where forms are received) | Yes |
 | `EMAIL_FROM_NAME` | `Growing Minds English School` | Yes |
 | `NEXT_PUBLIC_SITE_URL` | `https://your-project.vercel.app` | Yes |

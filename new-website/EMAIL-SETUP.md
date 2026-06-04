@@ -1,91 +1,92 @@
 # Gmail Email Setup — Growing Minds English School
 
-The website uses your **Gmail account** (`growingminds2025@gmail.com`) to:
+The website sends:
 
-1. **Receive** contact form and admission submissions in your inbox  
-2. **Send** automatic acknowledgment emails to parents and visitors  
-
----
-
-## How it works
-
-| Event | To (receive) | To (acknowledgment) |
-|-------|----------------|---------------------|
-| Contact form submitted | `growingminds2025@gmail.com` | Visitor's email |
-| Admission form submitted | `growingminds2025@gmail.com` | Parent email (from form) |
-
-Emails are sent via **Gmail SMTP** using a Google **App Password** (not your regular Gmail password).
+1. **Admin notifications** → `growingminds2025@gmail.com` (contact + admission forms)
+2. **Acknowledgment emails** → visitor / parent email
 
 ---
 
-## Step 1: Enable 2-Step Verification on Gmail
+## Option A — Gmail password (simplest if App Password is unavailable)
 
-1. Open [Google Account → Security](https://myaccount.google.com/security)
-2. Sign in with `growingminds2025@gmail.com`
-3. Under **How you sign in to Google**, enable **2-Step Verification**
-4. Complete the setup (phone verification)
+Google no longer shows **App Passwords** on every account. You can use your **normal Gmail sign-in password** instead.
 
-> App Passwords only work when 2-Step Verification is ON.
-
----
-
-## Step 2: Create a Gmail App Password
-
-1. Go to [Google App Passwords](https://myaccount.google.com/apppasswords)  
-   (Or: Google Account → Security → 2-Step Verification → App passwords)
-2. App name: `Growing Minds Website`
-3. Click **Create**
-4. Google shows a **16-character password** like: `abcd efgh ijkl mnop`
-5. Copy it — you will not see it again
-
----
-
-## Step 3: Add to Vercel Environment Variables
+### Vercel environment variables
 
 In Vercel → Project → **Settings** → **Environment Variables**:
 
 | Variable | Value |
 |----------|-------|
 | `GMAIL_USER` | `growingminds2025@gmail.com` |
-| `GMAIL_APP_PASSWORD` | `abcdefghijklmnop` (16 chars, no spaces) |
+| `GMAIL_PASSWORD` | Your normal Gmail password for this account |
 | `ADMIN_EMAIL` | `growingminds2025@gmail.com` |
 | `EMAIL_FROM_NAME` | `Growing Minds English School` |
 
-Redeploy after saving.
+You can **remove** `GMAIL_APP_PASSWORD` if it was set incorrectly.
+
+Click **Save**, then **Redeploy** the project.
+
+### If Gmail still rejects the password (535 error)
+
+Google often blocks normal passwords for website SMTP. Try these in order:
+
+1. **Turn on 2-Step Verification**, then open [App Passwords](https://myaccount.google.com/apppasswords) directly and create one → use it in `GMAIL_APP_PASSWORD` (remove `GMAIL_PASSWORD`).
+2. **Use Resend instead** (Option B below) — works without Gmail App Passwords.
 
 ---
 
-## Step 4: Local testing (optional)
+## Option B — Gmail App Password (more reliable long-term)
+
+1. Enable [2-Step Verification](https://myaccount.google.com/security) on `growingminds2025@gmail.com`
+2. Create an app password at [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)
+3. In Vercel set:
+
+| Variable | Value |
+|----------|-------|
+| `GMAIL_USER` | `growingminds2025@gmail.com` |
+| `GMAIL_APP_PASSWORD` | 16-character app password (spaces optional) |
+
+Remove `GMAIL_PASSWORD` when using an app password.
+
+---
+
+## Option C — Resend (no Gmail SMTP)
+
+If Gmail keeps failing:
+
+1. Sign up at [resend.com](https://resend.com) with `growingminds2025@gmail.com`
+2. Add domain `growingmindsschool.org` in Resend → copy the DNS records → add them in **Vercel → Domains → DNS**
+3. Create an API key in Resend
+4. In Vercel, **remove** `GMAIL_USER`, `GMAIL_PASSWORD`, and `GMAIL_APP_PASSWORD`
+5. Add:
+
+| Variable | Value |
+|----------|-------|
+| `RESEND_API_KEY` | `re_...` from Resend |
+| `FROM_EMAIL` | `Growing Minds English School <noreply@growingmindsschool.org>` |
+| `ADMIN_EMAIL` | `growingminds2025@gmail.com` |
+
+6. Redeploy
+
+---
+
+## Local testing
 
 Create `new-website/.env.local`:
 
 ```env
 GMAIL_USER=growingminds2025@gmail.com
-GMAIL_APP_PASSWORD=your-16-char-app-password
+GMAIL_PASSWORD=your-gmail-password
 ADMIN_EMAIL=growingminds2025@gmail.com
 EMAIL_FROM_NAME=Growing Minds English School
 ```
-
-Then:
 
 ```bash
 cd new-website
 npm run dev
 ```
 
-Submit the contact form or admission form and check:
-- Admin inbox receives the submission
-- Submitter receives acknowledgment email
-
----
-
-## Acknowledgment email content
-
-**Contact form** — sent to the person who wrote:
-> "Thank you for contacting Growing Minds English School. We have received your message..."
-
-**Admission form** — sent to parent email:
-> "Thank you for applying... We have received the application for [Student Name]..."
+Submit the contact form and check the admin inbox.
 
 ---
 
@@ -93,30 +94,15 @@ Submit the contact form or admission form and check:
 
 | Problem | Solution |
 |---------|----------|
-| `Invalid login` / auth error | Use App Password, not regular Gmail password |
-| No App Passwords option | Enable 2-Step Verification first |
-| Emails go to spam | Normal for new senders; mark as "Not spam" |
-| Acknowledgment not received | Check spam; verify parent email on admission form |
-| Works locally, not on Vercel | Confirm env vars set for Production + redeploy |
+| No **App Passwords** menu in Google | Use `GMAIL_PASSWORD` (Option A) or Resend (Option C) |
+| `535` / Invalid login | Wrong password, or Google blocked SMTP — try App Password or Resend |
+| Works locally, not on Vercel | Redeploy after changing env vars |
+| Emails in spam | Mark as “Not spam” in Gmail |
 
 ---
 
-## Alternative: Resend (optional)
+## Security
 
-If Gmail App Password is not preferred, you can use [Resend](https://resend.com) instead:
-
-```env
-RESEND_API_KEY=re_xxxx
-ADMIN_EMAIL=growingminds2025@gmail.com
-FROM_EMAIL=Growing Minds <noreply@yourdomain.com>
-```
-
-Gmail is used when `GMAIL_USER` + `GMAIL_APP_PASSWORD` are set. Resend is the fallback.
-
----
-
-## Security notes
-
-- Never commit `.env.local` or App Password to GitHub
-- App Password is only for this website — revoke it anytime in Google Account settings
-- Only store the password in Vercel Environment Variables (encrypted)
+- Never commit passwords to GitHub
+- Store values only in Vercel **Environment Variables**
+- Revoke app passwords anytime in Google Account settings
