@@ -3,7 +3,7 @@ import path from "node:path";
 import { unstable_noStore as noStore } from "next/cache";
 import { get, put } from "@vercel/blob";
 import { defaultContent, CONTENT_BLOB_PATH } from "@/data/default-content";
-import { isBlobStorageConfigured } from "@/lib/blob-storage";
+import { blobAccess, blobReadAccessModes, isBlobStorageConfigured } from "@/lib/blob-storage";
 import type { SiteContent } from "@/types/content";
 
 const LOCAL_CONTENT_FILE = path.join(process.cwd(), ".data", "site-content.json");
@@ -56,7 +56,7 @@ export async function saveSiteContent(content: SiteContent): Promise<SiteContent
   }
 
   await put(CONTENT_BLOB_PATH, JSON.stringify(normalized, null, 2), {
-    access: "private",
+    access: blobAccess(),
     addRandomSuffix: false,
     allowOverwrite: true,
     contentType: "application/json",
@@ -80,9 +80,9 @@ async function writeLocalContentFile(content: SiteContent): Promise<void> {
   await fs.writeFile(LOCAL_CONTENT_FILE, JSON.stringify(content, null, 2), "utf8");
 }
 
-/** Read CMS JSON from Blob — private first (fresh server reads), public for legacy seeds. */
+/** Read CMS JSON from Blob — supports legacy private blobs when store allows it. */
 async function readContentBlob(): Promise<string | null> {
-  for (const access of ["private", "public"] as const) {
+  for (const access of blobReadAccessModes()) {
     try {
       const result = await get(CONTENT_BLOB_PATH, { access });
       if (result?.statusCode === 200 && result.stream) {

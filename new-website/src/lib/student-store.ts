@@ -1,6 +1,6 @@
 import { get, put } from "@vercel/blob";
 import { hashPassword } from "@/lib/password";
-import { blobStorageErrorMessage, isBlobStorageConfigured } from "@/lib/blob-storage";
+import { blobStorageErrorMessage, blobAccess, isBlobStorageConfigured } from "@/lib/blob-storage";
 import type { StudentAdminInput, StudentRecord, StudentsRegistry } from "@/types/student";
 import { DEFAULT_STUDENT_LOGIN_ID, DEFAULT_STUDENT_PASSWORD } from "@/types/student";
 
@@ -38,7 +38,7 @@ export async function getStudentsRegistry(): Promise<StudentsRegistry> {
   }
 
   try {
-    const result = await get(STUDENTS_BLOB_PATH, { access: "private" });
+    const result = await get(STUDENTS_BLOB_PATH, { access: blobAccess() });
     if (!result || result.statusCode !== 200 || !result.stream) {
       return buildDefaultRegistry();
     }
@@ -63,10 +63,11 @@ export async function saveStudentsRegistry(registry: StudentsRegistry): Promise<
   }
 
   await put(STUDENTS_BLOB_PATH, JSON.stringify(registry, null, 2), {
-    access: "private",
+    access: blobAccess(),
     addRandomSuffix: false,
     allowOverwrite: true,
     contentType: "application/json",
+    cacheControlMaxAge: 60,
   });
 }
 

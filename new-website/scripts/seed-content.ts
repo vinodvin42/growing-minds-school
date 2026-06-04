@@ -1,5 +1,6 @@
 import { put } from "@vercel/blob";
 import { defaultContent, CONTENT_BLOB_PATH } from "../src/data/default-content";
+import { blobAccess } from "../src/lib/blob-storage";
 
 async function main() {
   if (!process.env.BLOB_READ_WRITE_TOKEN) {
@@ -9,7 +10,7 @@ async function main() {
   }
 
   const blob = await put(CONTENT_BLOB_PATH, JSON.stringify(defaultContent, null, 2), {
-    access: "private",
+    access: blobAccess(),
     addRandomSuffix: false,
     allowOverwrite: true,
     contentType: "application/json",

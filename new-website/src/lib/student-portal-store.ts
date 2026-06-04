@@ -1,5 +1,5 @@
 import { get, put } from "@vercel/blob";
-import { blobStorageErrorMessage, isBlobStorageConfigured } from "@/lib/blob-storage";
+import { blobStorageErrorMessage, blobAccess, isBlobStorageConfigured } from "@/lib/blob-storage";
 import type { HomeworkItem, StudentPortalData, TeacherMessage } from "@/types/student-portal";
 
 export const STUDENT_PORTAL_BLOB_PATH = "student-portal-data.json";
@@ -12,7 +12,7 @@ export async function getStudentPortalData(): Promise<StudentPortalData> {
   }
 
   try {
-    const result = await get(STUDENT_PORTAL_BLOB_PATH, { access: "private" });
+    const result = await get(STUDENT_PORTAL_BLOB_PATH, { access: blobAccess() });
     if (!result || result.statusCode !== 200 || !result.stream) {
       return emptyPortal();
     }
@@ -37,10 +37,11 @@ export async function saveStudentPortalData(data: StudentPortalData): Promise<vo
   }
 
   await put(STUDENT_PORTAL_BLOB_PATH, JSON.stringify(data, null, 2), {
-    access: "private",
+    access: blobAccess(),
     addRandomSuffix: false,
     allowOverwrite: true,
     contentType: "application/json",
+    cacheControlMaxAge: 60,
   });
 }
 
