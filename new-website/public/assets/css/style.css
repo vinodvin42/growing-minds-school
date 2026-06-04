@@ -41,7 +41,7 @@
     --font-body: 'Inter', sans-serif;
     /* Shared image frame sizes (site + admin preview) */
     --site-col-image-width: 536px;
-    --carousel-image-height: clamp(280px, 42vh, 460px);
+    --carousel-image-height: clamp(340px, 52vh, 560px);
     --about-landscape-image-height: clamp(280px, 34vw, 380px);
 }
 
@@ -296,11 +296,15 @@ h1, h2, h3, h4, h5, h6 {
 #heroCarousel.carousel-split .carousel-inner {
     background: var(--surface-green);
 }
+/* Smooth fade — keep Bootstrap's fade logic, only tune timing */
+#heroCarousel.carousel-split.carousel-fade .carousel-item {
+    transition: opacity 0.75s ease-in-out;
+}
 #heroCarousel.carousel-split .carousel-item {
     position: relative;
 }
 .carousel-split__slide {
-    padding: 2.5rem 0 3rem;
+    padding: 3rem 0 3.5rem;
 }
 .carousel-split__media {
     display: flex;
@@ -373,15 +377,22 @@ h1, h2, h3, h4, h5, h6 {
     border: 2px solid var(--lime-dark);
     background: transparent;
     opacity: 0.5;
+    transition: opacity 0.3s ease, background-color 0.3s ease, transform 0.3s ease;
 }
 .carousel-split__indicators .active {
     opacity: 1;
     background: var(--orange);
     border-color: var(--orange);
+    transform: scale(1.15);
 }
 .carousel-split__control {
     width: 3rem;
     opacity: 0.9;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.carousel-split__control:hover {
+    opacity: 1;
+    transform: scale(1.05);
 }
 .carousel-split__control .carousel-control-prev-icon,
 .carousel-split__control .carousel-control-next-icon {
@@ -398,8 +409,11 @@ h1, h2, h3, h4, h5, h6 {
     }
 }
 @media (max-width: 991px) {
+    #heroCarousel.carousel-split .carousel-inner {
+        min-height: calc(clamp(280px, 45vh, 420px) + 20rem);
+    }
     .carousel-split__slide {
-        padding: 1.75rem 0 2.5rem;
+        padding: 2rem 0 3rem;
     }
     .carousel-split__content {
         text-align: center;
@@ -409,7 +423,7 @@ h1, h2, h3, h4, h5, h6 {
         margin-right: auto;
     }
     .carousel-split__image-wrap {
-        height: clamp(240px, 38vh, 360px);
+        height: clamp(280px, 45vh, 420px);
     }
 }
 
@@ -1711,8 +1725,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 @media (max-width: 768px) {
     .navbar-brand-pro__logo { max-height: 56px; max-width: min(240px, 75vw); }
-    .carousel-split__slide { padding: 1.5rem 0 2rem; }
-    .carousel-split__image-wrap { height: clamp(220px, 34vh, 300px); }
+    .carousel-split__slide { padding: 1.75rem 0 2.5rem; }
+    .carousel-split__image-wrap { height: clamp(260px, 42vh, 380px); }
     .hero-section { padding: 2rem 0 !important; }
     .admission-banner { padding: 1.75rem 1.25rem; }
     .btn-video-play { padding: 0.75rem 1.25rem; }

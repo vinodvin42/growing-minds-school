@@ -9,7 +9,7 @@ function getSlideContent(slide: CarouselSlide, index: number) {
   return { title, imagePosition };
 }
 
-function SlideImage({ slide, priority }: { slide: CarouselSlide; priority?: boolean }) {
+function SlideImage({ slide }: { slide: CarouselSlide }) {
   const { fit, position } = resolveImageCrop({
     fit: slide.imageFit,
     focusX: slide.imageFocusX,
@@ -23,7 +23,8 @@ function SlideImage({ slide, priority }: { slide: CarouselSlide; priority?: bool
       <img
         src={slide.imageUrl}
         alt={slide.alt}
-        loading={priority ? "eager" : "lazy"}
+        loading="eager"
+        decoding="async"
         style={{ objectFit: fit, objectPosition: position }}
       />
     </div>
@@ -56,7 +57,15 @@ export default function HeroCarousel({ slides }: { slides: CarouselSlide[] }) {
   if (slides.length === 0) return null;
 
   return (
-    <div id="heroCarousel" className="carousel slide carousel-fade carousel-split" data-bs-ride="carousel">
+    <div
+      id="heroCarousel"
+      className="carousel slide carousel-fade carousel-split"
+      data-bs-ride="carousel"
+      data-bs-interval="6500"
+      data-bs-pause="hover"
+      data-bs-touch="true"
+      data-bs-wrap="true"
+    >
       <div className="carousel-indicators carousel-split__indicators">
         {slides.map((slide, i) => (
           <button
@@ -83,7 +92,7 @@ export default function HeroCarousel({ slides }: { slides: CarouselSlide[] }) {
                     {imageFirst ? (
                       <>
                         <div className="col-lg-6 carousel-split__media order-1">
-                          <SlideImage slide={slide} priority={i === 0} />
+                          <SlideImage slide={slide} />
                         </div>
                         <div className="col-lg-6 order-2">
                           <SlideContent slide={slide} title={title} />
@@ -95,7 +104,7 @@ export default function HeroCarousel({ slides }: { slides: CarouselSlide[] }) {
                           <SlideContent slide={slide} title={title} />
                         </div>
                         <div className="col-lg-6 carousel-split__media order-1 order-lg-2">
-                          <SlideImage slide={slide} priority={i === 0} />
+                          <SlideImage slide={slide} />
                         </div>
                       </>
                     )}
