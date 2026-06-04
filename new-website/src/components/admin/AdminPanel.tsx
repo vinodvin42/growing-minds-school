@@ -4,10 +4,27 @@ import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import type { SiteContent, CarouselSlide, GalleryImage, VideoItem, NewsItem, Teacher, Testimonial, StudentActivity } from "@/types/content";
 import ImageCropEditor from "@/components/admin/ImageCropEditor";
-import { AdminEditorPanel, AdminListHeader, AdminListRow } from "@/components/admin/AdminListUi";
+import {
+  AdminBadge,
+  AdminCellText,
+  AdminEditModal,
+  AdminListHeader,
+  AdminTable,
+  AdminTableActions,
+  AdminTableThumb,
+} from "@/components/admin/AdminListUi";
+import StudentsEditor from "@/components/admin/StudentsEditor";
+import HomeworkEditor from "@/components/admin/HomeworkEditor";
+import StudentMessagesEditor from "@/components/admin/StudentMessagesEditor";
+import AdminTopNav from "@/components/admin/AdminTopNav";
+import AdminDashboard from "@/components/admin/AdminDashboard";
+import {
+  type AdminTab,
+  findAdminNavItem,
+  findAdminSection,
+  usesWebsiteContentSave,
+} from "@/components/admin/admin-nav";
 import { ACTIVITY_CATEGORIES } from "@/lib/activities";
-
-type Tab = "settings" | "homepage" | "carousel" | "gallery" | "activities" | "videos" | "news" | "teachers" | "testimonials" | "about";
 
 function uid() {
   return Math.random().toString(36).slice(2, 10);
@@ -15,7 +32,7 @@ function uid() {
 
 export default function AdminPanel() {
   const [content, setContent] = useState<SiteContent | null>(null);
-  const [tab, setTab] = useState<Tab>("settings");
+  const [tab, setTab] = useState<AdminTab>("dashboard");
   const [status, setStatus] = useState("");
   const [saving, setSaving] = useState(false);
   const router = useRouter();
@@ -76,8 +93,6 @@ export default function AdminPanel() {
     router.push("/admin/login");
   }
 
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-
   if (!content) {
     return (
       <div className="admin-loading">
@@ -87,65 +102,43 @@ export default function AdminPanel() {
     );
   }
 
-  const tabs: { id: Tab; label: string; icon: string }[] = [
-    { id: "settings", label: "Site Settings", icon: "fa-cog" },
-    { id: "homepage", label: "Homepage", icon: "fa-home" },
-    { id: "carousel", label: "Carousel", icon: "fa-images" },
-    { id: "gallery", label: "Photo Gallery", icon: "fa-camera" },
-    { id: "activities", label: "Student Activities", icon: "fa-palette" },
-    { id: "videos", label: "Video Library", icon: "fa-video" },
-    { id: "news", label: "News & Events", icon: "fa-newspaper" },
-    { id: "teachers", label: "Teachers", icon: "fa-chalkboard-teacher" },
-    { id: "testimonials", label: "Testimonials", icon: "fa-quote-left" },
-    { id: "about", label: "About Page", icon: "fa-info-circle" },
-  ];
+  const activeItem = findAdminNavItem(tab);
+  const activeSection = findAdminSection(tab);
+  const showWebsiteSave = usesWebsiteContentSave(tab);
 
-  const activeTab = tabs.find((t) => t.id === tab);
-
-  function selectTab(id: Tab) {
+  function selectTab(id: AdminTab) {
     setTab(id);
-    setSidebarOpen(false);
+    setStatus("");
   }
 
   return (
     <div className="admin-app">
-      <header className="admin-header">
-        <div className="admin-header__inner">
+      <div className="admin-sticky-top">
+        <header className="admin-header">
+          <div className="admin-header__inner">
           <div className="admin-header__brand">
-            <button
-              type="button"
-              className="admin-header__menu-btn"
-              onClick={() => setSidebarOpen(true)}
-              aria-label="Open menu"
-            >
-              <i className="fas fa-bars" />
-            </button>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={content.settings.logoUrl} alt="" className="admin-header__logo d-none d-sm-block" />
             <div className="min-w-0">
-              <p className="admin-header__title">Content Manager</p>
+              <p className="admin-header__title">Admin Panel</p>
               <p className="admin-header__subtitle d-none d-md-block">{content.settings.schoolName}</p>
             </div>
           </div>
-          <div className="admin-header__actions admin-header__actions--mobile d-flex d-lg-none">
-            <button type="button" className="btn btn-sm btn-orange" onClick={save} disabled={saving}>
-              {saving ? "Saving..." : "Save"}
-            </button>
-          </div>
-          <div className="admin-header__actions d-none d-lg-flex">
+          <div className="admin-header__actions">
             <a href="/" target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline-light">
               <i className="fas fa-external-link-alt me-1" />
-              View Site
+              <span className="d-none d-sm-inline">View Site</span>
             </a>
-            <button type="button" className="btn btn-sm btn-orange" onClick={save} disabled={saving}>
-              {saving ? "Saving..." : "Save Changes"}
-            </button>
             <button type="button" className="btn btn-sm btn-outline-danger" onClick={logout}>
-              Logout
+              <i className="fas fa-sign-out-alt d-sm-none" />
+              <span className="d-none d-sm-inline">Logout</span>
             </button>
           </div>
-        </div>
-      </header>
+          </div>
+        </header>
+
+        <AdminTopNav activeTab={tab} onSelect={selectTab} />
+      </div>
 
       {status && (
         <div className="admin-status">
@@ -156,32 +149,26 @@ export default function AdminPanel() {
         </div>
       )}
 
-      <div className={`admin-overlay ${sidebarOpen ? "is-visible" : ""}`} onClick={() => setSidebarOpen(false)} aria-hidden="true" />
-
-      <div className="admin-layout">
-        <aside className={`admin-sidebar ${sidebarOpen ? "is-open" : ""}`}>
-          <p className="admin-sidebar__label">Manage Content</p>
-          <nav aria-label="Admin sections">
-            <ul className="admin-nav">
-              {tabs.map((t) => (
-                <li key={t.id}>
-                  <button
-                    type="button"
-                    className={`admin-nav__btn ${tab === t.id ? "is-active" : ""}`}
-                    onClick={() => selectTab(t.id)}
-                  >
-                    <i className={`fas ${t.icon}`} />
-                    {t.label}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        </aside>
-
-        <main className="admin-main">
-          <h1 className="admin-main__page-title">{activeTab?.label ?? "Admin"}</h1>
-          <div className="admin-card">
+      <main className="admin-main">
+        <div className="admin-main__head">
+          <div className="admin-main__head-text">
+            {activeSection && tab !== "dashboard" && (
+              <p className="admin-main__section-label">{activeSection.label}</p>
+            )}
+            <h1 className="admin-main__page-title">{activeItem?.label ?? "Admin"}</h1>
+            {activeItem?.hint && tab !== "dashboard" && (
+              <p className="admin-main__subtitle">{activeItem.hint}</p>
+            )}
+          </div>
+          {showWebsiteSave && (
+            <button type="button" className="btn btn-orange admin-main__save-btn" onClick={save} disabled={saving}>
+              <i className="fas fa-save me-1" />
+              {saving ? "Saving..." : "Save Website"}
+            </button>
+          )}
+        </div>
+        <div className="admin-card">
+            {tab === "dashboard" && <AdminDashboard onSelect={selectTab} />}
             {tab === "settings" && (
               <SettingsEditor content={content} setContent={setContent} />
             )}
@@ -212,21 +199,11 @@ export default function AdminPanel() {
             {tab === "about" && (
               <AboutEditor content={content} setContent={setContent} uploadFile={uploadFile} persist={persist} />
             )}
-          </div>
-        </main>
-      </div>
-
-      <div className="admin-mobile-bar">
-        <a href="/" target="_blank" rel="noopener noreferrer" className="btn btn-outline-secondary">
-          <i className="fas fa-external-link-alt" />
-        </a>
-        <button type="button" className="btn btn-orange" onClick={save} disabled={saving}>
-          {saving ? "Saving..." : "Save Changes"}
-        </button>
-        <button type="button" className="btn btn-outline-danger" onClick={logout}>
-          <i className="fas fa-sign-out-alt" />
-        </button>
-      </div>
+            {tab === "students" && <StudentsEditor />}
+            {tab === "homework" && <HomeworkEditor uploadFile={uploadFile} />}
+            {tab === "messages" && <StudentMessagesEditor uploadFile={uploadFile} />}
+        </div>
+      </main>
     </div>
   );
 }
@@ -330,82 +307,11 @@ function CarouselEditor({ content, setContent, uploadFile, persist }: { content:
     await persist(next);
   }
 
-  if (slide && editingIndex >= 0) {
-    const i = editingIndex;
-    return (
-      <AdminEditorPanel
-        title={`Edit Slide ${i + 1}`}
-        onBack={() => setEditingId(null)}
-        onDelete={() => removeSlide(slide.id)}
-      >
-        <div className="row g-2">
-          <div className="col-md-6">
-            <Field label="Eyebrow"><input className="form-control" value={slide.eyebrow ?? ""} onChange={(e) => patchSlide(i, { eyebrow: e.target.value })} placeholder="Welcome" /></Field>
-          </div>
-          <div className="col-md-6">
-            <Field label="Image Position">
-              <select className="form-select" value={slide.imagePosition ?? (i % 2 === 0 ? "right" : "left")} onChange={(e) => patchSlide(i, { imagePosition: e.target.value as "left" | "right" })}>
-                <option value="left">Image Left</option>
-                <option value="right">Image Right</option>
-              </select>
-            </Field>
-          </div>
-          <div className="col-12">
-            <Field label="Title"><input className="form-control" value={slide.title ?? slide.caption} onChange={(e) => patchSlide(i, { title: e.target.value, caption: e.target.value })} /></Field>
-          </div>
-          <div className="col-12">
-            <Field label="Description"><textarea className="form-control" rows={4} value={slide.description ?? ""} onChange={(e) => patchSlide(i, { description: e.target.value })} /></Field>
-          </div>
-          <div className="col-md-6">
-            <Field label="Button Text"><input className="form-control" value={slide.linkText ?? ""} onChange={(e) => patchSlide(i, { linkText: e.target.value })} placeholder="Learn More" /></Field>
-          </div>
-          <div className="col-md-6">
-            <Field label="Button Link"><input className="form-control" value={slide.linkUrl ?? ""} onChange={(e) => patchSlide(i, { linkUrl: e.target.value })} placeholder="/admissions" /></Field>
-          </div>
-          <div className="col-md-6">
-            <Field label="Image URL"><input className="form-control" value={slide.imageUrl} onChange={(e) => patchSlide(i, { imageUrl: e.target.value })} /></Field>
-          </div>
-          <div className="col-md-6">
-            <Field label="Alt Text"><input className="form-control" value={slide.alt} onChange={(e) => patchSlide(i, { alt: e.target.value })} /></Field>
-          </div>
-          <div className="col-12">
-            <Field label="Upload Image">
-              <input type="file" accept="image/*" className="form-control" onChange={async (e) => {
-                const f = e.target.files?.[0];
-                if (!f) return;
-                const url = await uploadFile(f);
-                if (!url) return;
-                const next = patchSlide(i, { imageUrl: url });
-                const ok = await persist(next);
-                if (!ok) alert("Image uploaded but save failed. Click Save Changes.");
-              }} />
-            </Field>
-          </div>
-          <div className="col-12">
-            <Field label="Image Crop &amp; Focus">
-              <ImageCropEditor
-                imageUrl={slide.imageUrl}
-                fit={slide.imageFit}
-                focusX={slide.imageFocusX}
-                focusY={slide.imageFocusY}
-                focus={slide.imageFocus}
-                previewVariant="carousel"
-                onChange={({ fit, focusX, focusY }) =>
-                  patchSlide(i, { imageFit: fit, imageFocusX: focusX, imageFocusY: focusY })
-                }
-              />
-            </Field>
-          </div>
-        </div>
-      </AdminEditorPanel>
-    );
-  }
-
   return (
     <>
       <AdminListHeader
         title="Hero Carousel Slides"
-        hint="Tap Edit to open the full slide editor with image crop preview."
+        hint="Edit opens a popup with image crop preview. Remember to Save Website when done."
         count={content.carousel.length}
         addLabel="Add Slide"
         onAdd={addSlide}
@@ -416,21 +322,101 @@ function CarouselEditor({ content, setContent, uploadFile, persist }: { content:
           <p className="mb-0">No slides yet. Add your first carousel slide.</p>
         </div>
       ) : (
-        <div className="admin-list-rows">
-          {content.carousel.map((s, i) => (
-            <AdminListRow
-              key={s.id}
-              badge={`Slide ${i + 1}`}
-              title={s.title ?? s.caption}
-              subtitle={s.description}
-              meta={s.eyebrow}
-              imageUrl={s.imageUrl || undefined}
-              onEdit={() => setEditingId(s.id)}
-              onDelete={() => removeSlide(s.id)}
-            />
-          ))}
-        </div>
+        <AdminTable>
+          <thead>
+            <tr>
+              <th aria-label="Preview" />
+              <th>#</th>
+              <th>Title</th>
+              <th>Eyebrow</th>
+              <th>Image</th>
+              <th aria-label="Actions" />
+            </tr>
+          </thead>
+          <tbody>
+            {content.carousel.map((s, i) => (
+              <tr key={s.id}>
+                <AdminTableThumb url={s.imageUrl || undefined} alt={s.alt} />
+                <td>{i + 1}</td>
+                <AdminCellText primary={s.title ?? s.caption} secondary={s.description} />
+                <td>{s.eyebrow || "—"}</td>
+                <td>{s.imagePosition ?? (i % 2 === 0 ? "right" : "left")}</td>
+                <AdminTableActions onEdit={() => setEditingId(s.id)} onDelete={() => removeSlide(s.id)} />
+              </tr>
+            ))}
+          </tbody>
+        </AdminTable>
       )}
+
+      <AdminEditModal
+        open={slide != null && editingIndex >= 0}
+        title={slide ? `Edit Slide ${editingIndex + 1}` : "Edit Slide"}
+        onClose={() => setEditingId(null)}
+        onDelete={slide ? () => removeSlide(slide.id) : undefined}
+        size="xl"
+      >
+        {slide && editingIndex >= 0 && (
+          <div className="row g-2">
+            <div className="col-md-6">
+              <Field label="Eyebrow"><input className="form-control" value={slide.eyebrow ?? ""} onChange={(e) => patchSlide(editingIndex, { eyebrow: e.target.value })} placeholder="Welcome" /></Field>
+            </div>
+            <div className="col-md-6">
+              <Field label="Image Position">
+                <select className="form-select" value={slide.imagePosition ?? (editingIndex % 2 === 0 ? "right" : "left")} onChange={(e) => patchSlide(editingIndex, { imagePosition: e.target.value as "left" | "right" })}>
+                  <option value="left">Image Left</option>
+                  <option value="right">Image Right</option>
+                </select>
+              </Field>
+            </div>
+            <div className="col-12">
+              <Field label="Title"><input className="form-control" value={slide.title ?? slide.caption} onChange={(e) => patchSlide(editingIndex, { title: e.target.value, caption: e.target.value })} /></Field>
+            </div>
+            <div className="col-12">
+              <Field label="Description"><textarea className="form-control" rows={4} value={slide.description ?? ""} onChange={(e) => patchSlide(editingIndex, { description: e.target.value })} /></Field>
+            </div>
+            <div className="col-md-6">
+              <Field label="Button Text"><input className="form-control" value={slide.linkText ?? ""} onChange={(e) => patchSlide(editingIndex, { linkText: e.target.value })} placeholder="Learn More" /></Field>
+            </div>
+            <div className="col-md-6">
+              <Field label="Button Link"><input className="form-control" value={slide.linkUrl ?? ""} onChange={(e) => patchSlide(editingIndex, { linkUrl: e.target.value })} placeholder="/admissions" /></Field>
+            </div>
+            <div className="col-md-6">
+              <Field label="Image URL"><input className="form-control" value={slide.imageUrl} onChange={(e) => patchSlide(editingIndex, { imageUrl: e.target.value })} /></Field>
+            </div>
+            <div className="col-md-6">
+              <Field label="Alt Text"><input className="form-control" value={slide.alt} onChange={(e) => patchSlide(editingIndex, { alt: e.target.value })} /></Field>
+            </div>
+            <div className="col-12">
+              <Field label="Upload Image">
+                <input type="file" accept="image/*" className="form-control" onChange={async (e) => {
+                  const f = e.target.files?.[0];
+                  if (!f) return;
+                  const url = await uploadFile(f);
+                  if (!url) return;
+                  const next = patchSlide(editingIndex, { imageUrl: url });
+                  const ok = await persist(next);
+                  if (!ok) alert("Image uploaded but save failed. Click Save Website.");
+                }} />
+              </Field>
+            </div>
+            <div className="col-12">
+              <Field label="Image Crop &amp; Focus">
+                <ImageCropEditor
+                  imageUrl={slide.imageUrl}
+                  fit={slide.imageFit}
+                  focusX={slide.imageFocusX}
+                  focusY={slide.imageFocusY}
+                  focus={slide.imageFocus}
+                  previewVariant="carousel"
+                  onChange={({ fit, focusX, focusY }) =>
+                    patchSlide(editingIndex, { imageFit: fit, imageFocusX: focusX, imageFocusY: focusY })
+                  }
+                />
+              </Field>
+            </div>
+          </div>
+        )}
+      </AdminEditModal>
     </>
   );
 }
@@ -462,51 +448,6 @@ function GalleryEditor({ content, setContent, uploadFile, persist }: { content: 
     if (editingId === id) setEditingId(null);
   }
 
-  if (img && editingIndex >= 0) {
-    const i = editingIndex;
-    return (
-      <AdminEditorPanel title={`Edit Photo ${i + 1}`} onBack={() => setEditingId(null)} onDelete={() => removePhoto(img.id)}>
-        <div className="row g-2">
-          <div className="col-md-6">
-            <Field label="Title"><input className="form-control" value={img.title ?? ""} onChange={(e) => patchImage(i, { title: e.target.value })} placeholder="Photo title shown on gallery page" /></Field>
-          </div>
-          <div className="col-md-6">
-            <Field label="Category">
-              <select className="form-select" value={img.category ?? "Campus"} onChange={(e) => patchImage(i, { category: e.target.value })}>
-                {["Campus", "Events", "Activities", "Sports", "Other"].map((c) => <option key={c} value={c}>{c}</option>)}
-              </select>
-            </Field>
-          </div>
-          <div className="col-12">
-            <Field label="Caption / Description"><textarea className="form-control" rows={3} value={img.caption ?? ""} onChange={(e) => patchImage(i, { caption: e.target.value })} placeholder="Short description visitors see when viewing this photo" /></Field>
-          </div>
-          <div className="col-md-6">
-            <Field label="Image URL"><input className="form-control" value={img.imageUrl} onChange={(e) => patchImage(i, { imageUrl: e.target.value })} /></Field>
-          </div>
-          <div className="col-md-6">
-            <Field label="Alt Text"><input className="form-control" value={img.alt} onChange={(e) => patchImage(i, { alt: e.target.value })} /></Field>
-          </div>
-          <div className="col-12">
-            <Field label="Upload Image">
-              <input type="file" accept="image/*" className="form-control" onChange={async (e) => {
-                const f = e.target.files?.[0];
-                if (!f) return;
-                const url = await uploadFile(f);
-                if (!url) return;
-                const next = patchImage(i, { imageUrl: url });
-                await persist(next);
-              }} />
-            </Field>
-          </div>
-        </div>
-        {img.imageUrl && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={img.imageUrl} alt={img.alt} className="w-100 rounded mt-2" style={{ maxHeight: 240, objectFit: "cover" }} />
-        )}
-      </AdminEditorPanel>
-    );
-  }
-
   return (
     <>
       <AdminListHeader title="Photo Gallery" hint="Upload photos with title, caption, and category. They appear on /gallery and the homepage preview." count={content.gallery.length} addLabel="Add Photo" onAdd={addPhoto} />
@@ -516,12 +457,79 @@ function GalleryEditor({ content, setContent, uploadFile, persist }: { content: 
           <p className="mb-0">No photos yet. Add your first gallery image.</p>
         </div>
       ) : (
-        <div className="admin-list-rows">
-          {content.gallery.map((g, i) => (
-            <AdminListRow key={g.id} badge={g.category || `Photo ${i + 1}`} title={g.title || g.alt || "Untitled photo"} subtitle={g.caption || (g.imageUrl ? g.imageUrl.split("/").pop() : "No image URL")} imageUrl={g.imageUrl || undefined} onEdit={() => setEditingId(g.id)} onDelete={() => removePhoto(g.id)} />
-          ))}
-        </div>
+        <AdminTable>
+          <thead>
+            <tr>
+              <th aria-label="Preview" />
+              <th>Title</th>
+              <th>Category</th>
+              <th>Caption</th>
+              <th aria-label="Actions" />
+            </tr>
+          </thead>
+          <tbody>
+            {content.gallery.map((g) => (
+              <tr key={g.id}>
+                <AdminTableThumb url={g.imageUrl || undefined} alt={g.alt} />
+                <AdminCellText primary={g.title || g.alt || "Untitled photo"} />
+                <td><AdminBadge>{g.category || "Campus"}</AdminBadge></td>
+                <AdminCellText primary={g.caption || "—"} truncate={false} />
+                <AdminTableActions onEdit={() => setEditingId(g.id)} onDelete={() => removePhoto(g.id)} />
+              </tr>
+            ))}
+          </tbody>
+        </AdminTable>
       )}
+
+      <AdminEditModal
+        open={img != null && editingIndex >= 0}
+        title={img ? `Edit Photo ${editingIndex + 1}` : "Edit Photo"}
+        onClose={() => setEditingId(null)}
+        onDelete={img ? () => removePhoto(img.id) : undefined}
+        size="lg"
+      >
+        {img && editingIndex >= 0 && (
+          <>
+            <div className="row g-2">
+              <div className="col-md-6">
+                <Field label="Title"><input className="form-control" value={img.title ?? ""} onChange={(e) => patchImage(editingIndex, { title: e.target.value })} placeholder="Photo title shown on gallery page" /></Field>
+              </div>
+              <div className="col-md-6">
+                <Field label="Category">
+                  <select className="form-select" value={img.category ?? "Campus"} onChange={(e) => patchImage(editingIndex, { category: e.target.value })}>
+                    {["Campus", "Events", "Activities", "Sports", "Other"].map((c) => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </Field>
+              </div>
+              <div className="col-12">
+                <Field label="Caption / Description"><textarea className="form-control" rows={3} value={img.caption ?? ""} onChange={(e) => patchImage(editingIndex, { caption: e.target.value })} placeholder="Short description visitors see when viewing this photo" /></Field>
+              </div>
+              <div className="col-md-6">
+                <Field label="Image URL"><input className="form-control" value={img.imageUrl} onChange={(e) => patchImage(editingIndex, { imageUrl: e.target.value })} /></Field>
+              </div>
+              <div className="col-md-6">
+                <Field label="Alt Text"><input className="form-control" value={img.alt} onChange={(e) => patchImage(editingIndex, { alt: e.target.value })} /></Field>
+              </div>
+              <div className="col-12">
+                <Field label="Upload Image">
+                  <input type="file" accept="image/*" className="form-control" onChange={async (e) => {
+                    const f = e.target.files?.[0];
+                    if (!f) return;
+                    const url = await uploadFile(f);
+                    if (!url) return;
+                    const next = patchImage(editingIndex, { imageUrl: url });
+                    await persist(next);
+                  }} />
+                </Field>
+              </div>
+            </div>
+            {img.imageUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={img.imageUrl} alt={img.alt} className="w-100 rounded mt-2" style={{ maxHeight: 240, objectFit: "cover" }} />
+            )}
+          </>
+        )}
+      </AdminEditModal>
     </>
   );
 }
@@ -569,75 +577,6 @@ function ActivitiesEditor({ content, setContent, uploadFile, persist }: { conten
     if (editingId === id) setEditingId(null);
   }
 
-  if (activity && editingIndex >= 0) {
-    const i = editingIndex;
-    return (
-      <AdminEditorPanel title={`Edit Activity: ${activity.title}`} onBack={() => setEditingId(null)} onDelete={() => removeActivity(activity.id)}>
-        <div className="row g-2">
-          <div className="col-md-6">
-            <Field label="Title"><input className="form-control" value={activity.title} onChange={(e) => patchActivity(i, { title: e.target.value })} /></Field>
-          </div>
-          <div className="col-md-6">
-            <Field label="Category">
-              <select className="form-select" value={activity.category} onChange={(e) => patchActivity(i, { category: e.target.value })}>
-                {ACTIVITY_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-              </select>
-            </Field>
-          </div>
-          <div className="col-md-6">
-            <Field label="Date / Frequency Label"><input className="form-control" value={activity.dateLabel ?? ""} onChange={(e) => patchActivity(i, { dateLabel: e.target.value })} placeholder="e.g. Every Week, Jan 2026" /></Field>
-          </div>
-          <div className="col-md-6">
-            <Field label="Alt Text"><input className="form-control" value={activity.alt} onChange={(e) => patchActivity(i, { alt: e.target.value })} /></Field>
-          </div>
-          <div className="col-12">
-            <Field label="Short Summary (card preview)">
-              <textarea className="form-control" rows={2} value={activity.description} onChange={(e) => patchActivity(i, { description: e.target.value })} placeholder="Brief text shown on the activity card" />
-            </Field>
-          </div>
-          <div className="col-12">
-            <Field label="Full Article (detail view)">
-              <textarea className="form-control" rows={8} value={activity.body ?? ""} onChange={(e) => patchActivity(i, { body: e.target.value })} placeholder="Write the full story for View Details. Leave a blank line between paragraphs." />
-            </Field>
-          </div>
-          <div className="col-md-6">
-            <Field label="Image URL"><input className="form-control" value={activity.imageUrl} onChange={(e) => patchActivity(i, { imageUrl: e.target.value })} /></Field>
-          </div>
-          <div className="col-md-6">
-            <Field label="Upload Image">
-              <input type="file" accept="image/*" className="form-control" onChange={async (e) => {
-                const f = e.target.files?.[0];
-                if (!f) return;
-                const url = await uploadFile(f);
-                if (!url) return;
-                const next = patchActivity(i, { imageUrl: url });
-                await persist(next);
-              }} />
-            </Field>
-          </div>
-          <div className="col-12">
-            <div className="form-check">
-              <input
-                className="form-check-input"
-                type="checkbox"
-                checked={!!activity.featured}
-                onChange={(e) => patchActivity(i, { featured: e.target.checked })}
-                id={`activity-featured-${activity.id}`}
-              />
-              <label className="form-check-label" htmlFor={`activity-featured-${activity.id}`}>
-                Show on homepage preview (up to 3 featured activities)
-              </label>
-            </div>
-          </div>
-        </div>
-        {activity.imageUrl && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={activity.imageUrl} alt={activity.alt} className="w-100 rounded mt-2" style={{ maxHeight: 240, objectFit: "cover" }} />
-        )}
-      </AdminEditorPanel>
-    );
-  }
-
   return (
     <>
       <h2 className="admin-section-title">Section Intro</h2>
@@ -656,20 +595,105 @@ function ActivitiesEditor({ content, setContent, uploadFile, persist }: { conten
           <p className="mb-0">No activities yet. Add your first student activity showcase.</p>
         </div>
       ) : (
-        <div className="admin-list-rows">
-          {content.activities.map((a, i) => (
-            <AdminListRow
-              key={a.id}
-              badge={a.featured ? `${a.category} · Featured` : a.category || `Activity ${i + 1}`}
-              title={a.title || "Untitled activity"}
-              subtitle={a.description || (a.imageUrl ? a.imageUrl.split("/").pop() : "No image URL")}
-              imageUrl={a.imageUrl || undefined}
-              onEdit={() => setEditingId(a.id)}
-              onDelete={() => removeActivity(a.id)}
-            />
-          ))}
-        </div>
+        <AdminTable>
+          <thead>
+            <tr>
+              <th aria-label="Preview" />
+              <th>Title</th>
+              <th>Category</th>
+              <th>Date</th>
+              <th>Featured</th>
+              <th aria-label="Actions" />
+            </tr>
+          </thead>
+          <tbody>
+            {content.activities.map((a) => (
+              <tr key={a.id}>
+                <AdminTableThumb url={a.imageUrl || undefined} alt={a.alt} />
+                <AdminCellText primary={a.title || "Untitled activity"} secondary={a.description} />
+                <td><AdminBadge>{a.category || "—"}</AdminBadge></td>
+                <td>{a.dateLabel || "—"}</td>
+                <td>{a.featured ? <AdminBadge tone="success">Yes</AdminBadge> : "—"}</td>
+                <AdminTableActions onEdit={() => setEditingId(a.id)} onDelete={() => removeActivity(a.id)} />
+              </tr>
+            ))}
+          </tbody>
+        </AdminTable>
       )}
+
+      <AdminEditModal
+        open={activity != null && editingIndex >= 0}
+        title={activity ? `Edit Activity: ${activity.title}` : "Edit Activity"}
+        onClose={() => setEditingId(null)}
+        onDelete={activity ? () => removeActivity(activity.id) : undefined}
+        size="xl"
+      >
+        {activity && editingIndex >= 0 && (
+          <>
+            <div className="row g-2">
+              <div className="col-md-6">
+                <Field label="Title"><input className="form-control" value={activity.title} onChange={(e) => patchActivity(editingIndex, { title: e.target.value })} /></Field>
+              </div>
+              <div className="col-md-6">
+                <Field label="Category">
+                  <select className="form-select" value={activity.category} onChange={(e) => patchActivity(editingIndex, { category: e.target.value })}>
+                    {ACTIVITY_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </Field>
+              </div>
+              <div className="col-md-6">
+                <Field label="Date / Frequency Label"><input className="form-control" value={activity.dateLabel ?? ""} onChange={(e) => patchActivity(editingIndex, { dateLabel: e.target.value })} placeholder="e.g. Every Week, Jan 2026" /></Field>
+              </div>
+              <div className="col-md-6">
+                <Field label="Alt Text"><input className="form-control" value={activity.alt} onChange={(e) => patchActivity(editingIndex, { alt: e.target.value })} /></Field>
+              </div>
+              <div className="col-12">
+                <Field label="Short Summary (card preview)">
+                  <textarea className="form-control" rows={2} value={activity.description} onChange={(e) => patchActivity(editingIndex, { description: e.target.value })} placeholder="Brief text shown on the activity card" />
+                </Field>
+              </div>
+              <div className="col-12">
+                <Field label="Full Article (detail view)">
+                  <textarea className="form-control" rows={8} value={activity.body ?? ""} onChange={(e) => patchActivity(editingIndex, { body: e.target.value })} placeholder="Write the full story for View Details. Leave a blank line between paragraphs." />
+                </Field>
+              </div>
+              <div className="col-md-6">
+                <Field label="Image URL"><input className="form-control" value={activity.imageUrl} onChange={(e) => patchActivity(editingIndex, { imageUrl: e.target.value })} /></Field>
+              </div>
+              <div className="col-md-6">
+                <Field label="Upload Image">
+                  <input type="file" accept="image/*" className="form-control" onChange={async (e) => {
+                    const f = e.target.files?.[0];
+                    if (!f) return;
+                    const url = await uploadFile(f);
+                    if (!url) return;
+                    const next = patchActivity(editingIndex, { imageUrl: url });
+                    await persist(next);
+                  }} />
+                </Field>
+              </div>
+              <div className="col-12">
+                <div className="form-check">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    checked={!!activity.featured}
+                    onChange={(e) => patchActivity(editingIndex, { featured: e.target.checked })}
+                    id={`activity-featured-${activity.id}`}
+                  />
+                  <label className="form-check-label" htmlFor={`activity-featured-${activity.id}`}>
+                    Show on homepage preview (up to 3 featured activities)
+                  </label>
+                </div>
+              </div>
+            </div>
+            {activity.imageUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={activity.imageUrl} alt={activity.alt} className="w-100 rounded mt-2" style={{ maxHeight: 240, objectFit: "cover" }} />
+            )}
+          </>
+        )}
+      </AdminEditModal>
     </>
   );
 }
@@ -697,63 +721,76 @@ function VideosEditor({ content, setContent, uploadFile }: { content: SiteConten
     if (editingId === id) setEditingId(null);
   }
 
-  if (video && editingIndex >= 0) {
-    const i = editingIndex;
-    return (
-      <AdminEditorPanel title={`Edit Video: ${video.title}`} onBack={() => setEditingId(null)} onDelete={() => removeVideo(video.id)}>
-        <p className="admin-hint mb-3">Use YouTube embed URLs (e.g. https://www.youtube.com/embed/VIDEO_ID). Mark one as featured for the homepage.</p>
-        <div className="row g-2">
-          <div className="col-md-6"><Field label="Title"><input className="form-control" value={video.title} onChange={(e) => patchVideo(i, { title: e.target.value })} /></Field></div>
-          <div className="col-md-6">
-            <Field label="Category">
-              <select className="form-select" value={video.category} onChange={(e) => patchVideo(i, { category: e.target.value as VideoItem["category"] })}>
-                {["tour", "events", "activities", "other"].map((c) => <option key={c} value={c}>{c}</option>)}
-              </select>
-            </Field>
-          </div>
-          <div className="col-12"><Field label="Description"><textarea className="form-control" rows={3} value={video.description} onChange={(e) => patchVideo(i, { description: e.target.value })} /></Field></div>
-          <div className="col-md-6"><Field label="Video Embed URL"><input className="form-control" value={video.videoUrl} onChange={(e) => patchVideo(i, { videoUrl: e.target.value })} /></Field></div>
-          <div className="col-md-6"><Field label="Thumbnail URL"><input className="form-control" value={video.thumbnailUrl} onChange={(e) => patchVideo(i, { thumbnailUrl: e.target.value })} /></Field></div>
-          <div className="col-12">
-            <Field label="Upload Thumbnail">
-              <input type="file" accept="image/*" className="form-control" onChange={async (e) => { const f = e.target.files?.[0]; if (f) { const url = await uploadFile(f); if (url) patchVideo(i, { thumbnailUrl: url }); } }} />
-            </Field>
-          </div>
-          <div className="col-12">
-            <div className="form-check">
-              <input className="form-check-input" type="checkbox" checked={video.featured} onChange={(e) => { const v = content.videos.map((vid, j) => ({ ...vid, featured: j === i ? e.target.checked : false })); update(v); }} id={`featured-${video.id}`} />
-              <label className="form-check-label" htmlFor={`featured-${video.id}`}>Featured on homepage</label>
-            </div>
-          </div>
-        </div>
-      </AdminEditorPanel>
-    );
-  }
-
   return (
     <>
-      <AdminListHeader title="Video Library" hint="Tap Edit to manage embed URL, thumbnail, and featured status." count={content.videos.length} addLabel="Add Video" onAdd={addVideo} />
+      <AdminListHeader title="Video Library" hint="Edit opens a popup to manage embed URL, thumbnail, and featured status." count={content.videos.length} addLabel="Add Video" onAdd={addVideo} />
       {content.videos.length === 0 ? (
         <div className="admin-empty-list">
           <i className="fas fa-video d-block" />
           <p className="mb-0">No videos yet. Add your first video.</p>
         </div>
       ) : (
-        <div className="admin-list-rows">
-          {content.videos.map((v, i) => (
-            <AdminListRow
-              key={v.id}
-              badge={v.featured ? "Featured" : `Video ${i + 1}`}
-              title={v.title}
-              subtitle={v.description}
-              meta={v.category}
-              imageUrl={v.thumbnailUrl || undefined}
-              onEdit={() => setEditingId(v.id)}
-              onDelete={() => removeVideo(v.id)}
-            />
-          ))}
-        </div>
+        <AdminTable>
+          <thead>
+            <tr>
+              <th aria-label="Preview" />
+              <th>Title</th>
+              <th>Category</th>
+              <th>Featured</th>
+              <th aria-label="Actions" />
+            </tr>
+          </thead>
+          <tbody>
+            {content.videos.map((v) => (
+              <tr key={v.id}>
+                <AdminTableThumb url={v.thumbnailUrl || undefined} alt={v.title} />
+                <AdminCellText primary={v.title} secondary={v.description} />
+                <td><AdminBadge>{v.category}</AdminBadge></td>
+                <td>{v.featured ? <AdminBadge tone="success">Yes</AdminBadge> : "—"}</td>
+                <AdminTableActions onEdit={() => setEditingId(v.id)} onDelete={() => removeVideo(v.id)} />
+              </tr>
+            ))}
+          </tbody>
+        </AdminTable>
       )}
+
+      <AdminEditModal
+        open={video != null && editingIndex >= 0}
+        title={video ? `Edit Video: ${video.title}` : "Edit Video"}
+        onClose={() => setEditingId(null)}
+        onDelete={video ? () => removeVideo(video.id) : undefined}
+        size="lg"
+      >
+        {video && editingIndex >= 0 && (
+          <>
+            <p className="admin-hint mb-3">Use YouTube embed URLs (e.g. https://www.youtube.com/embed/VIDEO_ID). Mark one as featured for the homepage.</p>
+            <div className="row g-2">
+              <div className="col-md-6"><Field label="Title"><input className="form-control" value={video.title} onChange={(e) => patchVideo(editingIndex, { title: e.target.value })} /></Field></div>
+              <div className="col-md-6">
+                <Field label="Category">
+                  <select className="form-select" value={video.category} onChange={(e) => patchVideo(editingIndex, { category: e.target.value as VideoItem["category"] })}>
+                    {["tour", "events", "activities", "other"].map((c) => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </Field>
+              </div>
+              <div className="col-12"><Field label="Description"><textarea className="form-control" rows={3} value={video.description} onChange={(e) => patchVideo(editingIndex, { description: e.target.value })} /></Field></div>
+              <div className="col-md-6"><Field label="Video Embed URL"><input className="form-control" value={video.videoUrl} onChange={(e) => patchVideo(editingIndex, { videoUrl: e.target.value })} /></Field></div>
+              <div className="col-md-6"><Field label="Thumbnail URL"><input className="form-control" value={video.thumbnailUrl} onChange={(e) => patchVideo(editingIndex, { thumbnailUrl: e.target.value })} /></Field></div>
+              <div className="col-12">
+                <Field label="Upload Thumbnail">
+                  <input type="file" accept="image/*" className="form-control" onChange={async (e) => { const f = e.target.files?.[0]; if (f) { const url = await uploadFile(f); if (url) patchVideo(editingIndex, { thumbnailUrl: url }); } }} />
+                </Field>
+              </div>
+              <div className="col-12">
+                <div className="form-check">
+                  <input className="form-check-input" type="checkbox" checked={video.featured} onChange={(e) => { const v = content.videos.map((vid, j) => ({ ...vid, featured: j === editingIndex ? e.target.checked : false })); update(v); }} id={`featured-${video.id}`} />
+                  <label className="form-check-label" htmlFor={`featured-${video.id}`}>Featured on homepage</label>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+      </AdminEditModal>
     </>
   );
 }
@@ -782,21 +819,6 @@ function NewsEditor({ content, setContent }: { content: SiteContent; setContent:
     if (editingId === id) setEditingId(null);
   }
 
-  if (item && editingIndex >= 0) {
-    const i = editingIndex;
-    return (
-      <AdminEditorPanel title={`Edit News: ${item.title}`} onBack={() => setEditingId(null)} onDelete={() => removeItem(item.id)}>
-        <Field label="Title"><input className="form-control" value={item.title} onChange={(e) => patchItem(i, { title: e.target.value })} /></Field>
-        <Field label="Excerpt"><textarea className="form-control" rows={3} value={item.excerpt} onChange={(e) => patchItem(i, { excerpt: e.target.value })} /></Field>
-        <div className="row g-2">
-          <div className="col-md-4"><Field label="Category"><input className="form-control" value={item.category} onChange={(e) => patchItem(i, { category: e.target.value })} /></Field></div>
-          <div className="col-md-4"><Field label="Date Label"><input className="form-control" value={item.dateLabel} onChange={(e) => patchItem(i, { dateLabel: e.target.value })} /></Field></div>
-          <div className="col-md-4"><Field label="Icon (fa-*)"><input className="form-control" value={item.icon} onChange={(e) => patchItem(i, { icon: e.target.value })} /></Field></div>
-        </div>
-      </AdminEditorPanel>
-    );
-  }
-
   return (
     <>
       <h2 className="admin-section-title">News & Events</h2>
@@ -805,19 +827,55 @@ function NewsEditor({ content, setContent }: { content: SiteContent; setContent:
       <Field label="Subtitle"><input className="form-control" value={ann.subtitle} onChange={(e) => setContent({ ...content, newsAnnouncement: { ...ann, subtitle: e.target.value } })} /></Field>
       <Field label="Description"><textarea className="form-control" rows={2} value={ann.description} onChange={(e) => setContent({ ...content, newsAnnouncement: { ...ann, description: e.target.value } })} /></Field>
       <hr className="admin-divider" />
-      <AdminListHeader title="News Items" hint="Tap Edit to update a news card." count={content.news.length} addLabel="Add News Item" onAdd={addItem} />
+      <AdminListHeader title="News Items" hint="Edit opens a popup to update a news card." count={content.news.length} addLabel="Add News Item" onAdd={addItem} />
       {content.news.length === 0 ? (
         <div className="admin-empty-list">
           <i className="fas fa-newspaper d-block" />
           <p className="mb-0">No news items yet.</p>
         </div>
       ) : (
-        <div className="admin-list-rows">
-          {content.news.map((n, i) => (
-            <AdminListRow key={n.id} badge={n.category || `Item ${i + 1}`} title={n.title} subtitle={n.excerpt} meta={n.dateLabel} onEdit={() => setEditingId(n.id)} onDelete={() => removeItem(n.id)} />
-          ))}
-        </div>
+        <AdminTable>
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Category</th>
+              <th>Date</th>
+              <th>Excerpt</th>
+              <th aria-label="Actions" />
+            </tr>
+          </thead>
+          <tbody>
+            {content.news.map((n) => (
+              <tr key={n.id}>
+                <AdminCellText primary={n.title} />
+                <td><AdminBadge>{n.category || "UPDATE"}</AdminBadge></td>
+                <td>{n.dateLabel || "—"}</td>
+                <AdminCellText primary={n.excerpt || "—"} />
+                <AdminTableActions onEdit={() => setEditingId(n.id)} onDelete={() => removeItem(n.id)} />
+              </tr>
+            ))}
+          </tbody>
+        </AdminTable>
       )}
+
+      <AdminEditModal
+        open={item != null && editingIndex >= 0}
+        title={item ? `Edit News: ${item.title}` : "Edit News"}
+        onClose={() => setEditingId(null)}
+        onDelete={item ? () => removeItem(item.id) : undefined}
+      >
+        {item && editingIndex >= 0 && (
+          <>
+            <Field label="Title"><input className="form-control" value={item.title} onChange={(e) => patchItem(editingIndex, { title: e.target.value })} /></Field>
+            <Field label="Excerpt"><textarea className="form-control" rows={3} value={item.excerpt} onChange={(e) => patchItem(editingIndex, { excerpt: e.target.value })} /></Field>
+            <div className="row g-2">
+              <div className="col-md-4"><Field label="Category"><input className="form-control" value={item.category} onChange={(e) => patchItem(editingIndex, { category: e.target.value })} /></Field></div>
+              <div className="col-md-4"><Field label="Date Label"><input className="form-control" value={item.dateLabel} onChange={(e) => patchItem(editingIndex, { dateLabel: e.target.value })} /></Field></div>
+              <div className="col-md-4"><Field label="Icon (fa-*)"><input className="form-control" value={item.icon} onChange={(e) => patchItem(editingIndex, { icon: e.target.value })} /></Field></div>
+            </div>
+          </>
+        )}
+      </AdminEditModal>
     </>
   );
 }
@@ -849,47 +907,66 @@ function TeachersEditor({ content, setContent, uploadFile, persist }: { content:
     if (editingId === id) setEditingId(null);
   }
 
-  if (teacher && editingIndex >= 0) {
-    const i = editingIndex;
-    return (
-      <AdminEditorPanel title={`Edit Teacher: ${teacher.name}`} onBack={() => setEditingId(null)} onDelete={() => removeTeacher(teacher.id)}>
-        <div className="row g-2">
-          <div className="col-md-6"><Field label="Name"><input className="form-control" value={teacher.name} onChange={(e) => patchTeacher(i, { name: e.target.value })} /></Field></div>
-          <div className="col-md-6"><Field label="Role"><input className="form-control" value={teacher.role} onChange={(e) => patchTeacher(i, { role: e.target.value })} /></Field></div>
-          <div className="col-md-6"><Field label="Experience"><input className="form-control" value={teacher.experience} onChange={(e) => patchTeacher(i, { experience: e.target.value })} /></Field></div>
-          <div className="col-md-6"><Field label="Photo URL"><input className="form-control" value={teacher.photoUrl} onChange={(e) => patchTeacher(i, { photoUrl: e.target.value })} /></Field></div>
-          <div className="col-12">
-            <Field label="Upload Photo">
-              <input type="file" accept="image/*" className="form-control" onChange={async (e) => {
-                const f = e.target.files?.[0];
-                if (!f) return;
-                const url = await uploadFile(f);
-                if (!url) return;
-                const next = patchTeacher(i, { photoUrl: url });
-                await persist(next);
-              }} />
-            </Field>
-          </div>
-        </div>
-      </AdminEditorPanel>
-    );
-  }
-
   return (
     <>
-      <AdminListHeader title="Teachers" hint="Tap Edit to update teacher details and photo." count={content.teachers.length} addLabel="Add Teacher" onAdd={addTeacher} />
+      <AdminListHeader title="Teachers" hint="Edit opens a popup to update teacher details and photo." count={content.teachers.length} addLabel="Add Teacher" onAdd={addTeacher} />
       {content.teachers.length === 0 ? (
         <div className="admin-empty-list">
           <i className="fas fa-chalkboard-teacher d-block" />
           <p className="mb-0">No teachers yet.</p>
         </div>
       ) : (
-        <div className="admin-list-rows">
-          {content.teachers.map((t, i) => (
-            <AdminListRow key={t.id} badge={`Teacher ${i + 1}`} title={t.name} subtitle={t.role} meta={t.experience} imageUrl={t.photoUrl || undefined} onEdit={() => setEditingId(t.id)} onDelete={() => removeTeacher(t.id)} />
-          ))}
-        </div>
+        <AdminTable>
+          <thead>
+            <tr>
+              <th aria-label="Photo" />
+              <th>Name</th>
+              <th>Role</th>
+              <th>Experience</th>
+              <th aria-label="Actions" />
+            </tr>
+          </thead>
+          <tbody>
+            {content.teachers.map((t) => (
+              <tr key={t.id}>
+                <AdminTableThumb url={t.photoUrl || undefined} alt={t.name} />
+                <AdminCellText primary={t.name} />
+                <td>{t.role || "—"}</td>
+                <td>{t.experience || "—"}</td>
+                <AdminTableActions onEdit={() => setEditingId(t.id)} onDelete={() => removeTeacher(t.id)} />
+              </tr>
+            ))}
+          </tbody>
+        </AdminTable>
       )}
+
+      <AdminEditModal
+        open={teacher != null && editingIndex >= 0}
+        title={teacher ? `Edit Teacher: ${teacher.name}` : "Edit Teacher"}
+        onClose={() => setEditingId(null)}
+        onDelete={teacher ? () => removeTeacher(teacher.id) : undefined}
+      >
+        {teacher && editingIndex >= 0 && (
+          <div className="row g-2">
+            <div className="col-md-6"><Field label="Name"><input className="form-control" value={teacher.name} onChange={(e) => patchTeacher(editingIndex, { name: e.target.value })} /></Field></div>
+            <div className="col-md-6"><Field label="Role"><input className="form-control" value={teacher.role} onChange={(e) => patchTeacher(editingIndex, { role: e.target.value })} /></Field></div>
+            <div className="col-md-6"><Field label="Experience"><input className="form-control" value={teacher.experience} onChange={(e) => patchTeacher(editingIndex, { experience: e.target.value })} /></Field></div>
+            <div className="col-md-6"><Field label="Photo URL"><input className="form-control" value={teacher.photoUrl} onChange={(e) => patchTeacher(editingIndex, { photoUrl: e.target.value })} /></Field></div>
+            <div className="col-12">
+              <Field label="Upload Photo">
+                <input type="file" accept="image/*" className="form-control" onChange={async (e) => {
+                  const f = e.target.files?.[0];
+                  if (!f) return;
+                  const url = await uploadFile(f);
+                  if (!url) return;
+                  const next = patchTeacher(editingIndex, { photoUrl: url });
+                  await persist(next);
+                }} />
+              </Field>
+            </div>
+          </div>
+        )}
+      </AdminEditModal>
     </>
   );
 }
@@ -917,34 +994,53 @@ function TestimonialsEditor({ content, setContent }: { content: SiteContent; set
     if (editingId === id) setEditingId(null);
   }
 
-  if (testimonial && editingIndex >= 0) {
-    const i = editingIndex;
-    return (
-      <AdminEditorPanel title={`Edit Testimonial: ${testimonial.author || "Untitled"}`} onBack={() => setEditingId(null)} onDelete={() => removeTestimonial(testimonial.id)}>
-        <Field label="Quote"><textarea className="form-control" rows={4} value={testimonial.quote} onChange={(e) => patchTestimonial(i, { quote: e.target.value })} /></Field>
-        <div className="row g-2">
-          <div className="col-md-6"><Field label="Author"><input className="form-control" value={testimonial.author} onChange={(e) => patchTestimonial(i, { author: e.target.value })} /></Field></div>
-          <div className="col-md-6"><Field label="Subtitle"><input className="form-control" value={testimonial.subtitle} onChange={(e) => patchTestimonial(i, { subtitle: e.target.value })} /></Field></div>
-        </div>
-      </AdminEditorPanel>
-    );
-  }
-
   return (
     <>
-      <AdminListHeader title="Parent Testimonials" hint="Tap Edit to update quote and author details." count={content.testimonials.length} addLabel="Add Testimonial" onAdd={addTestimonial} />
+      <AdminListHeader title="Parent Testimonials" hint="Edit opens a popup to update quote and author details." count={content.testimonials.length} addLabel="Add Testimonial" onAdd={addTestimonial} />
       {content.testimonials.length === 0 ? (
         <div className="admin-empty-list">
           <i className="fas fa-quote-left d-block" />
           <p className="mb-0">No testimonials yet.</p>
         </div>
       ) : (
-        <div className="admin-list-rows">
-          {content.testimonials.map((t, i) => (
-            <AdminListRow key={t.id} badge={`Testimonial ${i + 1}`} title={t.author || "Anonymous"} subtitle={t.quote} meta={t.subtitle} onEdit={() => setEditingId(t.id)} onDelete={() => removeTestimonial(t.id)} />
-          ))}
-        </div>
+        <AdminTable>
+          <thead>
+            <tr>
+              <th>Author</th>
+              <th>Subtitle</th>
+              <th>Quote</th>
+              <th aria-label="Actions" />
+            </tr>
+          </thead>
+          <tbody>
+            {content.testimonials.map((t) => (
+              <tr key={t.id}>
+                <AdminCellText primary={t.author || "Anonymous"} />
+                <td>{t.subtitle || "—"}</td>
+                <AdminCellText primary={t.quote || "—"} />
+                <AdminTableActions onEdit={() => setEditingId(t.id)} onDelete={() => removeTestimonial(t.id)} />
+              </tr>
+            ))}
+          </tbody>
+        </AdminTable>
       )}
+
+      <AdminEditModal
+        open={testimonial != null && editingIndex >= 0}
+        title={testimonial ? `Edit Testimonial: ${testimonial.author || "Untitled"}` : "Edit Testimonial"}
+        onClose={() => setEditingId(null)}
+        onDelete={testimonial ? () => removeTestimonial(testimonial.id) : undefined}
+      >
+        {testimonial && editingIndex >= 0 && (
+          <>
+            <Field label="Quote"><textarea className="form-control" rows={4} value={testimonial.quote} onChange={(e) => patchTestimonial(editingIndex, { quote: e.target.value })} /></Field>
+            <div className="row g-2">
+              <div className="col-md-6"><Field label="Author"><input className="form-control" value={testimonial.author} onChange={(e) => patchTestimonial(editingIndex, { author: e.target.value })} /></Field></div>
+              <div className="col-md-6"><Field label="Subtitle"><input className="form-control" value={testimonial.subtitle} onChange={(e) => patchTestimonial(editingIndex, { subtitle: e.target.value })} /></Field></div>
+            </div>
+          </>
+        )}
+      </AdminEditModal>
     </>
   );
 }

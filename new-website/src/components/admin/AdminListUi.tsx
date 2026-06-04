@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect } from "react";
+
 type AdminListHeaderProps = {
   title: string;
   hint?: string;
@@ -24,70 +26,158 @@ export function AdminListHeader({ title, hint, count, addLabel, onAdd }: AdminLi
   );
 }
 
-type AdminListRowProps = {
+type AdminEditModalProps = {
+  open: boolean;
   title: string;
-  subtitle?: string;
-  meta?: string;
-  imageUrl?: string;
-  badge?: string;
-  onEdit: () => void;
-  onDelete: () => void;
+  onClose: () => void;
+  onDelete?: () => void;
+  children: React.ReactNode;
+  footer?: React.ReactNode;
+  size?: "md" | "lg" | "xl";
 };
 
-export function AdminListRow({ title, subtitle, meta, imageUrl, badge, onEdit, onDelete }: AdminListRowProps) {
+export function AdminEditModal({
+  open,
+  title,
+  onClose,
+  onDelete,
+  children,
+  footer,
+  size = "lg",
+}: AdminEditModalProps) {
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [open, onClose]);
+
+  if (!open) return null;
+
   return (
-    <div className="admin-list-row">
-      {imageUrl ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={imageUrl} alt="" className="admin-list-row__thumb" />
-      ) : (
-        <div className="admin-list-row__thumb admin-list-row__thumb--empty">
-          <i className="fas fa-image" />
+    <div className="admin-modal" role="dialog" aria-modal="true" aria-labelledby="admin-modal-title">
+      <button type="button" className="admin-modal__backdrop" onClick={onClose} aria-label="Close dialog" />
+      <div className={`admin-modal__dialog admin-modal__dialog--${size}`}>
+        <div className="admin-modal__header">
+          <h2 id="admin-modal-title" className="admin-modal__title">
+            {title}
+          </h2>
+          <div className="admin-modal__header-actions">
+            {onDelete && (
+              <button type="button" className="btn btn-sm btn-outline-danger" onClick={onDelete}>
+                <i className="fas fa-trash me-1" />
+                Delete
+              </button>
+            )}
+            <button type="button" className="admin-modal__close" onClick={onClose} aria-label="Close">
+              <i className="fas fa-times" />
+            </button>
+          </div>
         </div>
-      )}
-      <div className="admin-list-row__body min-w-0">
-        {badge && <span className="admin-list-row__badge">{badge}</span>}
-        <strong className="admin-list-row__title">{title || "Untitled"}</strong>
-        {subtitle && <p className="admin-list-row__subtitle">{subtitle}</p>}
-        {meta && <p className="admin-list-row__meta">{meta}</p>}
-      </div>
-      <div className="admin-list-row__actions">
-        <button type="button" className="btn btn-sm btn-orange" onClick={onEdit}>
-          <i className="fas fa-pen me-1" />
-          Edit
-        </button>
-        <button type="button" className="btn btn-sm btn-outline-danger" onClick={onDelete} aria-label="Delete">
-          <i className="fas fa-trash" />
-        </button>
+        <div className="admin-modal__body">{children}</div>
+        {footer && <div className="admin-modal__footer">{footer}</div>}
       </div>
     </div>
   );
 }
 
-type AdminEditorPanelProps = {
+/** @deprecated Use AdminEditModal — kept for any remaining inline usage */
+export function AdminEditorPanel({
+  title,
+  onBack,
+  onDelete,
+  children,
+}: {
   title: string;
   onBack: () => void;
   onDelete?: () => void;
   children: React.ReactNode;
-};
-
-export function AdminEditorPanel({ title, onBack, onDelete, children }: AdminEditorPanelProps) {
+}) {
   return (
-    <div className="admin-editor-panel">
-      <div className="admin-editor-panel__toolbar">
-        <button type="button" className="btn btn-sm btn-outline-secondary admin-editor-panel__back" onClick={onBack}>
-          <i className="fas fa-arrow-left me-1" />
-          Back to list
-        </button>
-        <h2 className="admin-editor-panel__title">{title}</h2>
-        {onDelete && (
-          <button type="button" className="btn btn-sm btn-outline-danger ms-auto" onClick={onDelete}>
-            <i className="fas fa-trash me-1" />
-            Delete
-          </button>
-        )}
-      </div>
-      <div className="admin-editor-panel__body">{children}</div>
+    <AdminEditModal open title={title} onClose={onBack} onDelete={onDelete}>
+      {children}
+    </AdminEditModal>
+  );
+}
+
+export function AdminTable({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="admin-table-wrap">
+      <table className="admin-table">{children}</table>
     </div>
+  );
+}
+
+export function AdminTableThumb({ url, alt = "" }: { url?: string; alt?: string }) {
+  if (url) {
+    return (
+      <td className="admin-table__thumb-cell">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={url} alt={alt} className="admin-table__thumb" />
+      </td>
+    );
+  }
+  return (
+    <td className="admin-table__thumb-cell">
+      <span className="admin-table__thumb admin-table__thumb--empty" aria-hidden="true">
+        <i className="fas fa-image" />
+      </span>
+    </td>
+  );
+}
+
+export function AdminBadge({
+  children,
+  tone = "default",
+}: {
+  children: React.ReactNode;
+  tone?: "default" | "success" | "muted" | "warning";
+}) {
+  return <span className={`admin-table__badge admin-table__badge--${tone}`}>{children}</span>;
+}
+
+export function AdminTableActions({
+  onEdit,
+  onDelete,
+  editLabel = "Edit",
+}: {
+  onEdit: () => void;
+  onDelete: () => void;
+  editLabel?: string;
+}) {
+  return (
+    <td className="admin-table__actions">
+      <button type="button" className="btn btn-sm btn-orange" onClick={onEdit}>
+        <i className="fas fa-pen me-1" />
+        <span className="admin-table__action-label">{editLabel}</span>
+      </button>
+      <button type="button" className="btn btn-sm btn-outline-danger" onClick={onDelete} aria-label="Delete">
+        <i className="fas fa-trash" />
+      </button>
+    </td>
+  );
+}
+
+export function AdminCellText({
+  primary,
+  secondary,
+  truncate = true,
+}: {
+  primary: React.ReactNode;
+  secondary?: React.ReactNode;
+  truncate?: boolean;
+}) {
+  return (
+    <td className={`admin-table__text${truncate ? " admin-table__text--truncate" : ""}`}>
+      <strong>{primary}</strong>
+      {secondary != null && secondary !== "" && <span>{secondary}</span>}
+    </td>
   );
 }
