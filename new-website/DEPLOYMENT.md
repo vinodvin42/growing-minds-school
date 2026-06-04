@@ -44,9 +44,12 @@ git push -u origin main
 
 1. In your Vercel project → **Storage** tab
 2. Click **Create Database** → **Blob**
-3. Name it (e.g. `growing-minds-blob`)
-4. Connect to your project
-5. Vercel adds **`BLOB_READ_WRITE_TOKEN`** or **`BLOB_STORE_ID`** automatically
+3. Choose **Public** access (required — gallery images and CMS content must be viewable on the website)
+4. Name it (e.g. `growing-minds-blob`)
+5. Connect to your project
+6. Vercel adds **`BLOB_READ_WRITE_TOKEN`**, **`BLOB_STORE_ID`**, and related vars automatically
+
+> If you previously used a **Private** Blob store, create a new **Public** one instead. Private blobs cannot serve images on the public site. After switching stores, **redeploy** and **Save Changes** once in admin (or run `npm run seed`) — content from the old store is not copied automatically.
 
 ---
 
