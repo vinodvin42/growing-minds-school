@@ -1867,6 +1867,28 @@ h1, h2, h3, h4, h5, h6 {
     border-radius: var(--radius-md);
 }
 
+.student-password-field {
+    position: relative;
+}
+.student-password-field .form-control {
+    padding-right: 3rem;
+}
+.student-password-field__toggle {
+    position: absolute;
+    top: 50%;
+    right: 0.75rem;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    color: var(--text-muted, #64748b);
+    padding: 0.35rem 0.5rem;
+    line-height: 1;
+    cursor: pointer;
+}
+.student-password-field__toggle:hover {
+    color: var(--orange);
+}
+
 .student-saved-account {
     display: flex;
     align-items: center;

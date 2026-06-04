@@ -35,7 +35,7 @@ export async function PUT(request: Request) {
       return NextResponse.json({ success: false, message: "Duplicate student IDs are not allowed" }, { status: 400 });
     }
 
-    const existing = await getStudentsRegistry();
+    const existing = await getStudentsRegistry({ fresh: true });
     const merged = await mergeStudentInputs(existing.students, body.students);
     await saveStudentsRegistry({ students: merged });
 

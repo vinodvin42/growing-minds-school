@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-  clearSavedStudentAccount,
   getSavedStudentAccount,
   saveStudentAccount,
   type SavedStudentAccount,
@@ -21,8 +20,10 @@ function profileToSaved(student: StudentProfile): SavedStudentAccount {
 
 export default function StudentLoginForm() {
   const router = useRouter();
+  const errorRef = useRef<HTMLDivElement>(null);
   const [loginId, setLoginId] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [savedAccount, setSavedAccount] = useState<SavedStudentAccount | null>(null);
   const [useSavedAccount, setUseSavedAccount] = useState(true);
   const [error, setError] = useState("");
@@ -49,36 +50,63 @@ export default function StudentLoginForm() {
       .finally(() => setCheckingSession(false));
   }, [router]);
 
+  useEffect(() => {
+    if (error) {
+      errorRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  }, [error]);
+
   function switchAccount() {
     setUseSavedAccount(false);
     setLoginId("");
     setPassword("");
     setError("");
+    setShowPassword(false);
+  }
+
+  function showLoginError(message: string) {
+    setError(message);
+    if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+      navigator.vibrate(120);
+    }
   }
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
     setLoading(true);
+
+    const trimmedId = loginId.trim();
+    const trimmedPass = password.trim();
+
     try {
       const res = await fetch("/api/student/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "same-origin",
-        body: JSON.stringify({ loginId, password }),
+        body: JSON.stringify({ loginId: trimmedId, password: trimmedPass }),
       });
-      const data = await res.json();
-      if (!data.success) {
-        setError(data.message || "Login failed");
+
+      let data: { success?: boolean; message?: string; student?: StudentProfile };
+      try {
+        data = await res.json();
+      } catch {
+        showLoginError("Unable to sign in. Please check your connection and try again.");
         return;
       }
+
+      if (!data.success) {
+        showLoginError(data.message || "Invalid student ID or password");
+        return;
+      }
+
       if (data.student) {
         saveStudentAccount(profileToSaved(data.student));
       }
       router.replace("/student/dashboard");
       router.refresh();
     } catch {
-      setError("Unable to sign in. Please try again.");
+      showLoginError("Unable to sign in. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -132,7 +160,8 @@ export default function StudentLoginForm() {
 
             <form onSubmit={onSubmit} className="student-login-form">
               {error && (
-                <div className="alert alert-danger py-2 small" role="alert">
+                <div ref={errorRef} className="alert alert-danger py-2 small mb-3" role="alert">
+                  <i className="fas fa-exclamation-circle me-2" aria-hidden="true" />
                   {error}
                 </div>
               )}
@@ -148,6 +177,10 @@ export default function StudentLoginForm() {
                     value={loginId}
                     onChange={(e) => setLoginId(e.target.value)}
                     autoComplete="username"
+                    autoCapitalize="none"
+                    autoCorrect="off"
+                    spellCheck={false}
+                    inputMode="text"
                     placeholder="e.g. GMS2026001"
                     required
                   />
@@ -158,20 +191,42 @@ export default function StudentLoginForm() {
                 <label htmlFor="password" className="form-label fw-semibold">
                   Password
                 </label>
-                <input
-                  id="password"
-                  type="password"
-                  className="form-control form-control-lg"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  autoComplete="current-password"
-                  autoFocus={!!showSavedCard}
-                  required
-                />
+                <div className="student-password-field">
+                  <input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    className="form-control form-control-lg"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    autoComplete="current-password"
+                    autoCapitalize="none"
+                    autoCorrect="off"
+                    autoFocus={!!showSavedCard}
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="student-password-field__toggle"
+                    onClick={() => setShowPassword((v) => !v)}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    aria-pressed={showPassword}
+                  >
+                    <i className={`fas ${showPassword ? "fa-eye-slash" : "fa-eye"}`} aria-hidden="true" />
+                  </button>
+                </div>
               </div>
 
               <button type="submit" className="btn btn-orange btn-lg w-100" disabled={loading}>
-                {loading ? "Signing in…" : showSavedCard ? "Continue" : "Sign In"}
+                {loading ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" />
+                    Signing in…
+                  </>
+                ) : showSavedCard ? (
+                  "Continue"
+                ) : (
+                  "Sign In"
+                )}
               </button>
             </form>
 

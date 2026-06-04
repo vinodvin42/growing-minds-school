@@ -1,9 +1,9 @@
 import { unstable_noStore as noStore } from "next/cache";
-import { get, put } from "@vercel/blob";
+import { put } from "@vercel/blob";
+import { readBlobJsonText } from "@/lib/blob-read";
 import { hashPassword } from "@/lib/password";
 import {
   blobAccess,
-  blobReadAccessModes,
   blobStorageErrorMessage,
   isBlobStorageConfigured,
 } from "@/lib/blob-storage";
@@ -14,10 +14,15 @@ export const STUDENTS_BLOB_PATH = "students-registry.json";
 
 const DEFAULT_LOGIN_ID = DEFAULT_STUDENT_LOGIN_ID;
 const DEFAULT_PASSWORD = DEFAULT_STUDENT_PASSWORD;
-const MEMORY_TTL_MS = 2 * 60 * 1000;
+const MEMORY_TTL_MS = 30 * 1000;
 
 let memoryRegistry: StudentsRegistry | null = null;
 let memoryRegistryAt = 0;
+
+export function clearStudentsRegistryCache(): void {
+  memoryRegistry = null;
+  memoryRegistryAt = 0;
+}
 
 async function buildDefaultRegistry(): Promise<StudentsRegistry> {
   const now = new Date().toISOString();
@@ -42,27 +47,10 @@ async function buildDefaultRegistry(): Promise<StudentsRegistry> {
   };
 }
 
-async function readStudentsBlob(): Promise<string | null> {
-  for (const access of blobReadAccessModes()) {
-    try {
-      const result = await get(STUDENTS_BLOB_PATH, { access });
-      if (result?.statusCode === 200 && result.stream) {
-        return await new Response(result.stream).text();
-      }
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      if (!message.toLowerCase().includes("not found")) {
-        console.error(`Failed to load students registry (${access}):`, error);
-      }
-    }
-  }
-  return null;
-}
-
-export async function getStudentsRegistry(): Promise<StudentsRegistry> {
+export async function getStudentsRegistry(options?: { fresh?: boolean }): Promise<StudentsRegistry> {
   noStore();
 
-  if (memoryRegistry && Date.now() - memoryRegistryAt < MEMORY_TTL_MS) {
+  if (!options?.fresh && memoryRegistry && Date.now() - memoryRegistryAt < MEMORY_TTL_MS) {
     return memoryRegistry;
   }
 
@@ -71,7 +59,7 @@ export async function getStudentsRegistry(): Promise<StudentsRegistry> {
   }
 
   try {
-    const text = await readStudentsBlob();
+    const text = await readBlobJsonText(STUDENTS_BLOB_PATH);
     if (text === null) {
       return process.env.NODE_ENV === "development" ? buildDefaultRegistry() : { students: [] };
     }
@@ -110,12 +98,12 @@ export async function saveStudentsRegistry(registry: StudentsRegistry): Promise<
 
 export async function findStudentByLoginId(loginId: string): Promise<StudentRecord | null> {
   const normalized = loginId.trim().toLowerCase();
-  const { students } = await getStudentsRegistry();
+  const { students } = await getStudentsRegistry({ fresh: true });
   return students.find((s) => s.loginId.trim().toLowerCase() === normalized) ?? null;
 }
 
 export async function findStudentById(id: string): Promise<StudentRecord | null> {
-  const { students } = await getStudentsRegistry();
+  const { students } = await getStudentsRegistry({ fresh: true });
   return students.find((s) => s.id === id) ?? null;
 }
 
@@ -123,17 +111,22 @@ function uid() {
   return `stu_${Math.random().toString(36).slice(2, 11)}`;
 }
 
+function isBcryptHash(hash: string): boolean {
+  return /^\$2[aby]\$\d{2}\$/.test(hash);
+}
+
 export async function mergeStudentInputs(
   existing: StudentRecord[],
   inputs: StudentAdminInput[]
 ): Promise<StudentRecord[]> {
   const byId = new Map(existing.map((s) => [s.id, s]));
+  const byLoginId = new Map(existing.map((s) => [s.loginId.trim().toLowerCase(), s]));
   const now = new Date().toISOString();
   const next: StudentRecord[] = [];
 
   for (const input of inputs) {
     const id = input.id || uid();
-    const prev = input.id ? byId.get(input.id) : undefined;
+    const prev = (input.id ? byId.get(input.id) : undefined) ?? byLoginId.get(input.loginId.trim().toLowerCase());
     const loginId = input.loginId.trim();
 
     if (!loginId || !input.name.trim()) continue;
@@ -141,12 +134,12 @@ export async function mergeStudentInputs(
     let passwordHash = prev?.passwordHash ?? "";
     if (input.password?.trim()) {
       passwordHash = await hashPassword(input.password.trim());
-    } else if (!passwordHash) {
+    } else if (!passwordHash || !isBcryptHash(passwordHash)) {
       passwordHash = await hashPassword(DEFAULT_PASSWORD);
     }
 
     next.push({
-      id,
+      id: prev?.id ?? id,
       loginId,
       passwordHash,
       name: input.name.trim(),

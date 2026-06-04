@@ -7,19 +7,27 @@ import { toStudentProfile } from "@/types/student";
 export async function POST(request: Request) {
   try {
     const { loginId, password } = (await request.json()) as { loginId?: string; password?: string };
+    const id = loginId?.trim() ?? "";
+    const pass = password?.trim() ?? "";
 
-    if (!loginId?.trim() || !password) {
+    if (!id || !pass) {
       return NextResponse.json({ success: false, message: "Student ID and password are required" }, { status: 400 });
     }
 
-    const student = await findStudentByLoginId(loginId);
+    const student = await findStudentByLoginId(id);
     if (!student || !student.active) {
-      return NextResponse.json({ success: false, message: "Invalid student ID or password" }, { status: 401 });
+      return NextResponse.json(
+        { success: false, message: "Invalid student ID or password. Check with your teacher if this is a new account." },
+        { status: 401 }
+      );
     }
 
-    const valid = await verifyPassword(password, student.passwordHash);
+    const valid = await verifyPassword(pass, student.passwordHash);
     if (!valid) {
-      return NextResponse.json({ success: false, message: "Invalid student ID or password" }, { status: 401 });
+      return NextResponse.json(
+        { success: false, message: "Invalid student ID or password. Check caps lock and try again." },
+        { status: 401 }
+      );
     }
 
     const token = await createStudentSession(student.id, student.loginId);
@@ -38,6 +46,6 @@ export async function POST(request: Request) {
     return response;
   } catch (err) {
     console.error("Student login error:", err);
-    return NextResponse.json({ success: false, message: "Login failed" }, { status: 500 });
+    return NextResponse.json({ success: false, message: "Login failed. Please try again." }, { status: 500 });
   }
 }
