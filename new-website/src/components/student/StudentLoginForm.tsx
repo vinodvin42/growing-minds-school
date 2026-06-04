@@ -8,6 +8,7 @@ import {
   type SavedStudentAccount,
 } from "@/lib/student-account-client";
 import type { StudentProfile } from "@/types/student";
+import StudentBrand from "@/components/student/StudentBrand";
 
 function profileToSaved(student: StudentProfile): SavedStudentAccount {
   return {
@@ -125,11 +126,13 @@ export default function StudentLoginForm() {
 
   return (
     <div className="student-login-page">
+      <div className="student-login-page__banner" aria-hidden="true">
+        <div className="student-login-page__banner-pattern" />
+        <div className="student-login-page__banner-rainbow" />
+      </div>
       <div className="student-login-card">
         <div className="student-login-card__head">
-          <div className="student-login-card__logo" aria-hidden="true">
-            🎓
-          </div>
+          <StudentBrand size="lg" centered showTagline />
           <h1 className="student-login-card__title">{showSavedCard ? "Welcome back" : "Sign in"}</h1>
           <p className="student-login-card__subtitle">
             {showSavedCard ? "Enter your password to continue" : "Use your student ID and password"}

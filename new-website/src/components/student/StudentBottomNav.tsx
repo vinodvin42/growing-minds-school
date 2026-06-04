@@ -15,6 +15,7 @@ export default function StudentBottomNav() {
 
   return (
     <nav className="student-bottom-nav" aria-label="Student app navigation">
+      <div className="student-bottom-nav__rainbow" aria-hidden="true" />
       <div className="student-bottom-nav__inner">
         {TABS.map((tab) => {
           const active = pathname === tab.href || pathname?.startsWith(`${tab.href}/`);

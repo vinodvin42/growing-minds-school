@@ -24,6 +24,7 @@
     /* UI neutrals (warm, logo-friendly) */
     --ink: #2D4A22;
     --ink-light: #4A6741;
+    --ink-muted: #6B7A62;
     --navy: var(--green-darker);
     --navy-light: var(--green-dark);
     --slate: #5C6B52;
@@ -1895,16 +1896,125 @@ h1, h2, h3, h4, h5, h6 {
     background: var(--orange-light);
 }
 
+/* Shared school brand block */
+.student-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    min-width: 0;
+}
+.student-brand--centered {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+}
+.student-brand__logo {
+    border-radius: 12px;
+    object-fit: cover;
+    flex-shrink: 0;
+    box-shadow: 0 4px 14px rgba(45, 74, 34, 0.15);
+}
+.student-brand--sm .student-brand__logo {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+}
+.student-brand--md .student-brand__logo {
+    width: 52px;
+    height: 52px;
+}
+.student-brand--lg .student-brand__logo {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+}
+.student-brand__text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+    min-width: 0;
+}
+.student-brand__name {
+    font-family: var(--font-display);
+    font-weight: 800;
+    color: var(--green-darker);
+    letter-spacing: -0.02em;
+}
+.student-brand--sm .student-brand__name {
+    font-size: 0.9375rem;
+}
+.student-brand--md .student-brand__name {
+    font-size: 1.125rem;
+}
+.student-brand--lg .student-brand__name {
+    font-size: 1.35rem;
+}
+.student-brand__tagline {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--ink-muted);
+}
+.student-brand--lg .student-brand__tagline {
+    font-size: 0.8125rem;
+}
+.student-brand--light .student-brand__name,
+.student-brand--light .student-brand__tagline {
+    color: white;
+}
+.student-brand--light .student-brand__tagline {
+    opacity: 0.85;
+}
+.student-brand--light .student-brand__logo {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+.student-brand--centered .student-brand__text {
+    align-items: center;
+}
+
 /* Login */
 .student-login-page {
     flex: 1;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 1.25rem 1rem 2rem;
+    padding: 0 1rem 2rem;
     max-width: 480px;
     margin: 0 auto;
     width: 100%;
+    position: relative;
+}
+.student-login-page__banner {
+    width: 100%;
+    height: 88px;
+    background: linear-gradient(135deg, var(--green-darker) 0%, var(--green-dark) 55%, var(--lime-dark) 100%);
+    border-radius: 0 0 24px 24px;
+    margin-bottom: -2.5rem;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+.student-login-page__banner-pattern {
+    position: absolute;
+    inset: 0;
+    opacity: 0.05;
+    background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0);
+    background-size: 28px 28px;
+}
+.student-login-page__banner-rainbow {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3px;
+    background: linear-gradient(
+        90deg,
+        var(--lime) 0%,
+        var(--yellow) 25%,
+        var(--orange) 50%,
+        var(--blue) 75%,
+        var(--purple) 100%
+    );
 }
 .student-login-page--loading {
     flex-direction: column;
@@ -1922,15 +2032,15 @@ h1, h2, h3, h4, h5, h6 {
     padding: 1.5rem 1.25rem;
     box-shadow: 0 12px 40px rgba(45, 74, 34, 0.1);
     border: 1px solid rgba(45, 74, 34, 0.08);
+    position: relative;
+    z-index: 1;
 }
 .student-login-card__head {
     text-align: center;
     margin-bottom: 1.25rem;
 }
-.student-login-card__logo {
-    font-size: 2.25rem;
-    line-height: 1;
-    margin-bottom: 0.65rem;
+.student-login-card__head .student-brand {
+    margin-bottom: 0.85rem;
 }
 .student-login-card__title {
     margin: 0 0 0.35rem;
@@ -2084,15 +2194,47 @@ h1, h2, h3, h4, h5, h6 {
     margin: 0 auto;
     width: 100%;
 }
-.student-app__topbar {
+.student-app__header {
+    flex-shrink: 0;
+}
+.student-app__header-bg {
+    position: relative;
+    background: linear-gradient(135deg, var(--green-darker) 0%, var(--green-dark) 55%, var(--lime-dark) 100%);
+    overflow: hidden;
+}
+.student-app__header-pattern {
+    position: absolute;
+    inset: 0;
+    opacity: 0.05;
+    background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0);
+    background-size: 28px 28px;
+    pointer-events: none;
+}
+.student-app__header-top {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 0.75rem;
-    padding: 0.85rem 1rem;
-    background: white;
-    border-bottom: 1px solid rgba(45, 74, 34, 0.08);
-    flex-shrink: 0;
+    padding: 0.75rem 1rem 0.5rem;
+}
+.student-app__rainbow {
+    height: 3px;
+    background: linear-gradient(
+        90deg,
+        var(--lime) 0%,
+        var(--yellow) 25%,
+        var(--orange) 50%,
+        var(--blue) 75%,
+        var(--purple) 100%
+    );
+}
+.student-app__welcome {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem 1rem;
 }
 .student-app__user {
     display: flex;
@@ -2101,8 +2243,8 @@ h1, h2, h3, h4, h5, h6 {
     min-width: 0;
 }
 .student-app__avatar {
-    width: 42px;
-    height: 42px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     display: inline-flex;
     align-items: center;
@@ -2110,8 +2252,9 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 800;
     font-size: 1.05rem;
     color: var(--green-darker);
-    background: linear-gradient(135deg, var(--orange-light), var(--lime-light));
+    background: white;
     flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 .student-app__user-text {
     display: flex;
@@ -2120,9 +2263,10 @@ h1, h2, h3, h4, h5, h6 {
     line-height: 1.25;
 }
 .student-app__greeting {
-    font-size: 0.9375rem;
+    font-family: var(--font-display);
+    font-size: 1.05rem;
     font-weight: 800;
-    color: var(--green-darker);
+    color: white;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -2130,24 +2274,24 @@ h1, h2, h3, h4, h5, h6 {
 .student-app__meta {
     font-size: 0.75rem;
     font-weight: 600;
-    color: var(--orange-dark);
+    color: rgba(255, 255, 255, 0.82);
 }
 .student-app__logout {
-    width: 44px;
-    height: 44px;
+    width: 40px;
+    height: 40px;
     border: none;
-    border-radius: 12px;
-    background: var(--surface);
-    color: var(--ink-muted);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     flex-shrink: 0;
+    transition: background 0.15s ease;
 }
 .student-app__logout:hover {
-    background: #fef2f2;
-    color: #dc2626;
+    background: rgba(255, 255, 255, 0.28);
 }
 .student-app__body {
     flex: 1;
@@ -2167,6 +2311,9 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 1.35rem;
     font-weight: 800;
     color: var(--green-darker);
+    padding-left: 0.65rem;
+    border-left: 3px solid transparent;
+    border-image: linear-gradient(180deg, var(--orange), var(--lime)) 1;
 }
 .student-page-header__subtitle {
     margin: 0;
@@ -2306,6 +2453,17 @@ a.student-quick-card:active {
     box-shadow: 0 -4px 24px rgba(45, 74, 34, 0.08);
     padding-bottom: env(safe-area-inset-bottom, 0px);
 }
+.student-bottom-nav__rainbow {
+    height: 3px;
+    background: linear-gradient(
+        90deg,
+        var(--lime) 0%,
+        var(--yellow) 25%,
+        var(--orange) 50%,
+        var(--blue) 75%,
+        var(--purple) 100%
+    );
+}
 .student-bottom-nav__inner {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -2351,6 +2509,7 @@ a.student-quick-card:active {
     padding: 1rem 1.1rem;
     box-shadow: var(--shadow-sm);
     border: 1px solid rgba(45, 74, 34, 0.08);
+    border-top: 3px solid var(--orange);
 }
 .portal-feed-card__head {
     margin-bottom: 0.5rem;

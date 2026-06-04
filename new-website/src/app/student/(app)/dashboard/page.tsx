@@ -19,8 +19,8 @@ export default async function StudentDashboardPage() {
   return (
     <div className="student-page">
       <StudentPageHeader
-        title="Dashboard"
-        subtitle={`${student.standard}${student.section ? ` · Section ${student.section}` : ""}${student.rollNumber ? ` · Roll ${student.rollNumber}` : ""}`}
+        title="Your updates"
+        subtitle="Homework, messages, and school notices in one place"
       />
 
       <div className="student-quick-grid">
