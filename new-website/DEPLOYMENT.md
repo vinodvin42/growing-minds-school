@@ -31,8 +31,11 @@ git push -u origin main
 
 1. Go to [vercel.com/new](https://vercel.com/new)
 2. Import your GitHub repository
-3. Set **Root Directory** to `new-website`
-4. Framework Preset: **Next.js** (auto-detected)
+3. **Important:** Set **Root Directory** to `new-website`  
+   - Click **Edit** next to Root Directory  
+   - Enter `new-website` and confirm  
+   - Without this, the site will show **404: NOT_FOUND** because the Next.js app is not at the repo root
+4. Framework Preset: **Next.js** (auto-detected after root is set)
 5. Do **not** deploy yet — add env vars first
 
 ---
