@@ -274,16 +274,9 @@ export default function StudentFeesEditor() {
                   <AdminTableActions
                     onEdit={() => openEditor(student.id)}
                     onDelete={() => patchAccount(student.id, emptyFeeAccount(student.id, academicYear))}
+                    onReceipt={() => openReceiptInNewTab(adminFeeStatementReceiptUrl(student.id))}
                     editLabel="Manage"
                   />
-                  <button
-                    type="button"
-                    className="btn btn-sm btn-outline-secondary ms-1"
-                    title="Download fee statement"
-                    onClick={() => openReceiptInNewTab(adminFeeStatementReceiptUrl(student.id))}
-                  >
-                    <i className="fas fa-file-pdf" aria-hidden="true" />
-                  </button>
                 </tr>
               ))}
             </tbody>
@@ -312,28 +305,28 @@ export default function StudentFeesEditor() {
         {editing && editingStudent && (
           <div className="row g-3">
             <div className="col-12">
-              <div className="admin-fee-summary">
-                <div>
-                  <span className="admin-fee-summary__label">Total due</span>
-                  <strong>{formatInr(editingDue)}</strong>
+              <div className="admin-fee-toolbar">
+                <div className="admin-fee-summary">
+                  <div>
+                    <span className="admin-fee-summary__label">Total due</span>
+                    <strong>{formatInr(editingDue)}</strong>
+                  </div>
+                  <div>
+                    <span className="admin-fee-summary__label">Paid</span>
+                    <strong>{formatInr(editingPaid)}</strong>
+                  </div>
+                  <div>
+                    <span className="admin-fee-summary__label">Balance</span>
+                    <strong className="text-orange">{formatInr(editingBalance)}</strong>
+                  </div>
                 </div>
-                <div>
-                  <span className="admin-fee-summary__label">Paid</span>
-                  <strong>{formatInr(editingPaid)}</strong>
-                </div>
-                <div>
-                  <span className="admin-fee-summary__label">Balance</span>
-                  <strong className="text-orange">{formatInr(editingBalance)}</strong>
-                </div>
-              </div>
-              <div className="mt-2">
                 <button
                   type="button"
-                  className="btn btn-sm btn-outline-secondary"
+                  className="btn btn-sm btn-outline-secondary admin-fee-toolbar__statement"
                   onClick={() => openReceiptInNewTab(adminFeeStatementReceiptUrl(editing.studentId))}
                 >
                   <i className="fas fa-file-pdf me-1" aria-hidden="true" />
-                  Download fee statement
+                  Fee statement
                 </button>
               </div>
             </div>
@@ -349,17 +342,26 @@ export default function StudentFeesEditor() {
               {editing.lineItems.length === 0 ? (
                 <p className="small text-muted mb-0">No fee items yet. Add tuition, transport, etc.</p>
               ) : (
-                editing.lineItems.map((item) => (
-                  <div key={item.id} className="admin-fee-row row g-2 mb-2">
-                    <div className="col-md-4">
+                <>
+                  <div className="admin-fee-row admin-fee-row--head admin-fee-row--items" aria-hidden="true">
+                    <span>Fee name</span>
+                    <span>Category</span>
+                    <span>Amount</span>
+                    <span>Due date</span>
+                    <span />
+                  </div>
+                  {editing.lineItems.map((item) => (
+                  <div key={item.id} className="admin-fee-row admin-fee-row--items">
+                    <div className="admin-fee-row__field">
                       <input
                         className="form-control form-control-sm"
                         value={item.label}
                         onChange={(e) => patchLineItem(editing.studentId, item.id, { label: e.target.value })}
                         placeholder="Fee name"
+                        aria-label="Fee name"
                       />
                     </div>
-                    <div className="col-md-3">
+                    <div className="admin-fee-row__field">
                       <select
                         className="form-select form-select-sm"
                         value={item.category}
@@ -368,6 +370,7 @@ export default function StudentFeesEditor() {
                             category: e.target.value as FeeLineItem["category"],
                           })
                         }
+                        aria-label="Fee category"
                       >
                         {FEE_CATEGORIES.map((c) => (
                           <option key={c.value} value={c.value}>
@@ -376,7 +379,7 @@ export default function StudentFeesEditor() {
                         ))}
                       </select>
                     </div>
-                    <div className="col-md-2">
+                    <div className="admin-fee-row__field admin-fee-row__field--amount">
                       <input
                         type="number"
                         min={0}
@@ -384,20 +387,22 @@ export default function StudentFeesEditor() {
                         value={item.amount || ""}
                         onChange={(e) => patchLineItem(editing.studentId, item.id, { amount: parseAmount(e.target.value) })}
                         placeholder="₹"
+                        aria-label="Fee amount"
                       />
                     </div>
-                    <div className="col-md-2">
+                    <div className="admin-fee-row__field admin-fee-row__field--date">
                       <input
                         type="date"
                         className="form-control form-control-sm"
                         value={item.dueDate ?? ""}
                         onChange={(e) => patchLineItem(editing.studentId, item.id, { dueDate: e.target.value })}
+                        aria-label="Due date"
                       />
                     </div>
-                    <div className="col-md-1 d-flex align-items-center">
+                    <div className="admin-fee-row__actions">
                       <button
                         type="button"
-                        className="btn btn-sm btn-link text-danger p-0"
+                        className="btn btn-sm btn-outline-danger admin-fee-row__icon-btn"
                         onClick={() => removeLineItem(editing.studentId, item.id)}
                         aria-label="Remove fee item"
                       >
@@ -405,7 +410,8 @@ export default function StudentFeesEditor() {
                       </button>
                     </div>
                   </div>
-                ))
+                  ))}
+                </>
               )}
             </div>
 
@@ -420,17 +426,26 @@ export default function StudentFeesEditor() {
               {editing.payments.length === 0 ? (
                 <p className="small text-muted mb-0">Record cash, UPI, or bank payments here.</p>
               ) : (
-                editing.payments.map((payment) => (
-                  <div key={payment.id} className="admin-fee-row row g-2 mb-2">
-                    <div className="col-md-3">
+                <>
+                  <div className="admin-fee-row admin-fee-row--head admin-fee-row--payments" aria-hidden="true">
+                    <span>Date</span>
+                    <span>Amount</span>
+                    <span>Mode</span>
+                    <span>Reference</span>
+                    <span />
+                  </div>
+                  {editing.payments.map((payment) => (
+                  <div key={payment.id} className="admin-fee-row admin-fee-row--payments">
+                    <div className="admin-fee-row__field admin-fee-row__field--date">
                       <input
                         type="date"
                         className="form-control form-control-sm"
                         value={payment.date}
                         onChange={(e) => patchPayment(editing.studentId, payment.id, { date: e.target.value })}
+                        aria-label="Payment date"
                       />
                     </div>
-                    <div className="col-md-2">
+                    <div className="admin-fee-row__field admin-fee-row__field--amount">
                       <input
                         type="number"
                         min={0}
@@ -438,9 +453,10 @@ export default function StudentFeesEditor() {
                         value={payment.amount || ""}
                         onChange={(e) => patchPayment(editing.studentId, payment.id, { amount: parseAmount(e.target.value) })}
                         placeholder="₹"
+                        aria-label="Payment amount"
                       />
                     </div>
-                    <div className="col-md-3">
+                    <div className="admin-fee-row__field">
                       <select
                         className="form-select form-select-sm"
                         value={payment.mode}
@@ -449,6 +465,7 @@ export default function StudentFeesEditor() {
                             mode: e.target.value as FeePayment["mode"],
                           })
                         }
+                        aria-label="Payment mode"
                       >
                         {FEE_PAYMENT_MODES.map((m) => (
                           <option key={m.value} value={m.value}>
@@ -457,31 +474,32 @@ export default function StudentFeesEditor() {
                         ))}
                       </select>
                     </div>
-                    <div className="col-md-3">
+                    <div className="admin-fee-row__field">
                       <input
                         className="form-control form-control-sm"
                         value={payment.reference ?? ""}
                         onChange={(e) => patchPayment(editing.studentId, payment.id, { reference: e.target.value })}
                         placeholder="Receipt / UPI ref"
+                        aria-label="Payment reference"
                       />
                     </div>
-                    <div className="col-md-2 d-flex align-items-center gap-2">
+                    <div className="admin-fee-row__actions">
                       {payment.amount > 0 && (
                         <button
                           type="button"
-                          className="btn btn-sm btn-link text-secondary p-0"
+                          className="btn btn-sm btn-outline-secondary admin-fee-row__receipt-btn"
                           onClick={() =>
                             openReceiptInNewTab(adminPaymentReceiptUrl(editing.studentId, payment.id))
                           }
                           title="Download payment receipt"
-                          aria-label="Download payment receipt"
                         >
                           <i className="fas fa-file-pdf" aria-hidden="true" />
+                          <span>Receipt</span>
                         </button>
                       )}
                       <button
                         type="button"
-                        className="btn btn-sm btn-link text-danger p-0"
+                        className="btn btn-sm btn-outline-danger admin-fee-row__icon-btn"
                         onClick={() => removePayment(editing.studentId, payment.id)}
                         aria-label="Remove payment"
                       >
@@ -489,7 +507,8 @@ export default function StudentFeesEditor() {
                       </button>
                     </div>
                   </div>
-                ))
+                  ))}
+                </>
               )}
             </div>
 

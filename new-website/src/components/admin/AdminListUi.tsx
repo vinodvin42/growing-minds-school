@@ -209,11 +209,15 @@ export function AdminBadge({
 export function AdminTableActions({
   onEdit,
   onDelete,
+  onReceipt,
   editLabel = "Edit",
+  receiptTitle = "Download fee statement",
 }: {
   onEdit: () => void;
   onDelete: () => void;
+  onReceipt?: () => void;
   editLabel?: string;
+  receiptTitle?: string;
 }) {
   return (
     <td className="admin-table__actions">
@@ -221,6 +225,17 @@ export function AdminTableActions({
         <i className="fas fa-pen me-1" />
         <span className="admin-table__action-label">{editLabel}</span>
       </button>
+      {onReceipt && (
+        <button
+          type="button"
+          className="btn btn-sm btn-outline-secondary"
+          onClick={onReceipt}
+          title={receiptTitle}
+          aria-label={receiptTitle}
+        >
+          <i className="fas fa-file-pdf" aria-hidden="true" />
+        </button>
+      )}
       <button type="button" className="btn btn-sm btn-outline-danger" onClick={onDelete} aria-label="Delete">
         <i className="fas fa-trash" />
       </button>

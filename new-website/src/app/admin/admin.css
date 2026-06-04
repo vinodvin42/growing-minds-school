@@ -927,11 +927,115 @@
     text-transform: uppercase;
     letter-spacing: 0.04em;
 }
+.admin-fee-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 0.75rem;
+}
+.admin-fee-toolbar .admin-fee-summary {
+    flex: 1 1 16rem;
+    margin: 0;
+}
+.admin-fee-toolbar__statement {
+    align-self: center;
+    white-space: nowrap;
+    border-radius: 10px;
+    font-weight: 600;
+}
 .admin-fee-row {
     padding: 0.65rem 0.75rem;
     background: var(--surface);
     border-radius: 10px;
     border: 1px solid rgba(45, 74, 34, 0.08);
+    margin-bottom: 0.5rem;
+}
+.admin-fee-row--items {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.1fr) minmax(0, 0.75fr) minmax(0, 0.95fr) auto;
+    gap: 0.5rem;
+    align-items: center;
+}
+.admin-fee-row--payments {
+    display: grid;
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 0.75fr) minmax(0, 0.9fr) minmax(0, 1.2fr) auto;
+    gap: 0.5rem;
+    align-items: center;
+}
+.admin-fee-row--head {
+    padding: 0.35rem 0.75rem;
+    margin-bottom: 0.35rem;
+    background: transparent;
+    border: none;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--slate);
+}
+.admin-fee-row--head span:last-child {
+    justify-self: end;
+}
+.admin-fee-row__field {
+    min-width: 0;
+}
+.admin-fee-row__field--amount {
+    max-width: 7rem;
+}
+.admin-fee-row__field--date {
+    max-width: 10rem;
+}
+.admin-fee-row__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.35rem;
+    flex-shrink: 0;
+}
+.admin-fee-row__receipt-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.25rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+.admin-fee-row__icon-btn {
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+@media (max-width: 767px) {
+    .admin-fee-row--head {
+        display: none;
+    }
+    .admin-fee-row--items,
+    .admin-fee-row--payments {
+        grid-template-columns: 1fr 1fr;
+    }
+    .admin-fee-row--items .admin-fee-row__field:first-child,
+    .admin-fee-row--payments .admin-fee-row__field:nth-child(4) {
+        grid-column: 1 / -1;
+    }
+    .admin-fee-row__actions {
+        grid-column: 1 / -1;
+        justify-content: flex-start;
+        padding-top: 0.15rem;
+    }
+    .admin-fee-row__field--amount,
+    .admin-fee-row__field--date {
+        max-width: none;
+    }
+    .admin-fee-toolbar__statement {
+        width: 100%;
+    }
 }
 .admin-field { margin-bottom: 1rem; }
 .admin-field__label {

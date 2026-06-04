@@ -8,9 +8,9 @@ import type { FeeReceiptStudent } from "@/lib/fee-receipt";
 /** Inline logo so receipts render in print/PDF even without network. */
 export async function getEmbeddedReceiptLogoUrl(): Promise<string | undefined> {
   try {
-    const filePath = path.join(process.cwd(), "public", images.logo.replace(/^\//, ""));
+    const filePath = path.join(process.cwd(), "public", images.receiptLogo.replace(/^\//, ""));
     const buf = await fs.readFile(filePath);
-    const ext = images.logo.endsWith(".png") ? "png" : "jpeg";
+    const ext = images.receiptLogo.endsWith(".png") ? "png" : "jpeg";
     return `data:image/${ext};base64,${buf.toString("base64")}`;
   } catch {
     return undefined;

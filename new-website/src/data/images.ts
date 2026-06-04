@@ -2,6 +2,8 @@
 export const images = {
   logo: "/assets/images/logo-full.jpg",
   logoOriginal: "/assets/images/logo.jpg",
+  /** Compact logo for receipts, favicons, and PWA icons */
+  receiptLogo: "/assets/images/logo-100.jpg",
   favicon: "/assets/images/logo-100.jpg",
   schoolBuilding: "/assets/images/school-building-1.jpeg",
   schoolActivity: "/assets/images/school-activity-1.jpeg",

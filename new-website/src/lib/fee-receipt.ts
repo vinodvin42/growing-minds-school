@@ -53,7 +53,7 @@ function escapeHtml(text: string): string {
 function resolveLogoUrl(options?: FeeReceiptBuildOptions): string {
   if (options?.logoUrl) return options.logoUrl;
   const origin = (options?.baseUrl || process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, "");
-  return `${origin}${images.logo}`;
+  return `${origin}${images.receiptLogo}`;
 }
 
 function studentDetailsGridHtml(
