@@ -61,6 +61,8 @@ function mergeWithDefaults(data: Partial<SiteContent>): SiteContent {
     teachers: data.teachers ?? defaultContent.teachers,
     testimonials: data.testimonials ?? defaultContent.testimonials,
     gallery: data.gallery ?? defaultContent.gallery,
+    activitiesSection: { ...defaultContent.activitiesSection, ...data.activitiesSection },
+    activities: data.activities ?? defaultContent.activities,
     videos: data.videos ?? defaultContent.videos,
     news: data.news ?? defaultContent.news,
     newsAnnouncement: { ...defaultContent.newsAnnouncement, ...data.newsAnnouncement },

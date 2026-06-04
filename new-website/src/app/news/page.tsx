@@ -2,7 +2,6 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import SiteLayout from "@/components/SiteLayout";
 import PageHero from "@/components/PageHero";
-import SectionHeader from "@/components/SectionHeader";
 import { getSiteContent } from "@/lib/content";
 
 export const metadata: Metadata = {
@@ -18,7 +17,7 @@ export default async function NewsPage() {
     <SiteLayout activePath="/news">
       <PageHero
         title="News & Events"
-        subtitle="Stay updated with the latest announcements and happenings"
+        subtitle="Latest announcements and updates"
         breadcrumb={[{ label: "Home", href: "/" }, { label: "News" }]}
       />
 
@@ -47,14 +46,8 @@ export default async function NewsPage() {
         </div>
       </section>
 
-      <section className="py-5">
+      <section className="py-4">
         <div className="container">
-          <SectionHeader
-            eyebrow="Updates"
-            title="Latest"
-            highlight="News"
-            subtitle="Recent announcements from our school community"
-          />
           <div className="row g-4">
             {news.map((item) => (
               <div key={item.id} className="col-md-6 col-lg-4">

@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = process.env.NEXT_PUBLIC_SITE_URL || "https://growingminds.vercel.app";
-  const pages = ["", "/about", "/admissions", "/news", "/gallery", "/videos", "/contact"];
+  const pages = ["", "/about", "/admissions", "/news", "/gallery", "/activities", "/videos", "/contact", "/install-app"];
 
   return pages.map((path) => ({
     url: `${base}${path}`,

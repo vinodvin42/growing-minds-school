@@ -7,13 +7,15 @@ import StatsBar from "@/components/StatsBar";
 import JsonLd from "@/components/JsonLd";
 import { getSiteContent } from "@/lib/content";
 import { filterLogoFromGallery, filterLogoFromSlides } from "@/lib/media";
+import { activityEmoji, pickHomepageActivities } from "@/lib/activities";
 import { getSchoolJsonLd } from "@/lib/seo";
 
 export default async function HomePage() {
   const content = await getSiteContent();
-  const { settings, homepage, carousel, programs, enrollmentSteps, teachers, testimonials, gallery, videos } = content;
+  const { settings, homepage, carousel, programs, enrollmentSteps, teachers, testimonials, gallery, activities, activitiesSection, videos } = content;
   const bannerSlides = filterLogoFromSlides(carousel);
   const galleryPhotos = filterLogoFromGallery(gallery);
+  const activityPreview = pickHomepageActivities(activities);
 
   return (
     <SiteLayout activePath="/">
@@ -154,6 +156,57 @@ export default async function HomePage() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section className="activities-section">
+        <div className="container">
+          <SectionHeader
+            eyebrow={activitiesSection.eyebrow}
+            title={activitiesSection.title}
+            highlight={activitiesSection.highlight}
+            subtitle={activitiesSection.subtitle}
+          />
+          {activityPreview.length === 0 ? (
+            <div className="text-center text-muted py-4">
+              <p className="mb-0">Student activity highlights coming soon!</p>
+            </div>
+          ) : (
+            <div className="row g-4">
+              {activityPreview.map((activity) => (
+                <div key={activity.id} className="col-md-4">
+                  <article className="activity-preview-card h-100">
+                    <div className="activity-preview-card__image-wrap">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={activity.imageUrl} alt={activity.alt} className="activity-preview-card__image" />
+                      <span className="activity-preview-card__emoji" aria-hidden="true">
+                        {activityEmoji(activity.category)}
+                      </span>
+                    </div>
+                    <div className="activity-preview-card__body">
+                      <span className="activity-preview-card__badge">{activity.category}</span>
+                      <h3 className="activity-preview-card__title">{activity.title}</h3>
+                      <p className="activity-preview-card__desc">{activity.description}</p>
+                      {activity.dateLabel && (
+                        <p className="activity-preview-card__date mb-0">
+                          <i className="fas fa-calendar-alt me-2" />
+                          {activity.dateLabel}
+                        </p>
+                      )}
+                    </div>
+                  </article>
+                </div>
+              ))}
+            </div>
+          )}
+          {activities.some((a) => a.imageUrl) && (
+            <div className="text-center mt-4">
+              <Link href="/activities" className="btn btn-orange">
+                Explore All Activities
+                <i className="fas fa-arrow-right ms-2" />
+              </Link>
+            </div>
+          )}
         </div>
       </section>
 

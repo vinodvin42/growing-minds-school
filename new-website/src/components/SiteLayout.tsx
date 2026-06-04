@@ -2,6 +2,7 @@ import Script from "next/script";
 import TopBar from "@/components/TopBar";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import FloatingElements from "@/components/FloatingElements";
 import { getSiteContent } from "@/lib/content";
 
 export default async function SiteLayout({
@@ -15,6 +16,7 @@ export default async function SiteLayout({
 
   return (
     <>
+      <FloatingElements />
       <TopBar settings={content.settings} />
       <Navbar settings={content.settings} activePath={activePath} />
       <main className="flex-grow-1">{children}</main>

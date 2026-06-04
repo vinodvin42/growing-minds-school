@@ -1,15 +1,19 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { images } from "@/data/images";
 import { getDefaultOpenGraph } from "@/lib/seo";
+import { PWA } from "@/lib/pwa";
+import AppProviders from "@/components/AppProviders";
+import PwaInstallHint from "@/components/PwaInstallHint";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://growingminds.vercel.app"),
+  applicationName: PWA.shortName,
   title: {
     default: "Growing Minds English School | Best Preschool & Primary School in Malad West Mumbai",
     template: "%s | Growing Minds English School",
   },
-  description:
-    "Growing Minds English School - Quality English-medium education from Nursery to 8th Standard in Malad West, Mumbai. Admissions Open for 2026-2027.",
+  description: PWA.description,
   keywords: [
     "growing minds english school",
     "best school malad west",
@@ -18,6 +22,15 @@ export const metadata: Metadata = {
     "english medium school mumbai",
   ],
   robots: { index: true, follow: true },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: PWA.shortName,
+  },
+  formatDetection: {
+    telephone: false,
+  },
+  manifest: "/manifest.webmanifest",
   openGraph: {
     ...getDefaultOpenGraph(),
     title: "Growing Minds English School | Best Preschool & Primary School in Mumbai",
@@ -28,13 +41,20 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Growing Minds English School",
     description: "Quality English-medium education from Nursery to 8th Standard. Admissions Open 2026-2027.",
-    images: ["/assets/images/logo.jpg"],
+    images: [images.logoOriginal],
   },
   icons: {
-    icon: "/assets/images/logo-100.jpg",
-    shortcut: "/assets/images/logo-100.jpg",
-    apple: "/assets/images/logo-100.jpg",
+    icon: images.favicon,
+    shortcut: images.favicon,
+    apple: "/icons/icon-192.png",
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: PWA.themeColor,
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
@@ -51,7 +71,12 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         />
         <link rel="stylesheet" href="/assets/css/style.css" />
       </head>
-      <body className="min-h-screen d-flex flex-column">{children}</body>
+      <body className="min-h-screen d-flex flex-column">
+        <AppProviders>
+          {children}
+          <PwaInstallHint />
+        </AppProviders>
+      </body>
     </html>
   );
 }

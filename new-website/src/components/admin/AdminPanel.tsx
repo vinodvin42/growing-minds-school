@@ -2,11 +2,12 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import type { SiteContent, CarouselSlide, GalleryImage, VideoItem, NewsItem, Teacher, Testimonial } from "@/types/content";
+import type { SiteContent, CarouselSlide, GalleryImage, VideoItem, NewsItem, Teacher, Testimonial, StudentActivity } from "@/types/content";
 import ImageCropEditor from "@/components/admin/ImageCropEditor";
 import { AdminEditorPanel, AdminListHeader, AdminListRow } from "@/components/admin/AdminListUi";
+import { ACTIVITY_CATEGORIES } from "@/lib/activities";
 
-type Tab = "settings" | "homepage" | "carousel" | "gallery" | "videos" | "news" | "teachers" | "testimonials" | "about";
+type Tab = "settings" | "homepage" | "carousel" | "gallery" | "activities" | "videos" | "news" | "teachers" | "testimonials" | "about";
 
 function uid() {
   return Math.random().toString(36).slice(2, 10);
@@ -91,6 +92,7 @@ export default function AdminPanel() {
     { id: "homepage", label: "Homepage", icon: "fa-home" },
     { id: "carousel", label: "Carousel", icon: "fa-images" },
     { id: "gallery", label: "Photo Gallery", icon: "fa-camera" },
+    { id: "activities", label: "Student Activities", icon: "fa-palette" },
     { id: "videos", label: "Video Library", icon: "fa-video" },
     { id: "news", label: "News & Events", icon: "fa-newspaper" },
     { id: "teachers", label: "Teachers", icon: "fa-chalkboard-teacher" },
@@ -191,6 +193,9 @@ export default function AdminPanel() {
             )}
             {tab === "gallery" && (
               <GalleryEditor content={content} setContent={setContent} uploadFile={uploadFile} persist={persist} />
+            )}
+            {tab === "activities" && (
+              <ActivitiesEditor content={content} setContent={setContent} uploadFile={uploadFile} persist={persist} />
             )}
             {tab === "videos" && (
               <VideosEditor content={content} setContent={setContent} uploadFile={uploadFile} />
@@ -514,6 +519,154 @@ function GalleryEditor({ content, setContent, uploadFile, persist }: { content: 
         <div className="admin-list-rows">
           {content.gallery.map((g, i) => (
             <AdminListRow key={g.id} badge={g.category || `Photo ${i + 1}`} title={g.title || g.alt || "Untitled photo"} subtitle={g.caption || (g.imageUrl ? g.imageUrl.split("/").pop() : "No image URL")} imageUrl={g.imageUrl || undefined} onEdit={() => setEditingId(g.id)} onDelete={() => removePhoto(g.id)} />
+          ))}
+        </div>
+      )}
+    </>
+  );
+}
+
+function ActivitiesEditor({ content, setContent, uploadFile, persist }: { content: SiteContent; setContent: (c: SiteContent) => void; uploadFile: (f: File) => Promise<string | null>; persist: (override?: SiteContent) => Promise<boolean> }) {
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const section = content.activitiesSection;
+
+  const applyActivities = (activities: StudentActivity[]) => {
+    const next = { ...content, activities };
+    setContent(next);
+    return next;
+  };
+
+  const updateSection = (key: keyof typeof section, value: string) =>
+    setContent({ ...content, activitiesSection: { ...section, [key]: value } });
+
+  const editingIndex = content.activities.findIndex((a) => a.id === editingId);
+  const activity = editingIndex >= 0 ? content.activities[editingIndex] : null;
+
+  const patchActivity = (index: number, patch: Partial<StudentActivity>) => {
+    const activities = [...content.activities];
+    activities[index] = { ...activities[index], ...patch };
+    return applyActivities(activities);
+  };
+
+  function addActivity() {
+    const newActivity: StudentActivity = {
+      id: uid(),
+      title: "New Activity",
+      description: "",
+      body: "",
+      imageUrl: "",
+      alt: "Student activity",
+      category: "Art & Craft",
+      dateLabel: "",
+      featured: false,
+    };
+    applyActivities([...content.activities, newActivity]);
+    setEditingId(newActivity.id);
+  }
+
+  function removeActivity(id: string) {
+    applyActivities(content.activities.filter((a) => a.id !== id));
+    if (editingId === id) setEditingId(null);
+  }
+
+  if (activity && editingIndex >= 0) {
+    const i = editingIndex;
+    return (
+      <AdminEditorPanel title={`Edit Activity: ${activity.title}`} onBack={() => setEditingId(null)} onDelete={() => removeActivity(activity.id)}>
+        <div className="row g-2">
+          <div className="col-md-6">
+            <Field label="Title"><input className="form-control" value={activity.title} onChange={(e) => patchActivity(i, { title: e.target.value })} /></Field>
+          </div>
+          <div className="col-md-6">
+            <Field label="Category">
+              <select className="form-select" value={activity.category} onChange={(e) => patchActivity(i, { category: e.target.value })}>
+                {ACTIVITY_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+              </select>
+            </Field>
+          </div>
+          <div className="col-md-6">
+            <Field label="Date / Frequency Label"><input className="form-control" value={activity.dateLabel ?? ""} onChange={(e) => patchActivity(i, { dateLabel: e.target.value })} placeholder="e.g. Every Week, Jan 2026" /></Field>
+          </div>
+          <div className="col-md-6">
+            <Field label="Alt Text"><input className="form-control" value={activity.alt} onChange={(e) => patchActivity(i, { alt: e.target.value })} /></Field>
+          </div>
+          <div className="col-12">
+            <Field label="Short Summary (card preview)">
+              <textarea className="form-control" rows={2} value={activity.description} onChange={(e) => patchActivity(i, { description: e.target.value })} placeholder="Brief text shown on the activity card" />
+            </Field>
+          </div>
+          <div className="col-12">
+            <Field label="Full Article (detail view)">
+              <textarea className="form-control" rows={8} value={activity.body ?? ""} onChange={(e) => patchActivity(i, { body: e.target.value })} placeholder="Write the full story for View Details. Leave a blank line between paragraphs." />
+            </Field>
+          </div>
+          <div className="col-md-6">
+            <Field label="Image URL"><input className="form-control" value={activity.imageUrl} onChange={(e) => patchActivity(i, { imageUrl: e.target.value })} /></Field>
+          </div>
+          <div className="col-md-6">
+            <Field label="Upload Image">
+              <input type="file" accept="image/*" className="form-control" onChange={async (e) => {
+                const f = e.target.files?.[0];
+                if (!f) return;
+                const url = await uploadFile(f);
+                if (!url) return;
+                const next = patchActivity(i, { imageUrl: url });
+                await persist(next);
+              }} />
+            </Field>
+          </div>
+          <div className="col-12">
+            <div className="form-check">
+              <input
+                className="form-check-input"
+                type="checkbox"
+                checked={!!activity.featured}
+                onChange={(e) => patchActivity(i, { featured: e.target.checked })}
+                id={`activity-featured-${activity.id}`}
+              />
+              <label className="form-check-label" htmlFor={`activity-featured-${activity.id}`}>
+                Show on homepage preview (up to 3 featured activities)
+              </label>
+            </div>
+          </div>
+        </div>
+        {activity.imageUrl && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={activity.imageUrl} alt={activity.alt} className="w-100 rounded mt-2" style={{ maxHeight: 240, objectFit: "cover" }} />
+        )}
+      </AdminEditorPanel>
+    );
+  }
+
+  return (
+    <>
+      <h2 className="admin-section-title">Section Intro</h2>
+      <p className="admin-hint mb-3">Headline text for the homepage block and /activities page.</p>
+      <div className="row g-2 mb-4">
+        <div className="col-md-6"><Field label="Eyebrow"><input className="form-control" value={section.eyebrow} onChange={(e) => updateSection("eyebrow", e.target.value)} /></Field></div>
+        <div className="col-md-3"><Field label="Title"><input className="form-control" value={section.title} onChange={(e) => updateSection("title", e.target.value)} /></Field></div>
+        <div className="col-md-3"><Field label="Highlight"><input className="form-control" value={section.highlight} onChange={(e) => updateSection("highlight", e.target.value)} /></Field></div>
+        <div className="col-12"><Field label="Subtitle"><textarea className="form-control" rows={2} value={section.subtitle} onChange={(e) => updateSection("subtitle", e.target.value)} /></Field></div>
+      </div>
+
+      <AdminListHeader title="Student Activities" hint="Card shows the short summary. View Details opens a photo + article layout with the full story." count={content.activities.length} addLabel="Add Activity" onAdd={addActivity} />
+      {content.activities.length === 0 ? (
+        <div className="admin-empty-list">
+          <i className="fas fa-palette d-block" />
+          <p className="mb-0">No activities yet. Add your first student activity showcase.</p>
+        </div>
+      ) : (
+        <div className="admin-list-rows">
+          {content.activities.map((a, i) => (
+            <AdminListRow
+              key={a.id}
+              badge={a.featured ? `${a.category} · Featured` : a.category || `Activity ${i + 1}`}
+              title={a.title || "Untitled activity"}
+              subtitle={a.description || (a.imageUrl ? a.imageUrl.split("/").pop() : "No image URL")}
+              imageUrl={a.imageUrl || undefined}
+              onEdit={() => setEditingId(a.id)}
+              onDelete={() => removeActivity(a.id)}
+            />
           ))}
         </div>
       )}

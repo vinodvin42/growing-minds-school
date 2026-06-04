@@ -21,7 +21,7 @@ export default async function ContactPage() {
     <SiteLayout activePath="/contact">
       <PageHero
         title="Contact Us"
-        subtitle="We're here to answer your questions and welcome you to our school family"
+        subtitle="Questions? We're happy to help"
         breadcrumb={[{ label: "Home", href: "/" }, { label: "Contact" }]}
       />
 

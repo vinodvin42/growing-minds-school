@@ -62,6 +62,27 @@ export interface GalleryImage {
   category?: string;
 }
 
+export interface StudentActivity {
+  id: string;
+  title: string;
+  /** Short summary shown on activity cards */
+  description: string;
+  /** Full article for the detail view — use blank lines between paragraphs */
+  body?: string;
+  imageUrl: string;
+  alt: string;
+  category: string;
+  dateLabel?: string;
+  featured?: boolean;
+}
+
+export interface ActivitiesSectionContent {
+  eyebrow: string;
+  title: string;
+  highlight: string;
+  subtitle: string;
+}
+
 export interface VideoItem {
   id: string;
   title: string;
@@ -134,6 +155,8 @@ export interface SiteContent {
   teachers: Teacher[];
   testimonials: Testimonial[];
   gallery: GalleryImage[];
+  activitiesSection: ActivitiesSectionContent;
+  activities: StudentActivity[];
   videos: VideoItem[];
   news: NewsItem[];
   newsAnnouncement: {

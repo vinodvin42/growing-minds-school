@@ -7,6 +7,7 @@ const quickLinks = [
   { href: "/admissions", label: "Admissions" },
   { href: "/news", label: "News & Events" },
   { href: "/gallery", label: "Photo Gallery" },
+  { href: "/activities", label: "Student Activities" },
   { href: "/videos", label: "Video Library" },
   { href: "/contact", label: "Contact Us" },
 ];

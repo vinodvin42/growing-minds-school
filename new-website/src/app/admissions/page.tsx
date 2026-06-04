@@ -13,11 +13,11 @@ export default function AdmissionsPage() {
     <SiteLayout activePath="/admissions">
       <PageHero
         title="Admissions 2026–2027"
-        subtitle="Begin your child's journey with Growing Minds English School"
+        subtitle="Apply online for Nursery to 8th Standard"
         breadcrumb={[{ label: "Home", href: "/" }, { label: "Admissions" }]}
       />
 
-      <section className="py-5 bg-light">
+      <section className="py-4 bg-light">
         <div className="container">
           <div className="row justify-content-center">
             <div className="col-lg-10">
