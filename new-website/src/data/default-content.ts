@@ -7,7 +7,7 @@ export const defaultContent: SiteContent = {
     tagline: "Where Little Steps Lead to Bigger Dreams",
     logoUrl: images.logo,
     phone: "+91 97685 32431",
-    email: "growingminds2025@gmail.com",
+    email: "growingmindsenglishschool@gmail.com",
     address:
       "Shop No. D1, Plot No. 17, Malwani Ashwamegh CHS LTD., RSC 08, Mhada, Malwani, Malad West, Mumbai - 400095",
     officeHours: "Monday - Saturday: 9:00 AM - 5:00 PM\nSunday: Closed",

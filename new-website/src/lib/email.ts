@@ -15,21 +15,22 @@ type SendResult = { success: boolean; message: string };
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
+const DEFAULT_ADMIN_EMAIL = "growingmindsenglishschool@gmail.com";
+
 function getAdminEmail() {
-  return process.env.ADMIN_EMAIL || "growingminds2025@gmail.com";
+  return process.env.ADMIN_EMAIL?.trim() || DEFAULT_ADMIN_EMAIL;
 }
 
 function getFromName() {
   return process.env.EMAIL_FROM_NAME || "Growing Minds English School";
 }
 
-function getGmailPassword() {
-  const raw = process.env.GMAIL_APP_PASSWORD || process.env.GMAIL_PASSWORD;
-  return raw?.replace(/\s/g, "");
+function getGmailAppPassword() {
+  return process.env.GMAIL_APP_PASSWORD?.replace(/\s/g, "");
 }
 
 function useGmail() {
-  return Boolean(process.env.GMAIL_USER?.trim() && getGmailPassword());
+  return Boolean(process.env.GMAIL_USER?.trim() && getGmailAppPassword());
 }
 
 function getGmailTransporter() {
@@ -39,7 +40,7 @@ function getGmailTransporter() {
     secure: false,
     auth: {
       user: process.env.GMAIL_USER?.trim(),
-      pass: getGmailPassword(),
+      pass: getGmailAppPassword(),
     },
   });
 }
@@ -55,7 +56,10 @@ export function getPublicEmailError(internal?: string): string {
     internal?.includes("Invalid login") ||
     internal?.includes("BadCredentials")
   ) {
-    return "We could not send email from the website right now. Please email growingminds2025@gmail.com or call +91 97685 32431.";
+    return `We could not send email from the website right now. Please email ${getAdminEmail()} or call +91 97685 32431.`;
+  }
+  if (internal?.includes("No email provider configured")) {
+    return `We could not send email from the website right now. Please email ${getAdminEmail()} or call +91 97685 32431.`;
   }
   return "We could not send your message right now. Please try again or contact us by phone or email.";
 }
@@ -107,10 +111,10 @@ async function sendViaGmail(options: SendToOptions): Promise<SendResult> {
 }
 
 async function deliver(options: SendToOptions): Promise<SendResult> {
-  // Resend first — Gmail App Passwords are unavailable on many accounts.
   const attempts: Array<() => Promise<SendResult>> = [];
-  if (resend) attempts.push(() => sendViaResend(options));
+  // Prefer Gmail when configured — school uses their own inbox.
   if (useGmail()) attempts.push(() => sendViaGmail(options));
+  if (resend) attempts.push(() => sendViaResend(options));
 
   let lastError = "No email provider configured";
   for (const attempt of attempts) {
@@ -120,17 +124,21 @@ async function deliver(options: SendToOptions): Promise<SendResult> {
   }
 
   if (attempts.length === 0) {
-    console.log("[Email - dev mode]", { to: options.to, subject: options.subject });
-    return {
-      success: true,
-      message: "Email logged (configure RESEND_API_KEY or Gmail for production)",
-    };
+    console.error("[Email] No provider configured — set GMAIL_APP_PASSWORD or RESEND_API_KEY");
+    if (process.env.NODE_ENV === "development") {
+      console.log("[Email - dev mode]", { to: options.to, subject: options.subject });
+      return {
+        success: true,
+        message: "Email logged (configure GMAIL_APP_PASSWORD or RESEND_API_KEY for production)",
+      };
+    }
+    return { success: false, message: lastError };
   }
 
   return { success: false, message: lastError };
 }
 
-/** Notify school admin (inbox: growingminds2025@gmail.com) */
+/** Notify school admin inbox */
 export async function sendAdminEmail(options: SendOptions) {
   return deliver({
     ...options,
@@ -150,7 +158,17 @@ export async function sendEmail(options: SendOptions) {
 }
 
 export function getEmailProvider(): "resend" | "gmail" | "dev" {
-  if (resend) return "resend";
   if (useGmail()) return "gmail";
+  if (resend) return "resend";
   return "dev";
+}
+
+export function getEmailConfigStatus() {
+  return {
+    provider: getEmailProvider(),
+    adminEmail: getAdminEmail(),
+    gmailUser: process.env.GMAIL_USER?.trim() || null,
+    gmailConfigured: useGmail(),
+    resendConfigured: Boolean(resend),
+  };
 }

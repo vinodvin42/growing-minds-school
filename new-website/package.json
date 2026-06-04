@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "seed": "tsx scripts/seed-content.ts",
+    "test:email": "tsx scripts/test-email.ts",
     "pwa:icons": "node scripts/generate-pwa-icons.mjs"
   },
   "dependencies": {

@@ -12,7 +12,7 @@ function layout(title: string, body: string) {
       ${body}
       <div style="margin-top: 30px; padding-top: 16px; border-top: 1px solid #ddd; font-size: 13px; color: #888;">
         <p>Shop No. D1, Plot No. 17, Malwani, Malad West, Mumbai - 400095</p>
-        <p>Phone: +91 97685 32431 | Email: growingminds2025@gmail.com</p>
+        <p>Phone: +91 97685 32431 | Email: growingmindsenglishschool@gmail.com</p>
         <p>&copy; 2026 ${SCHOOL_NAME}. All rights reserved.</p>
       </div>
     </body></html>`;
