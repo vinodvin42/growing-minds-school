@@ -1,15 +1,16 @@
 import { NextResponse } from "next/server";
 import { put } from "@vercel/blob";
 import { isAuthenticated } from "@/lib/auth";
+import { blobStorageErrorMessage, isBlobStorageConfigured } from "@/lib/blob-storage";
 
 export async function POST(request: Request) {
   if (!(await isAuthenticated())) {
     return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
   }
 
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+  if (!isBlobStorageConfigured()) {
     return NextResponse.json(
-      { success: false, message: "BLOB_READ_WRITE_TOKEN is not configured" },
+      { success: false, message: blobStorageErrorMessage() },
       { status: 500 }
     );
   }

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { put } from "@vercel/blob";
+import { isBlobStorageConfigured } from "@/lib/blob-storage";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const ALLOWED_TYPES = ["application/pdf", "image/jpeg", "image/jpg", "image/png"];
@@ -27,7 +28,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, message: "Only PDF, JPG, and PNG files are allowed" }, { status: 400 });
     }
 
-    if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    if (!isBlobStorageConfigured()) {
       return NextResponse.json({
         success: true,
         url: `[dev:${field}:${file.name}]`,

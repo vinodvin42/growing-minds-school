@@ -1,9 +1,10 @@
 import { head, put } from "@vercel/blob";
 import { defaultContent, CONTENT_BLOB_PATH } from "@/data/default-content";
+import { blobStorageErrorMessage, isBlobStorageConfigured } from "@/lib/blob-storage";
 import type { SiteContent } from "@/types/content";
 
 export async function getSiteContent(): Promise<SiteContent> {
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+  if (!isBlobStorageConfigured()) {
     return defaultContent;
   }
 
@@ -29,8 +30,8 @@ export async function getSiteContent(): Promise<SiteContent> {
 }
 
 export async function saveSiteContent(content: SiteContent): Promise<void> {
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    throw new Error("BLOB_READ_WRITE_TOKEN is not configured");
+  if (!isBlobStorageConfigured()) {
+    throw new Error(blobStorageErrorMessage());
   }
 
   await put(CONTENT_BLOB_PATH, JSON.stringify(content, null, 2), {

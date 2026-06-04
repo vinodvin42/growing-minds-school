@@ -46,7 +46,7 @@ git push -u origin main
 2. Click **Create Database** → **Blob**
 3. Name it (e.g. `growing-minds-blob`)
 4. Connect to your project
-5. `BLOB_READ_WRITE_TOKEN` is added automatically
+5. Vercel adds **`BLOB_READ_WRITE_TOKEN`** or **`BLOB_STORE_ID`** automatically
 
 ---
 
@@ -62,7 +62,7 @@ In Vercel → **Settings** → **Environment Variables**, add:
 | `ADMIN_EMAIL` | `growingminds2025@gmail.com` (where forms are received) | Yes |
 | `EMAIL_FROM_NAME` | `Growing Minds English School` | Yes |
 | `NEXT_PUBLIC_SITE_URL` | `https://your-project.vercel.app` | Yes |
-| `BLOB_READ_WRITE_TOKEN` | Auto-set by Blob store | Yes |
+| `BLOB_READ_WRITE_TOKEN` or `BLOB_STORE_ID` | Auto-set when Blob store is connected | Yes |
 
 --- 
 
@@ -119,7 +119,7 @@ For Resend instead: sign up at [resend.com](https://resend.com), set `RESEND_API
 
 | Issue | Fix |
 |-------|-----|
-| Admin save fails | Ensure Blob store is connected and `BLOB_READ_WRITE_TOKEN` is set |
+| Admin save / upload fails | Connect Blob store, confirm `BLOB_STORE_ID` or `BLOB_READ_WRITE_TOKEN` is set, then **redeploy** |
 | Forms don't send email | Check `RESEND_API_KEY` and verify `FROM_EMAIL` domain |
 | Admission upload fails | Blob store required; files upload one at a time (max 5MB each) |
 | Images not loading | Local images are in `public/assets/images/` — no external deps needed |
