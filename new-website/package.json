@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "seed": "tsx scripts/seed-content.ts",
+    "seed:portal": "tsx scripts/seed-portal.ts",
     "migrate:storage": "tsx scripts/migrate-storage.ts",
     "migrate:blob-to-data": "tsx scripts/migrate-storage.ts --to-disk",
     "test:email": "tsx scripts/test-email.ts",
