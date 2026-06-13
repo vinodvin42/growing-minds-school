@@ -36,7 +36,7 @@
 - [ ] Redeploy
 
 ### Data
-- [ ] Migrate from Blob if needed: `npm run migrate:blob-to-data` → commit `data/`
+- [ ] Recover from old Blob if needed: `npm run recover:from-blob` — see **`STORAGE-SETUP.md`**
 - [ ] Or `npm run seed` + add students in admin
 
 ### Domain

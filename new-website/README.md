@@ -49,7 +49,7 @@ Login at `/admin/login` to manage site content, gallery, videos, students, homew
 npm run dev          # Local development
 npm run build        # Production build
 npm run seed         # Seed data/site-content.json locally
-npm run migrate:blob-to-data   # One-time: copy old Blob data to ./data/
+npm run recover:from-blob   # One-time: copy old Vercel Blob → GitHub storage
 ```
 
 ## Project structure

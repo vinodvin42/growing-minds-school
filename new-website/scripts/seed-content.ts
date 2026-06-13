@@ -1,9 +1,9 @@
-import { defaultContent, CONTENT_BLOB_PATH } from "../src/data/default-content";
+import { defaultContent, CONTENT_PATH } from "../src/data/default-content";
 import { writeStorageJson } from "../src/lib/storage/index";
 
 async function main() {
-  await writeStorageJson(CONTENT_BLOB_PATH, defaultContent);
-  console.log("Content seeded to storage:", CONTENT_BLOB_PATH);
+  await writeStorageJson(CONTENT_PATH, defaultContent);
+  console.log("Content seeded to storage:", CONTENT_PATH);
 }
 
 main().catch((err) => {

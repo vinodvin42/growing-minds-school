@@ -1,15 +1,12 @@
-/** Vercel Blob folder layout for student portal data. */
+/** JSON file layout for student portal data (GitHub / local storage). */
 
 export const PORTAL_ROOT = "portal";
 
-/** Index of all portal JSON paths — one read instead of list() on every request. */
-export const PORTAL_MANIFEST_BLOB_PATH = `${PORTAL_ROOT}/manifest.json`;
-
 /** @deprecated Single-file storage — migrated on read/save */
-export const LEGACY_PORTAL_BLOB_PATH = "student-portal-data.json";
+export const LEGACY_PORTAL_PATH = "student-portal-data.json";
 
 /** @deprecated Single-file registry — migrated on read/save */
-export const LEGACY_STUDENTS_BLOB_PATH = "students-registry.json";
+export const LEGACY_STUDENTS_PATH = "students-registry.json";
 
 export function academicYear(date: Date | string = new Date()): string {
   const d = typeof date === "string" ? new Date(date) : date;
@@ -37,32 +34,27 @@ export function classSlug(standard: string): string {
   return slug || "unassigned";
 }
 
-/** Homework: portal/2026/classes/3rd-standard/homework.json */
-export function classHomeworkBlobPath(year: string, slug: string): string {
+export function classHomeworkPath(year: string, slug: string): string {
   return `${PORTAL_ROOT}/${year}/classes/${slug}/homework.json`;
 }
 
-/** Messages: portal/2026/06/messages.json */
-export function messagesBlobPath(yearMonth: string): string {
+export function messagesPath(yearMonth: string): string {
   return `${PORTAL_ROOT}/${yearMonth}/messages.json`;
 }
 
-export function classStudentsBlobPath(year: string, slug: string): string {
+export function classStudentsPath(year: string, slug: string): string {
   return `${PORTAL_ROOT}/${year}/classes/${slug}/students.json`;
 }
 
-/** Fees: portal/2026/accounts/stu_abc123.json */
-export function studentFeesBlobPath(year: string, studentId: string): string {
+export function studentFeesPath(year: string, studentId: string): string {
   return `${PORTAL_ROOT}/${year}/accounts/${studentId}.json`;
 }
 
-/** Holidays: portal/2026/calendar/holidays.json */
-export function holidaysBlobPath(year: string): string {
+export function holidaysPath(year: string): string {
   return `${PORTAL_ROOT}/${year}/calendar/holidays.json`;
 }
 
-/** Reminders: portal/2026/calendar/reminders.json */
-export function remindersBlobPath(year: string): string {
+export function remindersPath(year: string): string {
   return `${PORTAL_ROOT}/${year}/calendar/reminders.json`;
 }
 

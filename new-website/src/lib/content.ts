@@ -1,6 +1,6 @@
 import { unstable_noStore as noStore } from "next/cache";
-import { defaultContent, CONTENT_BLOB_PATH } from "@/data/default-content";
-import { isStorageConfigured } from "@/lib/blob-storage";
+import { defaultContent, CONTENT_PATH } from "@/data/default-content";
+import { isStorageConfigured } from "@/lib/storage/config";
 import { readStorageText, writeStorageText } from "@/lib/storage/index";
 import type { SiteContent } from "@/types/content";
 
@@ -28,7 +28,7 @@ export async function getSiteContent(): Promise<SiteContent> {
   }
 
   try {
-    const text = await readStorageText(CONTENT_BLOB_PATH);
+    const text = await readStorageText(CONTENT_PATH);
     if (!text?.trim()) {
       return defaultContent;
     }
@@ -46,7 +46,7 @@ export async function saveSiteContent(content: SiteContent): Promise<SiteContent
     throw new Error("Storage is not configured.");
   }
 
-  await writeStorageText(CONTENT_BLOB_PATH, JSON.stringify(normalized, null, 2));
+  await writeStorageText(CONTENT_PATH, JSON.stringify(normalized, null, 2));
   return normalized;
 }
 

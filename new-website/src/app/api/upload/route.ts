@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { isAuthenticated } from "@/lib/auth";
-import { isStorageConfigured, storageErrorMessage } from "@/lib/blob-storage";
+import { isStorageConfigured, storageErrorMessage } from "@/lib/storage/config";
 import { writeStorageBinary } from "@/lib/storage/index";
 
 export async function POST(request: Request) {

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { isStorageConfigured } from "@/lib/blob-storage";
+import { isStorageConfigured } from "@/lib/storage/config";
 import { writeStorageBinary } from "@/lib/storage/index";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;

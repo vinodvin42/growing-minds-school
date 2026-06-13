@@ -1,21 +1,30 @@
 import { NextResponse } from "next/server";
 import { isAuthenticated } from "@/lib/auth";
-import { migrateStorageLayout } from "@/lib/storage-migrate";
+import {
+  bootstrapPortalManifestFromStorage,
+  clearPortalManifestCache,
+  savePortalManifest,
+} from "@/lib/portal-manifest";
 
-/** One-time: move legacy Blob files into portal/ layout + create manifest.json (safe on Vercel). */
+/** Rebuild portal/manifest.json from files already in storage. */
 export async function POST() {
   if (!(await isAuthenticated())) {
     return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
   }
 
-  const report = await migrateStorageLayout();
-  return NextResponse.json({
-    success: report.success,
-    message: report.success
-      ? "Storage migration completed."
-      : "Migration finished with errors.",
-    report,
-  });
+  try {
+    clearPortalManifestCache();
+    const manifest = await bootstrapPortalManifestFromStorage();
+    await savePortalManifest(manifest);
+    return NextResponse.json({
+      success: true,
+      message: "Portal manifest rebuilt from storage.",
+      manifest,
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Manifest rebuild failed";
+    return NextResponse.json({ success: false, message }, { status: 500 });
+  }
 }
 
 export async function GET() {
@@ -25,6 +34,6 @@ export async function GET() {
 
   return NextResponse.json({
     success: true,
-    message: "POST to this endpoint to migrate legacy Blob data into portal/ layout and rebuild manifest.json.",
+    message: "POST to rebuild portal/manifest.json from existing storage files.",
   });
 }

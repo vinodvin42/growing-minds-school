@@ -1,17 +1,17 @@
-import { listBlobPathnames, readBlobJson, writeBlobJson } from "@/lib/blob-json";
-import { isStorageConfigured } from "@/lib/blob-storage";
+import { listStoragePathnames, readStorageJson, writeStorageJson } from "@/lib/storage/index";
+import { isStorageConfigured } from "@/lib/storage/config";
 import {
-  classHomeworkBlobPath,
-  classStudentsBlobPath,
-  messagesBlobPath,
+  classHomeworkPath,
+  classStudentsPath,
+  messagesPath,
   PORTAL_ROOT,
-  studentFeesBlobPath,
+  studentFeesPath,
 } from "@/lib/portal-storage-paths";
 
 export const PORTAL_MANIFEST_PATH = `${PORTAL_ROOT}/manifest.json`;
 
 /** In-process cache TTL — reduces repeat reads on warm serverless instances. */
-export const BLOB_MEMORY_TTL_MS = 120_000;
+export const STORAGE_CACHE_TTL_MS = 120_000;
 
 export interface PortalYearIndex {
   studentClassSlugs: string[];
@@ -89,7 +89,7 @@ export function studentJsonPaths(manifest: PortalManifest): string[] {
   const paths: string[] = [];
   for (const [year, index] of Object.entries(manifest.years)) {
     for (const slug of index.studentClassSlugs) {
-      paths.push(classStudentsBlobPath(year, slug));
+      paths.push(classStudentsPath(year, slug));
     }
   }
   return paths;
@@ -100,7 +100,7 @@ export function homeworkJsonPaths(manifest: PortalManifest, year?: string): stri
   for (const [y, index] of Object.entries(manifest.years)) {
     if (year && y !== year) continue;
     for (const slug of index.homeworkClassSlugs) {
-      paths.push(classHomeworkBlobPath(y, slug));
+      paths.push(classHomeworkPath(y, slug));
     }
   }
   return paths;
@@ -112,23 +112,23 @@ export function homeworkJsonPathsForStudent(
   studentClassSlug: string
 ): string[] {
   const slugs = uniqSorted([studentClassSlug, "all-classes", "individual"]);
-  return slugs.map((slug) => classHomeworkBlobPath(year, slug));
+  return slugs.map((slug) => classHomeworkPath(year, slug));
 }
 
 export function messageJsonPaths(manifest: PortalManifest): string[] {
   const months = uniqSorted(Object.values(manifest.years).flatMap((index) => index.messageMonths));
-  return months.map((yearMonth) => messagesBlobPath(yearMonth));
+  return months.map((yearMonth) => messagesPath(yearMonth));
 }
 
 export function feeJsonPaths(manifest: PortalManifest, year: string, extraStudentIds: string[] = []): string[] {
   const index = getYearIndex(manifest, year);
   const ids = uniqSorted([...index.feeStudentIds, ...extraStudentIds]);
-  return ids.map((id) => studentFeesBlobPath(year, id));
+  return ids.map((id) => studentFeesPath(year, id));
 }
 
-export async function bootstrapPortalManifestFromBlob(): Promise<PortalManifest> {
+export async function bootstrapPortalManifestFromStorage(): Promise<PortalManifest> {
   const manifest = emptyPortalManifest();
-  const pathnames = await listBlobPathnames(`${PORTAL_ROOT}/`);
+  const pathnames = await listStoragePathnames(`${PORTAL_ROOT}/`);
 
   for (const path of pathnames) {
     const studentsMatch = path.match(/^portal\/(\d{4})\/classes\/([^/]+)\/students\.json$/);
@@ -175,11 +175,11 @@ export async function bootstrapPortalManifestFromBlob(): Promise<PortalManifest>
 export async function readPortalManifest(options?: { fresh?: boolean }): Promise<PortalManifest | null> {
   if (!isStorageConfigured()) return null;
 
-  if (!options?.fresh && memoryManifest && Date.now() - memoryManifestAt < BLOB_MEMORY_TTL_MS) {
+  if (!options?.fresh && memoryManifest && Date.now() - memoryManifestAt < STORAGE_CACHE_TTL_MS) {
     return memoryManifest;
   }
 
-  const raw = await readBlobJson<PortalManifest>(PORTAL_MANIFEST_PATH);
+  const raw = await readStorageJson<PortalManifest>(PORTAL_MANIFEST_PATH);
   if (!raw) return null;
 
   const manifest = normalizeManifest(raw);
@@ -194,7 +194,7 @@ export async function savePortalManifest(manifest: PortalManifest): Promise<void
     version: 1,
     updatedAt: new Date().toISOString(),
   };
-  await writeBlobJson(PORTAL_MANIFEST_PATH, next);
+  await writeStorageJson(PORTAL_MANIFEST_PATH, next);
   memoryManifest = next;
   memoryManifestAt = Date.now();
 }
@@ -203,10 +203,16 @@ export async function ensurePortalManifest(options?: { fresh?: boolean }): Promi
   if (!isStorageConfigured()) return emptyPortalManifest();
 
   const existing = await readPortalManifest(options);
-  if (existing) return existing;
+  if (existing && Object.keys(existing.years).length > 0) return existing;
 
-  const bootstrapped = await bootstrapPortalManifestFromBlob();
-  await savePortalManifest(bootstrapped);
+  const bootstrapped = await bootstrapPortalManifestFromStorage();
+  if (Object.keys(bootstrapped.years).length === 0) {
+    return existing ?? bootstrapped;
+  }
+
+  if (!existing || Object.keys(existing.years).length === 0) {
+    await savePortalManifest(bootstrapped);
+  }
   return bootstrapped;
 }
 

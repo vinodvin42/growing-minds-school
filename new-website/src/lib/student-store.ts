@@ -1,9 +1,7 @@
 import { unstable_noStore as noStore } from "next/cache";
-import { readBlobJson, writeBlobJson } from "@/lib/blob-json";
-import { readBlobJsonText } from "@/lib/blob-read";
 import { hashPassword } from "@/lib/password";
 import {
-  BLOB_MEMORY_TTL_MS,
+  STORAGE_CACHE_TTL_MS,
   ensurePortalManifest,
   studentJsonPaths,
   syncStudentClassSlugsAfterSave,
@@ -12,10 +10,11 @@ import {
 import {
   academicYear,
   classSlug,
-  classStudentsBlobPath,
-  LEGACY_STUDENTS_BLOB_PATH,
+  classStudentsPath,
+  LEGACY_STUDENTS_PATH,
 } from "@/lib/portal-storage-paths";
-import { blobStorageErrorMessage, isStorageConfigured } from "@/lib/blob-storage";
+import { isStorageConfigured, storageErrorMessage } from "@/lib/storage/config";
+import { readStorageJson, readStorageText, writeStorageJson } from "@/lib/storage/index";
 import type { StudentAdminInput, StudentRecord, StudentsRegistry } from "@/types/student";
 import { DEFAULT_STUDENT_LOGIN_ID, DEFAULT_STUDENT_PASSWORD } from "@/types/student";
 
@@ -54,7 +53,7 @@ async function buildDefaultRegistry(): Promise<StudentsRegistry> {
 }
 
 async function loadLegacyRegistry(): Promise<StudentsRegistry | null> {
-  const text = await readBlobJsonText(LEGACY_STUDENTS_BLOB_PATH);
+  const text = await readStorageText(LEGACY_STUDENTS_PATH);
   if (!text?.trim()) return null;
   try {
     const data = JSON.parse(text) as StudentsRegistry;
@@ -71,7 +70,7 @@ async function loadStudentsFromManifest(): Promise<StudentRecord[]> {
   const students: StudentRecord[] = [];
 
   for (const path of paths) {
-    const file = await readBlobJson<{ students?: StudentRecord[] }>(path);
+    const file = await readStorageJson<{ students?: StudentRecord[] }>(path);
     if (file?.students?.length) {
       students.push(...file.students);
     }
@@ -83,7 +82,7 @@ async function loadStudentsFromManifest(): Promise<StudentRecord[]> {
 export async function getStudentsRegistry(options?: { fresh?: boolean }): Promise<StudentsRegistry> {
   noStore();
 
-  if (!options?.fresh && memoryRegistry && Date.now() - memoryRegistryAt < BLOB_MEMORY_TTL_MS) {
+  if (!options?.fresh && memoryRegistry && Date.now() - memoryRegistryAt < STORAGE_CACHE_TTL_MS) {
     return memoryRegistry;
   }
 
@@ -110,7 +109,7 @@ export async function getStudentsRegistry(options?: { fresh?: boolean }): Promis
 
 export async function saveStudentsRegistry(registry: StudentsRegistry): Promise<void> {
   if (!isStorageConfigured()) {
-    throw new Error(blobStorageErrorMessage());
+    throw new Error(storageErrorMessage());
   }
 
   const year = academicYear();
@@ -128,8 +127,8 @@ export async function saveStudentsRegistry(registry: StudentsRegistry): Promise<
   const knownSlugs = manifest.years[year]?.studentClassSlugs ?? [];
 
   for (const slug of new Set([...activeSlugs, ...knownSlugs])) {
-    const path = classStudentsBlobPath(year, slug);
-    await writeBlobJson(path, { students: byClass.get(slug) ?? [] });
+    const path = classStudentsPath(year, slug);
+    await writeStorageJson(path, { students: byClass.get(slug) ?? [] });
   }
 
   await updatePortalYearIndex(year, (index) => syncStudentClassSlugsAfterSave(index, activeSlugs));

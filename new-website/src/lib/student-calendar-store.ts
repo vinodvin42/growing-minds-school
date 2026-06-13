@@ -1,7 +1,7 @@
 import { unstable_noStore as noStore } from "next/cache";
-import { readBlobJson, writeBlobJson } from "@/lib/blob-json";
-import { blobStorageErrorMessage, isStorageConfigured } from "@/lib/blob-storage";
-import { academicYear, holidaysBlobPath, remindersBlobPath } from "@/lib/portal-storage-paths";
+import { isStorageConfigured, storageErrorMessage } from "@/lib/storage/config";
+import { readStorageJson, writeStorageJson } from "@/lib/storage/index";
+import { academicYear, holidaysPath, remindersPath } from "@/lib/portal-storage-paths";
 import {
   emptyCalendarData,
   filterActiveHolidays,
@@ -20,7 +20,7 @@ let memoryCalendarAt = 0;
 let memoryYear = "";
 
 async function loadHolidays(year: string): Promise<HolidayItem[]> {
-  const file = await readBlobJson<ItemsFile<HolidayItem>>(holidaysBlobPath(year));
+  const file = await readStorageJson<ItemsFile<HolidayItem>>(holidaysPath(year));
   const items = Array.isArray(file?.items) ? file.items : [];
   return items.map((h) => ({
     ...h,
@@ -29,7 +29,7 @@ async function loadHolidays(year: string): Promise<HolidayItem[]> {
 }
 
 async function loadReminders(year: string): Promise<PortalReminder[]> {
-  const file = await readBlobJson<ItemsFile<PortalReminder>>(remindersBlobPath(year));
+  const file = await readStorageJson<ItemsFile<PortalReminder>>(remindersPath(year));
   return Array.isArray(file?.items) ? file.items : [];
 }
 
@@ -78,7 +78,7 @@ export async function saveStudentCalendarData(
   year: string = academicYear()
 ): Promise<StudentCalendarData> {
   if (!isStorageConfigured()) {
-    throw new Error(blobStorageErrorMessage());
+    throw new Error(storageErrorMessage());
   }
 
   const holidays = Array.isArray(data.holidays) ? data.holidays : [];
@@ -90,8 +90,8 @@ export async function saveStudentCalendarData(
     createdAt: h.createdAt || now,
   }));
 
-  await writeBlobJson(holidaysBlobPath(year), { items: normalizedHolidays });
-  await writeBlobJson(remindersBlobPath(year), { items: reminders });
+  await writeStorageJson(holidaysPath(year), { items: normalizedHolidays });
+  await writeStorageJson(remindersPath(year), { items: reminders });
 
   const saved = { holidays: normalizedHolidays, reminders };
   memoryCalendar = saved;

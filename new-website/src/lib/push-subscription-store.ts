@@ -1,5 +1,5 @@
-import { readBlobJson, writeBlobJson } from "@/lib/blob-json";
-import { blobStorageErrorMessage, isStorageConfigured } from "@/lib/blob-storage";
+import { isStorageConfigured, storageErrorMessage } from "@/lib/storage/config";
+import { readStorageJson, writeStorageJson } from "@/lib/storage/index";
 
 const PUSH_SUBSCRIPTIONS_PATH = "portal/push/subscriptions.json";
 
@@ -19,7 +19,7 @@ const TTL = 30_000;
 async function load(): Promise<PushRegistry> {
   if (memory.data && Date.now() - memory.at < TTL) return memory.data;
   if (!isStorageConfigured()) return { subscriptions: [] };
-  const file = await readBlobJson<PushRegistry>(PUSH_SUBSCRIPTIONS_PATH);
+  const file = await readStorageJson<PushRegistry>(PUSH_SUBSCRIPTIONS_PATH);
   const data = { subscriptions: Array.isArray(file?.subscriptions) ? file.subscriptions : [] };
   memory.data = data;
   memory.at = Date.now();
@@ -30,7 +30,7 @@ export async function upsertPushSubscription(
   studentId: string,
   sub: Omit<StoredPushSubscription, "studentId" | "updatedAt">
 ): Promise<void> {
-  if (!isStorageConfigured()) throw new Error(blobStorageErrorMessage());
+  if (!isStorageConfigured()) throw new Error(storageErrorMessage());
 
   const registry = await load();
   const now = new Date().toISOString();
@@ -39,7 +39,7 @@ export async function upsertPushSubscription(
   );
   without.push({ ...sub, studentId, updatedAt: now });
   const next = { subscriptions: without };
-  await writeBlobJson(PUSH_SUBSCRIPTIONS_PATH, next);
+  await writeStorageJson(PUSH_SUBSCRIPTIONS_PATH, next);
   memory.data = next;
   memory.at = Date.now();
 }
@@ -48,7 +48,7 @@ export async function removePushSubscription(endpoint: string): Promise<void> {
   if (!isStorageConfigured()) return;
   const registry = await load();
   const next = { subscriptions: registry.subscriptions.filter((s) => s.endpoint !== endpoint) };
-  await writeBlobJson(PUSH_SUBSCRIPTIONS_PATH, next);
+  await writeStorageJson(PUSH_SUBSCRIPTIONS_PATH, next);
   memory.data = next;
   memory.at = Date.now();
 }

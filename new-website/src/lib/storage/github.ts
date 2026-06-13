@@ -1,5 +1,6 @@
 import {
   getGithubBranch,
+  getGithubDataPrefix,
   getGithubRepo,
   getGithubToken,
   toGithubRepoPath,
@@ -174,8 +175,8 @@ export async function listGithubPathnames(prefix: string): Promise<string[]> {
   const repo = getGithubRepo();
   if (!repo) return [];
 
-  const dataPrefix = toGithubRepoPath("")?.replace(/\/$/, "") ?? "";
-  const listPrefix = prefix.replace(/\/$/, "");
+  const dataPrefix = getGithubDataPrefix();
+  const listPrefix = prefix.replace(/^\/+|\/+$/g, "");
   const fullPrefix = listPrefix ? `${dataPrefix}/${listPrefix}`.replace(/\/+/g, "/") : dataPrefix;
 
   try {
@@ -191,7 +192,9 @@ export async function listGithubPathnames(prefix: string): Promise<string[]> {
       .filter(
         (item) =>
           item.type === "blob" &&
-          (item.path.startsWith(fullPrefix + "/") || (listPrefix === "" && item.path.startsWith(dataPrefix + "/")))
+          (item.path === fullPrefix ||
+            item.path.startsWith(`${fullPrefix}/`) ||
+            (listPrefix === "" && (item.path === dataPrefix || item.path.startsWith(`${dataPrefix}/`))))
       )
       .map((item) => item.path.slice(stripPrefix.length))
       .filter(Boolean);

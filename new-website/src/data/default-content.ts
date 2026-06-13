@@ -235,4 +235,4 @@ export const defaultContent: SiteContent = {
   ],
 };
 
-export const CONTENT_BLOB_PATH = "site-content.json";
+export const CONTENT_PATH = "site-content.json";

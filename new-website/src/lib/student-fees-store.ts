@@ -1,14 +1,14 @@
 import { unstable_noStore as noStore } from "next/cache";
-import { readBlobJson, writeBlobJson } from "@/lib/blob-json";
-import { blobStorageErrorMessage, isStorageConfigured } from "@/lib/blob-storage";
+import { isStorageConfigured, storageErrorMessage } from "@/lib/storage/config";
+import { readStorageJson, writeStorageJson } from "@/lib/storage/index";
 import {
-  BLOB_MEMORY_TTL_MS,
+  STORAGE_CACHE_TTL_MS,
   ensurePortalManifest,
   feeJsonPaths,
   updatePortalYearIndex,
   uniqSorted,
 } from "@/lib/portal-manifest";
-import { academicYear, studentFeesBlobPath } from "@/lib/portal-storage-paths";
+import { academicYear, studentFeesPath } from "@/lib/portal-storage-paths";
 import {
   emptyFeeAccount,
   toFeeSummary,
@@ -37,7 +37,7 @@ async function loadAccountsFromManifest(year: string, extraStudentIds: string[] 
   const map = new Map<string, StudentFeeAccount>();
 
   for (const path of paths) {
-    const file = await readBlobJson<StudentFeeAccount>(path);
+    const file = await readStorageJson<StudentFeeAccount>(path);
     if (!file?.studentId) continue;
     map.set(file.studentId, normalizeAccount(file, year));
   }
@@ -46,7 +46,7 @@ async function loadAccountsFromManifest(year: string, extraStudentIds: string[] 
 }
 
 async function getAccountMap(year: string, fresh?: boolean, extraStudentIds: string[] = []): Promise<Map<string, StudentFeeAccount>> {
-  if (!fresh && memoryYear === year && Date.now() - memoryAccountsAt < BLOB_MEMORY_TTL_MS) {
+  if (!fresh && memoryYear === year && Date.now() - memoryAccountsAt < STORAGE_CACHE_TTL_MS) {
     return memoryAccounts;
   }
 
@@ -73,8 +73,8 @@ export async function getStudentFeeAccount(
     return emptyFeeAccount(studentId, year);
   }
 
-  const path = studentFeesBlobPath(year, studentId);
-  const file = await readBlobJson<StudentFeeAccount>(path);
+  const path = studentFeesPath(year, studentId);
+  const file = await readStorageJson<StudentFeeAccount>(path);
   if (file?.studentId) {
     return normalizeAccount(file, year);
   }
@@ -101,7 +101,7 @@ export async function getAllStudentFeeSummaries(
 
 export async function saveStudentFeeAccount(account: StudentFeeAccount): Promise<StudentFeeAccount> {
   if (!isStorageConfigured()) {
-    throw new Error(blobStorageErrorMessage());
+    throw new Error(storageErrorMessage());
   }
 
   const year = account.academicYear || academicYear();
@@ -110,7 +110,7 @@ export async function saveStudentFeeAccount(account: StudentFeeAccount): Promise
     updatedAt: new Date().toISOString(),
   };
 
-  await writeBlobJson(studentFeesBlobPath(year, saved.studentId), saved);
+  await writeStorageJson(studentFeesPath(year, saved.studentId), saved);
 
   await updatePortalYearIndex(year, (index) => ({
     ...index,

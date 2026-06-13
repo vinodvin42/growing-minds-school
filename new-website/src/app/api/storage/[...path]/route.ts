@@ -19,10 +19,6 @@ type RouteContext = { params: Promise<{ path: string[] }> };
 /** Serve uploaded files (filesystem or GitHub-backed storage on Vercel). */
 export async function GET(_request: Request, context: RouteContext) {
   const backend = storageBackend();
-  if (backend === "blob") {
-    return NextResponse.json({ message: "Not found" }, { status: 404 });
-  }
-
   const segments = (await context.params).path;
   const relativePath = segments.map(decodeURIComponent).join("/");
 

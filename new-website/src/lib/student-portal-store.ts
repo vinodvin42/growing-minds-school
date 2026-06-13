@@ -1,8 +1,8 @@
 import { unstable_noStore as noStore } from "next/cache";
-import { readBlobJson, writeBlobJson } from "@/lib/blob-json";
-import { blobStorageErrorMessage, isStorageConfigured } from "@/lib/blob-storage";
+import { isStorageConfigured, storageErrorMessage } from "@/lib/storage/config";
+import { readStorageJson, writeStorageJson } from "@/lib/storage/index";
 import {
-  BLOB_MEMORY_TTL_MS,
+  STORAGE_CACHE_TTL_MS,
   ensurePortalManifest,
   getYearIndex,
   homeworkJsonPaths,
@@ -14,10 +14,10 @@ import {
 } from "@/lib/portal-manifest";
 import {
   academicYear,
-  classHomeworkBlobPath,
+  classHomeworkPath,
   classSlug,
-  LEGACY_PORTAL_BLOB_PATH,
-  messagesBlobPath,
+  LEGACY_PORTAL_PATH,
+  messagesPath,
   yearMonthFromDate,
 } from "@/lib/portal-storage-paths";
 import type { HomeworkItem, StudentPortalData, TeacherMessage } from "@/types/student-portal";
@@ -78,7 +78,7 @@ function dedupeById<T extends { id: string }>(items: T[]): T[] {
 }
 
 async function loadLegacyPortal(): Promise<StudentPortalData | null> {
-  const legacy = await readBlobJson<StudentPortalData>(LEGACY_PORTAL_BLOB_PATH);
+  const legacy = await readStorageJson<StudentPortalData>(LEGACY_PORTAL_PATH);
   if (!legacy) return null;
   return {
     homework: Array.isArray(legacy.homework) ? legacy.homework : [],
@@ -93,7 +93,7 @@ async function readItemsFromPaths<T>(
   const items: T[] = [];
 
   for (const path of paths) {
-    const file = await readBlobJson<ItemsFile<T> | { homework?: T[]; messages?: T[] }>(path);
+    const file = await readStorageJson<ItemsFile<T> | { homework?: T[]; messages?: T[] }>(path);
     if (!file) continue;
     if (Array.isArray((file as ItemsFile<T>).items)) {
       items.push(...(file as ItemsFile<T>).items);
@@ -126,7 +126,7 @@ async function loadHomeworkForStudent(student: StudentProfile): Promise<Homework
 
   const items: HomeworkItem[] = [];
   for (const path of paths) {
-    const file = await readBlobJson<ItemsFile<HomeworkItem>>(path);
+    const file = await readStorageJson<ItemsFile<HomeworkItem>>(path);
     if (file?.items?.length) items.push(...file.items);
   }
 
@@ -150,7 +150,7 @@ async function loadMessageItems(): Promise<TeacherMessage[]> {
 export async function getStudentPortalData(options?: { fresh?: boolean }): Promise<StudentPortalData> {
   noStore();
 
-  if (!options?.fresh && memoryPortal && Date.now() - memoryPortalAt < BLOB_MEMORY_TTL_MS) {
+  if (!options?.fresh && memoryPortal && Date.now() - memoryPortalAt < STORAGE_CACHE_TTL_MS) {
     return memoryPortal;
   }
 
@@ -202,13 +202,13 @@ async function saveHomeworkByClass(items: HomeworkItem[]): Promise<void> {
     for (const [key, bucket] of partitions) {
       const [y, slug] = key.split("/");
       if (y !== year) continue;
-      await writeBlobJson(classHomeworkBlobPath(y, slug), { items: bucket });
+      await writeStorageJson(classHomeworkPath(y, slug), { items: bucket });
       touched.add(slug);
     }
 
     for (const slug of known) {
       if (!touched.has(slug)) {
-        await writeBlobJson(classHomeworkBlobPath(year, slug), { items: [] });
+        await writeStorageJson(classHomeworkPath(year, slug), { items: [] });
       }
     }
 
@@ -237,13 +237,13 @@ async function writeMessagesByMonth(items: TeacherMessage[]): Promise<void> {
 
     for (const [yearMonth, bucket] of partitions) {
       if (!yearMonth.startsWith(`${year}/`)) continue;
-      await writeBlobJson(messagesBlobPath(yearMonth), { items: bucket });
+      await writeStorageJson(messagesPath(yearMonth), { items: bucket });
       touched.add(yearMonth);
     }
 
     for (const month of known) {
       if (!touched.has(month)) {
-        await writeBlobJson(messagesBlobPath(month), { items: [] });
+        await writeStorageJson(messagesPath(month), { items: [] });
       }
     }
 
@@ -257,7 +257,7 @@ async function writeMessagesByMonth(items: TeacherMessage[]): Promise<void> {
 
 export async function saveStudentPortalData(data: StudentPortalData): Promise<StudentPortalData> {
   if (!isStorageConfigured()) {
-    throw new Error(blobStorageErrorMessage());
+    throw new Error(storageErrorMessage());
   }
 
   const homework = Array.isArray(data.homework) ? data.homework : [];

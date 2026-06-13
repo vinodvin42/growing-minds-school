@@ -17,19 +17,14 @@ export async function readStorageText(relativePath: string): Promise<string | nu
     return readGithubText(safe);
   }
 
-  if (storageBackend() === "filesystem") {
-    const abs = toAbsoluteStoragePath(safe);
-    if (!abs) return null;
-    try {
-      const text = await fs.readFile(abs, "utf8");
-      return text.trim() ? text : null;
-    } catch {
-      return null;
-    }
+  const abs = toAbsoluteStoragePath(safe);
+  if (!abs) return null;
+  try {
+    const text = await fs.readFile(abs, "utf8");
+    return text.trim() ? text : null;
+  } catch {
+    return null;
   }
-
-  const { readBlobText } = await import("@/lib/storage/blob");
-  return readBlobText(safe);
 }
 
 export async function writeStorageText(relativePath: string, text: string, contentType = "application/json"): Promise<void> {
@@ -42,16 +37,10 @@ export async function writeStorageText(relativePath: string, text: string, conte
     return;
   }
 
-  if (storageBackend() === "filesystem") {
-    const abs = toAbsoluteStoragePath(safe);
-    if (!abs) throw new Error("Invalid storage path");
-    await fs.mkdir(path.dirname(abs), { recursive: true });
-    await fs.writeFile(abs, text, "utf8");
-    return;
-  }
-
-  const { writeBlobText } = await import("@/lib/storage/blob");
-  await writeBlobText(safe, text, contentType);
+  const abs = toAbsoluteStoragePath(safe);
+  if (!abs) throw new Error("Invalid storage path");
+  await fs.mkdir(path.dirname(abs), { recursive: true });
+  await fs.writeFile(abs, text, "utf8");
 }
 
 export async function writeStorageBinary(
@@ -70,16 +59,11 @@ export async function writeStorageBinary(
     return storagePublicUrl(safe);
   }
 
-  if (storageBackend() === "filesystem") {
-    const abs = toAbsoluteStoragePath(safe);
-    if (!abs) throw new Error("Invalid storage path");
-    await fs.mkdir(path.dirname(abs), { recursive: true });
-    await fs.writeFile(abs, body);
-    return storagePublicUrl(safe);
-  }
-
-  const { writeBlobBinary } = await import("@/lib/storage/blob");
-  return writeBlobBinary(safe, body, contentType);
+  const abs = toAbsoluteStoragePath(safe);
+  if (!abs) throw new Error("Invalid storage path");
+  await fs.mkdir(path.dirname(abs), { recursive: true });
+  await fs.writeFile(abs, body);
+  return storagePublicUrl(safe);
 }
 
 export async function listStoragePathnames(prefix: string): Promise<string[]> {
@@ -91,38 +75,33 @@ export async function listStoragePathnames(prefix: string): Promise<string[]> {
     return listGithubPathnames(safePrefix.replace(/\/$/, ""));
   }
 
-  if (storageBackend() === "filesystem") {
-    const base = getDataDir();
-    const start = toAbsoluteStoragePath(safePrefix);
-    if (!start) return [];
+  const base = getDataDir();
+  const start = toAbsoluteStoragePath(safePrefix);
+  if (!start) return [];
 
-    const prefixNorm = safePrefix.replace(/\/$/, "");
-    const results: string[] = [];
+  const prefixNorm = safePrefix.replace(/\/$/, "");
+  const results: string[] = [];
 
-    async function walk(absDir: string): Promise<void> {
-      let entries;
-      try {
-        entries = await fs.readdir(absDir, { withFileTypes: true });
-      } catch {
-        return;
-      }
-      for (const entry of entries) {
-        const abs = path.join(absDir, entry.name);
-        const rel = path.relative(base, abs).replace(/\\/g, "/");
-        if (entry.isDirectory()) {
-          await walk(abs);
-        } else {
-          results.push(rel);
-        }
+  async function walk(absDir: string): Promise<void> {
+    let entries;
+    try {
+      entries = await fs.readdir(absDir, { withFileTypes: true });
+    } catch {
+      return;
+    }
+    for (const entry of entries) {
+      const abs = path.join(absDir, entry.name);
+      const rel = path.relative(base, abs).replace(/\\/g, "/");
+      if (entry.isDirectory()) {
+        await walk(abs);
+      } else {
+        results.push(rel);
       }
     }
-
-    await walk(start);
-    return results.filter((p) => p.startsWith(prefixNorm));
   }
 
-  const { listBlobPathnames } = await import("@/lib/storage/blob");
-  return listBlobPathnames(safePrefix.replace(/\/$/, ""));
+  await walk(start);
+  return results.filter((p) => p.startsWith(prefixNorm));
 }
 
 export async function readStorageJson<T>(relativePath: string): Promise<T | null> {
@@ -149,17 +128,11 @@ export async function readStorageBytes(relativePath: string): Promise<Buffer | n
     return readGithubBytes(safe);
   }
 
-  if (storageBackend() === "filesystem") {
-    const abs = toAbsoluteStoragePath(safe);
-    if (!abs) return null;
-    try {
-      return await fs.readFile(abs);
-    } catch {
-      return null;
-    }
+  const abs = toAbsoluteStoragePath(safe);
+  if (!abs) return null;
+  try {
+    return await fs.readFile(abs);
+  } catch {
+    return null;
   }
-
-  const { readBlobFileBytes } = await import("@/lib/storage/blob");
-  const file = await readBlobFileBytes(safe);
-  return file?.data ?? null;
 }

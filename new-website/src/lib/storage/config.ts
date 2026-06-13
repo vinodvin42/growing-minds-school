@@ -1,18 +1,12 @@
 import path from "node:path";
 
-export type StorageBackend = "filesystem" | "github" | "blob";
+export type StorageBackend = "filesystem" | "github";
 
-/**
- * Storage backends:
- * - filesystem — local dev, reads/writes ./data
- * - github — Vercel production, JSON/binary files in the Git repo via GitHub API
- * - blob — legacy migration only
- */
+/** Storage backends: filesystem (local dev) or github (Vercel production). */
 export function storageBackend(): StorageBackend {
   const configured = process.env.STORAGE_BACKEND?.trim().toLowerCase();
   if (configured === "github" || configured === "repo") return "github";
   if (configured === "filesystem") return "filesystem";
-  if (configured === "blob") return "blob";
   if (process.env.VERCEL && process.env.GITHUB_TOKEN) return "github";
   return "filesystem";
 }
@@ -20,10 +14,7 @@ export function storageBackend(): StorageBackend {
 export function isStorageConfigured(): boolean {
   const backend = storageBackend();
   if (backend === "filesystem") return true;
-  if (backend === "github") {
-    return Boolean(getGithubToken() && getGithubRepo());
-  }
-  return Boolean(process.env.BLOB_READ_WRITE_TOKEN);
+  return Boolean(getGithubToken() && getGithubRepo());
 }
 
 export function storageErrorMessage(): string {
@@ -31,10 +22,7 @@ export function storageErrorMessage(): string {
   if (backend === "filesystem") {
     return "File storage is not writable. Check DATA_DIR permissions.";
   }
-  if (backend === "github") {
-    return "GitHub storage is not configured. Set GITHUB_TOKEN and GITHUB_REPO on Vercel.";
-  }
-  return "Blob storage is not configured.";
+  return "GitHub storage is not configured. Set GITHUB_TOKEN and GITHUB_REPO on Vercel.";
 }
 
 export function getDataDir(): string {
@@ -58,7 +46,6 @@ export function getGithubBranch(): string {
   return process.env.GITHUB_BRANCH?.trim() || "main";
 }
 
-/** Path inside the repo where JSON/uploads live, e.g. new-website/data */
 export function getGithubDataPrefix(): string {
   const prefix = process.env.GITHUB_DATA_PREFIX?.trim() || "new-website/data";
   return prefix.replace(/\\/g, "/").replace(/^\/+|\/+$/g, "");
@@ -90,23 +77,4 @@ export function toAbsoluteStoragePath(relativePath: string): string | null {
   const safe = sanitizeStoragePath(relativePath);
   if (!safe) return null;
   return path.join(getDataDir(), safe);
-}
-
-export function blobAccess(): "public" | "private" {
-  const configured = process.env.BLOB_ACCESS?.trim().toLowerCase();
-  if (configured === "private" || configured === "public") return configured;
-  return "public";
-}
-
-export function blobReadAccessModes(): Array<"public" | "private"> {
-  const primary = blobAccess();
-  return primary === "private" ? ["private", "public"] : ["public"];
-}
-
-export function isBlobStorageConfigured(): boolean {
-  return storageBackend() === "blob" && isStorageConfigured();
-}
-
-export function blobStorageErrorMessage(): string {
-  return storageErrorMessage();
 }

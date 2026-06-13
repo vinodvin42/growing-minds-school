@@ -34,7 +34,7 @@ In Vercel → project → **Settings** → **Environment Variables**:
 | `ADMIN_PASSWORD` | Strong admin password |
 | `NEXT_PUBLIC_SITE_URL` | `https://www.growingmindsschool.org` |
 
-**Do not set** `BLOB_READ_WRITE_TOKEN` — Blob is not used.
+**Do not set** `BLOB_READ_WRITE_TOKEN` — the app no longer uses Vercel Blob.
 
 Redeploy after adding variables.
 
@@ -50,19 +50,26 @@ Expected:
 
 ---
 
-## Migrate from Vercel Blob (one time)
+## Recover data from old Vercel Blob (one time)
 
-If you still have data in Blob:
+If student/fee data still lives in the **old** Vercel project’s Blob store:
+
+1. Open the old project on Vercel → **Storage** → Blob → **.env.local** tab
+2. Copy `BLOB_READ_WRITE_TOKEN`
+3. Run locally:
 
 ```bash
 cd new-website
-BLOB_READ_WRITE_TOKEN=vercel_blob_xxx STORAGE_BACKEND=filesystem npm run migrate:blob-to-data
-git add new-website/data
-git commit -m "Migrate school data from Blob to JSON files"
-git push
+$env:BLOB_READ_WRITE_TOKEN="vercel_blob_xxx"
+$env:GITHUB_TOKEN="ghp_xxx"
+$env:GITHUB_REPO="vinodvin42/growing-minds-school"
+$env:GITHUB_BRANCH="main"
+$env:GITHUB_DATA_PREFIX="new-website/data"
+$env:STORAGE_BACKEND="github"
+npm run recover:from-blob
 ```
 
-Or push migrated files via admin after first deploy (empty start).
+This copies every Blob file into GitHub storage and rebuilds `portal/manifest.json`.
 
 ---
 
@@ -71,6 +78,7 @@ Or push migrated files via admin after first deploy (empty start).
 ```bash
 npm run dev          # uses ./data/ automatically
 npm run seed         # creates data/site-content.json
+npm run seed:portal  # demo student for testing
 ```
 
 No GitHub token needed locally.
@@ -100,4 +108,4 @@ Files are served at `/api/storage/uploads/...` and `/api/storage/admissions/...`
 - **No Blob operation limits** — data lives in Git, not Vercel Blob.
 - **Saves commit to GitHub** — each admin save creates a git commit (may take 1–2 seconds).
 - **Large uploads** — images/PDFs are stored in the repo via GitHub API (keep files reasonably sized).
-- **Legacy Blob** — set `STORAGE_BACKEND=blob` only for one-time migration scripts.
+- **Rebuild manifest** — POST `/api/admin/migrate-storage` (admin login required) rescans storage and updates `portal/manifest.json`.

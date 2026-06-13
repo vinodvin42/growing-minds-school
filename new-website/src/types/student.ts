@@ -1,4 +1,4 @@
-/** Stored in Blob — includes password hash (never sent to clients). */
+/** Stored in JSON files — includes password hash (never sent to clients). */
 export interface StudentRecord {
   id: string;
   loginId: string;
