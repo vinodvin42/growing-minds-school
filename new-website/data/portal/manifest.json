@@ -1,5 +1,14 @@
 {
   "version": 1,
-  "years": {},
-  "updatedAt": "2026-06-13T09:52:27.140Z"
+  "years": {
+    "2026": {
+      "studentClassSlugs": [
+        "3rd-standard"
+      ],
+      "homeworkClassSlugs": [],
+      "messageMonths": [],
+      "feeStudentIds": []
+    }
+  },
+  "updatedAt": "2026-06-13T10:09:58.242Z"
 }
