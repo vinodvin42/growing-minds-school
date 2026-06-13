@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { NextResponse } from "next/server";
+import { readStorageBytes } from "@/lib/storage/index";
 import { storageBackend, toAbsoluteStoragePath } from "@/lib/storage/config";
 
 const PUBLIC_PREFIXES = ["uploads/", "admissions/"];
@@ -15,9 +16,10 @@ const MIME: Record<string, string> = {
 
 type RouteContext = { params: Promise<{ path: string[] }> };
 
-/** Serve uploaded files when STORAGE_BACKEND=filesystem */
+/** Serve uploaded files (filesystem or GitHub-backed storage on Vercel). */
 export async function GET(_request: Request, context: RouteContext) {
-  if (storageBackend() !== "filesystem") {
+  const backend = storageBackend();
+  if (backend === "blob") {
     return NextResponse.json({ message: "Not found" }, { status: 404 });
   }
 
@@ -28,22 +30,31 @@ export async function GET(_request: Request, context: RouteContext) {
     return NextResponse.json({ message: "Forbidden" }, { status: 403 });
   }
 
-  const abs = toAbsoluteStoragePath(relativePath);
-  if (!abs) {
-    return NextResponse.json({ message: "Invalid path" }, { status: 400 });
+  let data: Buffer | null = null;
+
+  if (backend === "filesystem") {
+    const abs = toAbsoluteStoragePath(relativePath);
+    if (!abs) {
+      return NextResponse.json({ message: "Invalid path" }, { status: 400 });
+    }
+    try {
+      data = await fs.readFile(abs);
+    } catch {
+      return NextResponse.json({ message: "Not found" }, { status: 404 });
+    }
+  } else {
+    data = await readStorageBytes(relativePath);
+    if (!data) {
+      return NextResponse.json({ message: "Not found" }, { status: 404 });
+    }
   }
 
-  try {
-    const data = await fs.readFile(abs);
-    const ext = path.extname(abs).toLowerCase();
-    const contentType = MIME[ext] ?? "application/octet-stream";
-    return new NextResponse(data, {
-      headers: {
-        "Content-Type": contentType,
-        "Cache-Control": "public, max-age=31536000, immutable",
-      },
-    });
-  } catch {
-    return NextResponse.json({ message: "Not found" }, { status: 404 });
-  }
+  const ext = path.extname(relativePath).toLowerCase();
+  const contentType = MIME[ext] ?? "application/octet-stream";
+  return new NextResponse(new Uint8Array(data), {
+    headers: {
+      "Content-Type": contentType,
+      "Cache-Control": "public, max-age=3600",
+    },
+  });
 }

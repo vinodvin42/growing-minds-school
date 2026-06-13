@@ -36,8 +36,8 @@ yarn-error.log*
 # vercel
 .vercel
 
-# Filesystem storage (STORAGE_BACKEND=filesystem)
-/data/
+# Local JSON data (also synced to GitHub on Vercel)
+# /data/ is committed after migration — do not ignore
 
 # legacy local CMS path
 .data/

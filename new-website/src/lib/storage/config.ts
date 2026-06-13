@@ -1,30 +1,73 @@
 import path from "node:path";
 
-export type StorageBackend = "filesystem" | "blob";
+export type StorageBackend = "filesystem" | "github" | "blob";
 
-/** Default is filesystem. Set STORAGE_BACKEND=blob only for legacy Vercel Blob deployments. */
+/**
+ * Storage backends:
+ * - filesystem — local dev, reads/writes ./data
+ * - github — Vercel production, JSON/binary files in the Git repo via GitHub API
+ * - blob — legacy migration only
+ */
 export function storageBackend(): StorageBackend {
   const configured = process.env.STORAGE_BACKEND?.trim().toLowerCase();
+  if (configured === "github" || configured === "repo") return "github";
+  if (configured === "filesystem") return "filesystem";
   if (configured === "blob") return "blob";
+  if (process.env.VERCEL && process.env.GITHUB_TOKEN) return "github";
   return "filesystem";
 }
 
 export function isStorageConfigured(): boolean {
-  if (storageBackend() === "filesystem") return true;
-  return Boolean(process.env.BLOB_READ_WRITE_TOKEN || (process.env.BLOB_STORE_ID && process.env.VERCEL));
+  const backend = storageBackend();
+  if (backend === "filesystem") return true;
+  if (backend === "github") {
+    return Boolean(getGithubToken() && getGithubRepo());
+  }
+  return Boolean(process.env.BLOB_READ_WRITE_TOKEN);
 }
 
 export function storageErrorMessage(): string {
-  if (storageBackend() === "filesystem") {
+  const backend = storageBackend();
+  if (backend === "filesystem") {
     return "File storage is not writable. Check DATA_DIR permissions.";
   }
-  return "Blob storage is not configured. Connect a Blob store or set STORAGE_BACKEND=filesystem with a persistent DATA_DIR.";
+  if (backend === "github") {
+    return "GitHub storage is not configured. Set GITHUB_TOKEN and GITHUB_REPO on Vercel.";
+  }
+  return "Blob storage is not configured.";
 }
 
-/** Root folder for JSON and uploads when using filesystem backend. */
 export function getDataDir(): string {
   const dir = process.env.DATA_DIR?.trim();
   return dir ? path.resolve(dir) : path.join(process.cwd(), "data");
+}
+
+export function getGithubToken(): string | null {
+  return process.env.GITHUB_TOKEN?.trim() || null;
+}
+
+export function getGithubRepo(): { owner: string; repo: string } | null {
+  const raw = process.env.GITHUB_REPO?.trim();
+  if (!raw) return null;
+  const [owner, repo] = raw.split("/");
+  if (!owner || !repo) return null;
+  return { owner, repo };
+}
+
+export function getGithubBranch(): string {
+  return process.env.GITHUB_BRANCH?.trim() || "main";
+}
+
+/** Path inside the repo where JSON/uploads live, e.g. new-website/data */
+export function getGithubDataPrefix(): string {
+  const prefix = process.env.GITHUB_DATA_PREFIX?.trim() || "new-website/data";
+  return prefix.replace(/\\/g, "/").replace(/^\/+|\/+$/g, "");
+}
+
+export function toGithubRepoPath(relativePath: string): string | null {
+  const safe = sanitizeStoragePath(relativePath);
+  if (!safe) return null;
+  return `${getGithubDataPrefix()}/${safe}`.replace(/\/+/g, "/");
 }
 
 export function storagePublicUrl(relativePath: string): string {
@@ -37,7 +80,6 @@ export function storagePublicUrl(relativePath: string): string {
   return base ? `${base}/api/storage/${encoded}` : `/api/storage/${encoded}`;
 }
 
-/** Prevent path traversal — returns null if unsafe. */
 export function sanitizeStoragePath(relativePath: string): string | null {
   const normalized = relativePath.replace(/\\/g, "/").replace(/^\/+/, "");
   if (!normalized || normalized.includes("..")) return null;
@@ -50,7 +92,6 @@ export function toAbsoluteStoragePath(relativePath: string): string | null {
   return path.join(getDataDir(), safe);
 }
 
-/** Legacy blob helpers — only used when STORAGE_BACKEND=blob */
 export function blobAccess(): "public" | "private" {
   const configured = process.env.BLOB_ACCESS?.trim().toLowerCase();
   if (configured === "private" || configured === "public") return configured;
@@ -62,12 +103,10 @@ export function blobReadAccessModes(): Array<"public" | "private"> {
   return primary === "private" ? ["private", "public"] : ["public"];
 }
 
-/** @deprecated Use isStorageConfigured */
 export function isBlobStorageConfigured(): boolean {
   return storageBackend() === "blob" && isStorageConfigured();
 }
 
-/** @deprecated Use storageErrorMessage */
 export function blobStorageErrorMessage(): string {
   return storageErrorMessage();
 }

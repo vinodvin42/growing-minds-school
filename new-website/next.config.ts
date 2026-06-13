@@ -2,8 +2,6 @@ import type { NextConfig } from "next";
 import { withSerwist } from "@serwist/turbopack";
 
 const nextConfig: NextConfig = {
-  output: "standalone",
-  serverExternalPackages: ["@vercel/blob"],
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "customer-assets.emergentagent.com" },

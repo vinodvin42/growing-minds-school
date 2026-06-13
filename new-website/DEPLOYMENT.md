@@ -40,16 +40,16 @@ git push -u origin main
 
 ---
 
-## Step 3: Add Vercel Blob Storage
+## Step 3: GitHub storage (JSON files — no Blob)
 
-1. In your Vercel project → **Storage** tab
-2. Click **Create Database** → **Blob**
-3. Choose **Public** access (required — gallery images and CMS content must be viewable on the website)
-4. Name it (e.g. `growing-minds-blob`)
-5. Connect to your project
-6. Vercel adds **`BLOB_READ_WRITE_TOKEN`**, **`BLOB_STORE_ID`**, and related vars automatically
+School data is stored as JSON files in your GitHub repo, not Vercel Blob.
 
-> If you previously used a **Private** Blob store, create a new **Public** one instead. Private blobs cannot serve images on the public site. After switching stores, **redeploy** and **Save Changes** once in admin (or run `npm run seed`) — content from the old store is not copied automatically.
+1. GitHub → **Settings** → **Developer settings** → **Personal access tokens** → **Fine-grained token**
+2. Repository: **`vinodvin42/growing-minds-school`**
+3. Permission: **Contents** → Read and write
+4. Copy the token — you will set it as `GITHUB_TOKEN` on Vercel
+
+See **`STORAGE-SETUP.md`** for full details.
 
 ---
 
@@ -60,13 +60,18 @@ In Vercel → **Settings** → **Environment Variables**, add:
 | Variable | Value | Required |
 |----------|-------|----------|
 | `ADMIN_PASSWORD` | Strong password for `/admin` | Yes |
-| `RESEND_API_KEY` | From [resend.com](https://resend.com) — **use this if Gmail App Password unavailable** | Yes (email) |
-| `ADMIN_EMAIL` | `growingminds2025@gmail.com` (where forms are received) | Yes |
+| `STORAGE_BACKEND` | `github` | Yes |
+| `GITHUB_TOKEN` | GitHub PAT from Step 3 | Yes |
+| `GITHUB_REPO` | `vinodvin42/growing-minds-school` | Yes |
+| `GITHUB_BRANCH` | `main` | Yes |
+| `GITHUB_DATA_PREFIX` | `new-website/data` | Yes |
+| `GMAIL_USER` / `GMAIL_APP_PASSWORD` | Gmail SMTP — see `EMAIL-SETUP.md` | Yes (email) |
+| `ADMIN_EMAIL` | Where forms are received | Yes |
 | `EMAIL_FROM_NAME` | `Growing Minds English School` | Yes |
-| `FROM_EMAIL` | `Growing Minds <noreply@growingmindsschool.org>` (after domain verify in Resend) | Optional |
-| `GMAIL_USER` / `GMAIL_APP_PASSWORD` | Gmail SMTP — only if App Passwords work on your account | Optional |
-| `NEXT_PUBLIC_SITE_URL` | `https://your-project.vercel.app` | Yes |
-| `BLOB_READ_WRITE_TOKEN` or `BLOB_STORE_ID` | Auto-set when Blob store is connected | Yes |
+| `NEXT_PUBLIC_SITE_URL` | `https://www.growingmindsschool.org` | Yes |
+| `RESEND_API_KEY` | Optional — if Gmail unavailable | Optional |
+
+**Do not connect Vercel Blob** — `BLOB_READ_WRITE_TOKEN` is not needed.
 
 --- 
 
@@ -85,7 +90,7 @@ Your site will be live at `https://your-project.vercel.app`
 1. Visit `https://your-project.vercel.app/admin/login`
 2. Log in with your `ADMIN_PASSWORD`
 3. Review content in each tab
-4. Click **Save Changes** to persist to Blob storage
+4. Click **Save Changes** — data is saved as JSON files in your GitHub repo
 
 ### Add school videos
 
@@ -130,9 +135,9 @@ For Resend instead: sign up at [resend.com](https://resend.com), set `RESEND_API
 | Issue | Fix |
 |-------|-----|
 | **Domain shows old LiteSpeed site** | DNS still on Terabytes hosting — follow **`DOMAIN-SETUP.md`** |
-| Admin save / upload fails | Connect Blob store, confirm `BLOB_STORE_ID` or `BLOB_READ_WRITE_TOKEN` is set, then **redeploy** |
-| Forms don't send email | Add `RESEND_API_KEY` on Vercel (Gmail won't work without App Password) + redeploy |
-| Admission upload fails | Blob store required; files upload one at a time (max 5MB each) |
+| Admin save / upload fails | Check `GITHUB_TOKEN` has repo write access, `STORAGE_BACKEND=github`, then **redeploy** |
+| Forms don't send email | Add Gmail App Password or `RESEND_API_KEY` on Vercel + redeploy |
+| Admission upload fails | GitHub token needs Contents write; max ~5MB per file |
 | Images not loading | Local images are in `public/assets/images/` — no external deps needed |
 | 401 on admin | Clear cookies, log in again with correct `ADMIN_PASSWORD` |
 

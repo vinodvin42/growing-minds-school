@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "node scripts/generate-pwa-icons.mjs && next build",
-    "start": "node scripts/ensure-data-dir.mjs && next start",
+    "start": "next start",
     "lint": "eslint",
     "seed": "tsx scripts/seed-content.ts",
     "migrate:storage": "tsx scripts/migrate-storage.ts",

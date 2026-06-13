@@ -1,86 +1,103 @@
-# Storage — filesystem (default)
+# Storage — JSON files on Vercel (no Blob)
 
-All CMS content, student portal JSON, and uploads are stored on **disk** under `DATA_DIR`.
+CMS content, student portal data, and uploads are stored as **JSON and files in your GitHub repo** — not Vercel Blob.
 
-Vercel Blob is **not used** unless you explicitly set `STORAGE_BACKEND=blob` (legacy only).
+| Environment | Backend | How it works |
+|-------------|---------|--------------|
+| **Vercel (production)** | `github` | Reads/writes via GitHub API → `new-website/data/` in the repo |
+| **Local dev** | `filesystem` | Reads/writes `./data/` on your PC |
 
----
-
-## Environment
-
-```env
-STORAGE_BACKEND=filesystem
-DATA_DIR=/data
-NEXT_PUBLIC_SITE_URL=https://www.growingmindsschool.org
-```
-
-| Variable | Default | Notes |
-|----------|---------|--------|
-| `STORAGE_BACKEND` | `filesystem` | Only set `blob` for old Vercel-only deploys |
-| `DATA_DIR` | `./data` | Use `/data` on Railway/Docker with a mounted volume |
+Each admin save commits a file to GitHub. Vercel redeploys automatically when `main` updates.
 
 ---
 
-## Where to deploy
+## Vercel setup
 
-**Vercel cannot persist files.** Use a host with a persistent volume:
+### 1. Create a GitHub token
 
-| Host | Guide |
-|------|--------|
-| Railway | `DEPLOY-FILE-STORAGE.md` |
-| Docker / VPS | `Dockerfile`, `docker-compose.yml` |
-| Render | Same env vars + persistent disk |
+1. GitHub → **Settings** → **Developer settings** → **Personal access tokens** → **Fine-grained token**
+2. Repository access: **`vinodvin42/growing-minds-school`**
+3. Permissions: **Contents** → Read and write
+4. Copy the token
 
----
+### 2. Vercel environment variables
 
-## Local development
+In Vercel → project → **Settings** → **Environment Variables**:
 
-```bash
-npm run dev    # reads/writes ./data
-npm run seed   # initial site-content.json
+| Variable | Value |
+|----------|--------|
+| `STORAGE_BACKEND` | `github` |
+| `GITHUB_TOKEN` | Your GitHub token |
+| `GITHUB_REPO` | `vinodvin42/growing-minds-school` |
+| `GITHUB_BRANCH` | `main` |
+| `GITHUB_DATA_PREFIX` | `new-website/data` |
+| `ADMIN_PASSWORD` | Strong admin password |
+| `NEXT_PUBLIC_SITE_URL` | `https://www.growingmindsschool.org` |
+
+**Do not set** `BLOB_READ_WRITE_TOKEN` — Blob is not used.
+
+Redeploy after adding variables.
+
+### 3. Verify
+
+Open: `https://your-site.vercel.app/api/health`
+
+Expected:
+
+```json
+{ "ok": true, "backend": "github", "github": { "repo": "vinodvin42/growing-minds-school", "tokenSet": true } }
 ```
 
 ---
 
 ## Migrate from Vercel Blob (one time)
 
-On your computer:
+If you still have data in Blob:
 
 ```bash
-BLOB_READ_WRITE_TOKEN=vercel_blob_xxx npm run migrate:blob-to-data
+cd new-website
+BLOB_READ_WRITE_TOKEN=vercel_blob_xxx STORAGE_BACKEND=filesystem npm run migrate:blob-to-data
+git add new-website/data
+git commit -m "Migrate school data from Blob to JSON files"
+git push
 ```
 
-Copies all Blob files into `./data/`. Upload that folder to your server volume, then disconnect Blob on Vercel.
+Or push migrated files via admin after first deploy (empty start).
 
 ---
 
-## Layout
+## Local development
+
+```bash
+npm run dev          # uses ./data/ automatically
+npm run seed         # creates data/site-content.json
+```
+
+No GitHub token needed locally.
+
+---
+
+## Folder layout
 
 ```
-data/
+new-website/data/
   site-content.json
-  portal/manifest.json
-  portal/{year}/classes/{class}/students.json
-  portal/{year}/classes/{class}/homework.json
-  portal/{year}/{month}/messages.json
-  portal/{year}/accounts/{studentId}.json
-  portal/{year}/calendar/holidays.json
-  portal/{year}/calendar/reminders.json
+  portal/
+    manifest.json
+    2026/
+      classes/...
+      accounts/...
   uploads/
   admissions/
 ```
 
-Uploads are served via `/api/storage/[...path]`.
+Files are served at `/api/storage/uploads/...` and `/api/storage/admissions/...`.
 
 ---
 
-## Legacy: Vercel + Blob
+## Notes
 
-Only if you cannot move hosting yet:
-
-```env
-STORAGE_BACKEND=blob
-BLOB_READ_WRITE_TOKEN=...
-```
-
-Requires `@vercel/blob` and Vercel Pro for higher limits. **Not recommended** — move to file storage instead.
+- **No Blob operation limits** — data lives in Git, not Vercel Blob.
+- **Saves commit to GitHub** — each admin save creates a git commit (may take 1–2 seconds).
+- **Large uploads** — images/PDFs are stored in the repo via GitHub API (keep files reasonably sized).
+- **Legacy Blob** — set `STORAGE_BACKEND=blob` only for one-time migration scripts.

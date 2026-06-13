@@ -12,6 +12,11 @@ export async function readStorageText(relativePath: string): Promise<string | nu
   const safe = sanitizeStoragePath(relativePath);
   if (!safe) return null;
 
+  if (storageBackend() === "github") {
+    const { readGithubText } = await import("@/lib/storage/github");
+    return readGithubText(safe);
+  }
+
   if (storageBackend() === "filesystem") {
     const abs = toAbsoluteStoragePath(safe);
     if (!abs) return null;
@@ -30,6 +35,12 @@ export async function readStorageText(relativePath: string): Promise<string | nu
 export async function writeStorageText(relativePath: string, text: string, contentType = "application/json"): Promise<void> {
   const safe = sanitizeStoragePath(relativePath);
   if (!safe) throw new Error("Invalid storage path");
+
+  if (storageBackend() === "github") {
+    const { writeGithubText } = await import("@/lib/storage/github");
+    await writeGithubText(safe, text);
+    return;
+  }
 
   if (storageBackend() === "filesystem") {
     const abs = toAbsoluteStoragePath(safe);
@@ -51,15 +62,22 @@ export async function writeStorageBinary(
   const safe = sanitizeStoragePath(relativePath);
   if (!safe) throw new Error("Invalid storage path");
 
+  const body = Buffer.isBuffer(data) ? data : Buffer.from(data);
+
+  if (storageBackend() === "github") {
+    const { writeGithubBinary } = await import("@/lib/storage/github");
+    await writeGithubBinary(safe, body);
+    return storagePublicUrl(safe);
+  }
+
   if (storageBackend() === "filesystem") {
     const abs = toAbsoluteStoragePath(safe);
     if (!abs) throw new Error("Invalid storage path");
     await fs.mkdir(path.dirname(abs), { recursive: true });
-    await fs.writeFile(abs, data);
+    await fs.writeFile(abs, body);
     return storagePublicUrl(safe);
   }
 
-  const body = Buffer.isBuffer(data) ? data : Buffer.from(data);
   const { writeBlobBinary } = await import("@/lib/storage/blob");
   return writeBlobBinary(safe, body, contentType);
 }
@@ -67,6 +85,11 @@ export async function writeStorageBinary(
 export async function listStoragePathnames(prefix: string): Promise<string[]> {
   const safePrefix = sanitizeStoragePath(prefix.replace(/\/$/, "") + "/");
   if (!safePrefix) return [];
+
+  if (storageBackend() === "github") {
+    const { listGithubPathnames } = await import("@/lib/storage/github");
+    return listGithubPathnames(safePrefix.replace(/\/$/, ""));
+  }
 
   if (storageBackend() === "filesystem") {
     const base = getDataDir();
@@ -115,4 +138,28 @@ export async function readStorageJson<T>(relativePath: string): Promise<T | null
 
 export async function writeStorageJson(relativePath: string, data: unknown): Promise<void> {
   await writeStorageText(relativePath, JSON.stringify(data, null, 2));
+}
+
+export async function readStorageBytes(relativePath: string): Promise<Buffer | null> {
+  const safe = sanitizeStoragePath(relativePath);
+  if (!safe) return null;
+
+  if (storageBackend() === "github") {
+    const { readGithubBytes } = await import("@/lib/storage/github");
+    return readGithubBytes(safe);
+  }
+
+  if (storageBackend() === "filesystem") {
+    const abs = toAbsoluteStoragePath(safe);
+    if (!abs) return null;
+    try {
+      return await fs.readFile(abs);
+    } catch {
+      return null;
+    }
+  }
+
+  const { readBlobFileBytes } = await import("@/lib/storage/blob");
+  const file = await readBlobFileBytes(safe);
+  return file?.data ?? null;
 }
