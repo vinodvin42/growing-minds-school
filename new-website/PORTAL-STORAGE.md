@@ -1,5 +1,27 @@
 # Student portal — Blob folder layout
 
+## Index file (reduces Blob `list()` usage)
+
+All portal JSON paths are tracked in a single index:
+
+```
+portal/
+  manifest.json    → { "version": 1, "years": { "2026": { ... } }, "updatedAt": "..." }
+```
+
+Each year entry lists:
+
+| Field | Tracks |
+|-------|--------|
+| `studentClassSlugs` | `classes/{slug}/students.json` |
+| `homeworkClassSlugs` | `classes/{slug}/homework.json` |
+| `messageMonths` | `{year}/{month}/messages.json` |
+| `feeStudentIds` | `accounts/{studentId}.json` |
+
+On first request after deploy, if `manifest.json` is missing the app runs **one** Blob list to build the index, saves it, then uses **direct path reads** only.
+
+Admin saves update `manifest.json` automatically.
+
 ## Homework (by year + class)
 
 Each homework item is saved under the class it targets:

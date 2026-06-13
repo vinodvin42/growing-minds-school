@@ -36,9 +36,15 @@ yarn-error.log*
 # vercel
 .vercel
 
-# local CMS fallback (dev without Blob)
+# Filesystem storage (STORAGE_BACKEND=filesystem)
+/data/
+
+# legacy local CMS path
 .data/
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+.vercel
+.env*

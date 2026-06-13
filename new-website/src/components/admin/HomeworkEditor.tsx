@@ -136,7 +136,7 @@ export default function HomeworkEditor({ uploadFile }: { uploadFile: (f: File) =
     <>
       <AdminCollapsibleSection
         title="Homework"
-        hint="Saved class-wise in Blob: portal/2026/classes/3rd-standard/homework.json (by target class). All-school → all-classes folder."
+        hint="Saved class-wise in portal/2026/classes/3rd-standard/homework.json (by target class). All-school → all-classes folder."
         count={portal.homework.length}
         addLabel="Add Homework"
         onAdd={addItem}

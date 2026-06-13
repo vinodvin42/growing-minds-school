@@ -136,7 +136,7 @@ export default function StudentMessagesEditor({ uploadFile }: { uploadFile: (f: 
     <>
       <AdminCollapsibleSection
         title="Teacher Messages"
-        hint="Saved per month in Blob: portal/2026/06/messages.json (by created date). Broadcast or individual messages with attachments."
+        hint="Saved per month in portal/2026/06/messages.json (by created date). Broadcast or individual messages with attachments."
         count={portal.messages.length}
         addLabel="New Message"
         onAdd={addItem}

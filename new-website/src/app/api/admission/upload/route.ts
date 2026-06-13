@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { put } from "@vercel/blob";
-import { isBlobStorageConfigured } from "@/lib/blob-storage";
+import { isStorageConfigured } from "@/lib/blob-storage";
+import { writeStorageBinary } from "@/lib/storage/index";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const ALLOWED_TYPES = ["application/pdf", "image/jpeg", "image/jpg", "image/png"];
@@ -28,7 +28,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, message: "Only PDF, JPG, and PNG files are allowed" }, { status: 400 });
     }
 
-    if (!isBlobStorageConfigured()) {
+    if (!isStorageConfigured()) {
       return NextResponse.json({
         success: true,
         url: `[dev:${field}:${file.name}]`,
@@ -36,13 +36,11 @@ export async function POST(request: Request) {
       });
     }
 
-    const blob = await put(
-      `admissions/${Date.now()}-${field}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`,
-      file,
-      { access: "public" }
-    );
+    const pathname = `admissions/${Date.now()}-${field}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const url = await writeStorageBinary(pathname, buffer, file.type || "application/octet-stream");
 
-    return NextResponse.json({ success: true, url: blob.url });
+    return NextResponse.json({ success: true, url });
   } catch (err) {
     console.error("Admission upload error:", err);
     return NextResponse.json({ success: false, message: "Upload failed" }, { status: 500 });

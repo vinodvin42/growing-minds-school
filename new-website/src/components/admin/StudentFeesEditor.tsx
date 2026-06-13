@@ -235,7 +235,7 @@ export default function StudentFeesEditor() {
     <>
       <AdminCollapsibleSection
         title="Student Fees & Accounts"
-        hint={`Academic year ${academicYear}. Saved per student in Blob: portal/${academicYear}/accounts/{studentId}.json`}
+        hint={`Academic year ${academicYear}. Saved per student in portal/${academicYear}/accounts/{studentId}.json`}
         count={students.length}
         defaultOpen
       >

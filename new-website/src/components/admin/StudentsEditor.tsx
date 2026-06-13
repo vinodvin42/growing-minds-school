@@ -134,7 +134,7 @@ export default function StudentsEditor() {
     <>
       <AdminCollapsibleSection
         title="Student Management"
-        hint="Saved per class in Blob: portal/2026/classes/3rd-standard/students.json. Save after edits — students sign in at /student/login."
+        hint="Saved per class in portal/2026/classes/3rd-standard/students.json. Save after edits — students sign in at /student/login."
         count={students.length}
         addLabel="Add Student"
         onAdd={addStudent}

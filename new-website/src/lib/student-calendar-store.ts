@@ -1,6 +1,6 @@
 import { unstable_noStore as noStore } from "next/cache";
 import { readBlobJson, writeBlobJson } from "@/lib/blob-json";
-import { blobStorageErrorMessage, isBlobStorageConfigured } from "@/lib/blob-storage";
+import { blobStorageErrorMessage, isStorageConfigured } from "@/lib/blob-storage";
 import { academicYear, holidaysBlobPath, remindersBlobPath } from "@/lib/portal-storage-paths";
 import {
   emptyCalendarData,
@@ -43,7 +43,7 @@ export async function getStudentCalendarData(
     return memoryCalendar;
   }
 
-  if (!isBlobStorageConfigured()) {
+  if (!isStorageConfigured()) {
     return emptyCalendarData();
   }
 
@@ -77,7 +77,7 @@ export async function saveStudentCalendarData(
   data: StudentCalendarData,
   year: string = academicYear()
 ): Promise<StudentCalendarData> {
-  if (!isBlobStorageConfigured()) {
+  if (!isStorageConfigured()) {
     throw new Error(blobStorageErrorMessage());
   }
 

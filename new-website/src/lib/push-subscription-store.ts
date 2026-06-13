@@ -1,5 +1,5 @@
 import { readBlobJson, writeBlobJson } from "@/lib/blob-json";
-import { blobStorageErrorMessage, isBlobStorageConfigured } from "@/lib/blob-storage";
+import { blobStorageErrorMessage, isStorageConfigured } from "@/lib/blob-storage";
 
 const PUSH_SUBSCRIPTIONS_PATH = "portal/push/subscriptions.json";
 
@@ -18,7 +18,7 @@ const TTL = 30_000;
 
 async function load(): Promise<PushRegistry> {
   if (memory.data && Date.now() - memory.at < TTL) return memory.data;
-  if (!isBlobStorageConfigured()) return { subscriptions: [] };
+  if (!isStorageConfigured()) return { subscriptions: [] };
   const file = await readBlobJson<PushRegistry>(PUSH_SUBSCRIPTIONS_PATH);
   const data = { subscriptions: Array.isArray(file?.subscriptions) ? file.subscriptions : [] };
   memory.data = data;
@@ -30,7 +30,7 @@ export async function upsertPushSubscription(
   studentId: string,
   sub: Omit<StoredPushSubscription, "studentId" | "updatedAt">
 ): Promise<void> {
-  if (!isBlobStorageConfigured()) throw new Error(blobStorageErrorMessage());
+  if (!isStorageConfigured()) throw new Error(blobStorageErrorMessage());
 
   const registry = await load();
   const now = new Date().toISOString();
@@ -45,7 +45,7 @@ export async function upsertPushSubscription(
 }
 
 export async function removePushSubscription(endpoint: string): Promise<void> {
-  if (!isBlobStorageConfigured()) return;
+  if (!isStorageConfigured()) return;
   const registry = await load();
   const next = { subscriptions: registry.subscriptions.filter((s) => s.endpoint !== endpoint) };
   await writeBlobJson(PUSH_SUBSCRIPTIONS_PATH, next);

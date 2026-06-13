@@ -1,13 +1,23 @@
 import { unstable_noStore as noStore } from "next/cache";
-import { listBlobPathnames, readBlobJson, writeBlobJson } from "@/lib/blob-json";
-import { blobStorageErrorMessage, isBlobStorageConfigured } from "@/lib/blob-storage";
+import { readBlobJson, writeBlobJson } from "@/lib/blob-json";
+import { blobStorageErrorMessage, isStorageConfigured } from "@/lib/blob-storage";
+import {
+  BLOB_MEMORY_TTL_MS,
+  ensurePortalManifest,
+  getYearIndex,
+  homeworkJsonPaths,
+  homeworkJsonPathsForStudent,
+  messageJsonPaths,
+  syncHomeworkSlugsAfterSave,
+  syncMessageMonthsAfterSave,
+  updatePortalYearIndex,
+} from "@/lib/portal-manifest";
 import {
   academicYear,
   classHomeworkBlobPath,
   classSlug,
   LEGACY_PORTAL_BLOB_PATH,
   messagesBlobPath,
-  PORTAL_ROOT,
   yearMonthFromDate,
 } from "@/lib/portal-storage-paths";
 import type { HomeworkItem, StudentPortalData, TeacherMessage } from "@/types/student-portal";
@@ -23,9 +33,7 @@ const emptyPortal = (): StudentPortalData => ({ homework: [], messages: [] });
 
 let memoryPortal: StudentPortalData | null = null;
 let memoryPortalAt = 0;
-const MEMORY_TTL_MS = 30 * 1000;
 
-/** Which class folder a homework item belongs in when saved. */
 export function homeworkClassSlug(item: HomeworkItem): string {
   if (item.audience === "individual") return INDIVIDUAL_SLUG;
   if (item.audience === "all") return ALL_CLASSES_SLUG;
@@ -78,12 +86,13 @@ async function loadLegacyPortal(): Promise<StudentPortalData | null> {
   };
 }
 
-async function loadItemsFromPaths<T>(suffix: string): Promise<T[]> {
-  const pathnames = await listBlobPathnames(`${PORTAL_ROOT}/`);
-  const targetPaths = pathnames.filter((p) => p.endsWith(`/${suffix}`));
+async function readItemsFromPaths<T>(
+  paths: string[],
+  suffix: string
+): Promise<T[]> {
   const items: T[] = [];
 
-  for (const path of targetPaths) {
+  for (const path of paths) {
     const file = await readBlobJson<ItemsFile<T> | { homework?: T[]; messages?: T[] }>(path);
     if (!file) continue;
     if (Array.isArray((file as ItemsFile<T>).items)) {
@@ -99,28 +108,24 @@ async function loadItemsFromPaths<T>(suffix: string): Promise<T[]> {
 }
 
 async function loadHomeworkItems(): Promise<HomeworkItem[]> {
-  const fromFolders = dedupeById(await loadItemsFromPaths<HomeworkItem>("homework.json"));
+  const manifest = await ensurePortalManifest();
+  const paths = homeworkJsonPaths(manifest);
+  const fromFolders = dedupeById(await readItemsFromPaths<HomeworkItem>(paths, "homework.json"));
   if (fromFolders.length > 0) return fromFolders;
   const legacy = await loadLegacyPortal();
   return legacy?.homework ?? [];
 }
 
-/** Load homework files for one student (class + school-wide + individual). */
 async function loadHomeworkForStudent(student: StudentProfile): Promise<HomeworkItem[]> {
-  if (!isBlobStorageConfigured()) return [];
+  if (!isStorageConfigured()) return [];
 
+  const year = academicYear();
+  const manifest = await ensurePortalManifest();
   const studentSlug = classSlug(student.standard);
-  const pathnames = await listBlobPathnames(`${PORTAL_ROOT}/`);
-  const relevantPaths = pathnames.filter((p) => {
-    if (!p.endsWith("/homework.json")) return false;
-    if (p.endsWith(`/classes/${studentSlug}/homework.json`)) return true;
-    if (p.endsWith(`/classes/${ALL_CLASSES_SLUG}/homework.json`)) return true;
-    if (p.endsWith(`/classes/${INDIVIDUAL_SLUG}/homework.json`)) return true;
-    return false;
-  });
+  const paths = homeworkJsonPathsForStudent(manifest, year, studentSlug);
 
   const items: HomeworkItem[] = [];
-  for (const path of relevantPaths) {
+  for (const path of paths) {
     const file = await readBlobJson<ItemsFile<HomeworkItem>>(path);
     if (file?.items?.length) items.push(...file.items);
   }
@@ -134,7 +139,9 @@ async function loadHomeworkForStudent(student: StudentProfile): Promise<Homework
 }
 
 async function loadMessageItems(): Promise<TeacherMessage[]> {
-  const fromFolders = await loadItemsFromPaths<TeacherMessage>("messages.json");
+  const manifest = await ensurePortalManifest();
+  const paths = messageJsonPaths(manifest);
+  const fromFolders = await readItemsFromPaths<TeacherMessage>(paths, "messages.json");
   if (fromFolders.length > 0) return fromFolders;
   const legacy = await loadLegacyPortal();
   return legacy?.messages ?? [];
@@ -143,11 +150,11 @@ async function loadMessageItems(): Promise<TeacherMessage[]> {
 export async function getStudentPortalData(options?: { fresh?: boolean }): Promise<StudentPortalData> {
   noStore();
 
-  if (!options?.fresh && memoryPortal && Date.now() - memoryPortalAt < MEMORY_TTL_MS) {
+  if (!options?.fresh && memoryPortal && Date.now() - memoryPortalAt < BLOB_MEMORY_TTL_MS) {
     return memoryPortal;
   }
 
-  if (!isBlobStorageConfigured()) {
+  if (!isStorageConfigured()) {
     return emptyPortal();
   }
 
@@ -167,7 +174,7 @@ export async function getStudentPortalData(options?: { fresh?: boolean }): Promi
 
 export async function getStudentPortalDataForStudent(student: StudentProfile): Promise<StudentPortalData> {
   noStore();
-  if (!isBlobStorageConfigured()) return emptyPortal();
+  if (!isStorageConfigured()) return emptyPortal();
 
   const [homework, messages] = await Promise.all([
     loadHomeworkForStudent(student),
@@ -179,43 +186,77 @@ export async function getStudentPortalDataForStudent(student: StudentProfile): P
 
 async function saveHomeworkByClass(items: HomeworkItem[]): Promise<void> {
   const partitions = partitionHomeworkByClass(items);
-  const existingPaths = (await listBlobPathnames(`${PORTAL_ROOT}/`)).filter((p) => p.endsWith("/homework.json"));
-  const touched = new Set<string>();
-
-  for (const [key, bucket] of partitions) {
-    const [year, slug] = key.split("/");
-    const path = classHomeworkBlobPath(year, slug);
-    await writeBlobJson(path, { items: bucket });
-    touched.add(path);
+  const manifest = await ensurePortalManifest();
+  const affectedYears = new Set<string>(Object.keys(manifest.years));
+  for (const key of partitions.keys()) {
+    affectedYears.add(key.split("/")[0]);
+  }
+  if (affectedYears.size === 0) {
+    affectedYears.add(academicYear());
   }
 
-  for (const path of existingPaths) {
-    if (!touched.has(path)) {
-      await writeBlobJson(path, { items: [] });
+  for (const year of affectedYears) {
+    const known = getYearIndex(manifest, year).homeworkClassSlugs;
+    const touched = new Set<string>();
+
+    for (const [key, bucket] of partitions) {
+      const [y, slug] = key.split("/");
+      if (y !== year) continue;
+      await writeBlobJson(classHomeworkBlobPath(y, slug), { items: bucket });
+      touched.add(slug);
     }
+
+    for (const slug of known) {
+      if (!touched.has(slug)) {
+        await writeBlobJson(classHomeworkBlobPath(year, slug), { items: [] });
+      }
+    }
+
+    await updatePortalYearIndex(year, (index) =>
+      touched.size > 0
+        ? syncHomeworkSlugsAfterSave(index, [...touched])
+        : { ...index, homeworkClassSlugs: [] }
+    );
   }
 }
 
 async function writeMessagesByMonth(items: TeacherMessage[]): Promise<void> {
   const partitions = partitionByYearMonth(items);
-  const existingPaths = (await listBlobPathnames(`${PORTAL_ROOT}/`)).filter((p) => p.endsWith("/messages.json"));
-  const touched = new Set<string>();
-
-  for (const [yearMonth, bucket] of partitions) {
-    const path = messagesBlobPath(yearMonth);
-    await writeBlobJson(path, { items: bucket });
-    touched.add(path);
+  const manifest = await ensurePortalManifest();
+  const affectedYears = new Set<string>(Object.keys(manifest.years));
+  for (const yearMonth of partitions.keys()) {
+    affectedYears.add(yearMonth.split("/")[0]);
+  }
+  if (affectedYears.size === 0) {
+    affectedYears.add(academicYear());
   }
 
-  for (const path of existingPaths) {
-    if (!touched.has(path)) {
-      await writeBlobJson(path, { items: [] });
+  for (const year of affectedYears) {
+    const known = getYearIndex(manifest, year).messageMonths;
+    const touched = new Set<string>();
+
+    for (const [yearMonth, bucket] of partitions) {
+      if (!yearMonth.startsWith(`${year}/`)) continue;
+      await writeBlobJson(messagesBlobPath(yearMonth), { items: bucket });
+      touched.add(yearMonth);
     }
+
+    for (const month of known) {
+      if (!touched.has(month)) {
+        await writeBlobJson(messagesBlobPath(month), { items: [] });
+      }
+    }
+
+    await updatePortalYearIndex(year, (index) =>
+      touched.size > 0
+        ? syncMessageMonthsAfterSave(index, [...touched])
+        : { ...index, messageMonths: [] }
+    );
   }
 }
 
 export async function saveStudentPortalData(data: StudentPortalData): Promise<StudentPortalData> {
-  if (!isBlobStorageConfigured()) {
+  if (!isStorageConfigured()) {
     throw new Error(blobStorageErrorMessage());
   }
 

@@ -2,6 +2,9 @@
 
 export const PORTAL_ROOT = "portal";
 
+/** Index of all portal JSON paths — one read instead of list() on every request. */
+export const PORTAL_MANIFEST_BLOB_PATH = `${PORTAL_ROOT}/manifest.json`;
+
 /** @deprecated Single-file storage — migrated on read/save */
 export const LEGACY_PORTAL_BLOB_PATH = "student-portal-data.json";
 

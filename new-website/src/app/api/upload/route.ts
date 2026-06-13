@@ -1,18 +1,15 @@
 import { NextResponse } from "next/server";
-import { put } from "@vercel/blob";
 import { isAuthenticated } from "@/lib/auth";
-import { blobStorageErrorMessage, isBlobStorageConfigured } from "@/lib/blob-storage";
+import { isStorageConfigured, storageErrorMessage } from "@/lib/blob-storage";
+import { writeStorageBinary } from "@/lib/storage/index";
 
 export async function POST(request: Request) {
   if (!(await isAuthenticated())) {
     return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
   }
 
-  if (!isBlobStorageConfigured()) {
-    return NextResponse.json(
-      { success: false, message: blobStorageErrorMessage() },
-      { status: 500 }
-    );
+  if (!isStorageConfigured()) {
+    return NextResponse.json({ success: false, message: storageErrorMessage() }, { status: 500 });
   }
 
   try {
@@ -23,11 +20,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, message: "No file provided" }, { status: 400 });
     }
 
-    const blob = await put(`uploads/${Date.now()}-${file.name}`, file, {
-      access: "public",
-    });
+    const pathname = `uploads/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const url = await writeStorageBinary(pathname, buffer, file.type || "application/octet-stream");
 
-    return NextResponse.json({ success: true, url: blob.url });
+    return NextResponse.json({ success: true, url });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Upload failed";
     return NextResponse.json({ success: false, message }, { status: 500 });

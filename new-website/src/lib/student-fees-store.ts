@@ -1,7 +1,14 @@
 import { unstable_noStore as noStore } from "next/cache";
-import { listBlobPathnames, readBlobJson, writeBlobJson } from "@/lib/blob-json";
-import { blobStorageErrorMessage, isBlobStorageConfigured } from "@/lib/blob-storage";
-import { academicYear, PORTAL_ROOT, studentFeesBlobPath } from "@/lib/portal-storage-paths";
+import { readBlobJson, writeBlobJson } from "@/lib/blob-json";
+import { blobStorageErrorMessage, isStorageConfigured } from "@/lib/blob-storage";
+import {
+  BLOB_MEMORY_TTL_MS,
+  ensurePortalManifest,
+  feeJsonPaths,
+  updatePortalYearIndex,
+  uniqSorted,
+} from "@/lib/portal-manifest";
+import { academicYear, studentFeesBlobPath } from "@/lib/portal-storage-paths";
 import {
   emptyFeeAccount,
   toFeeSummary,
@@ -9,14 +16,9 @@ import {
   type StudentFeeSummary,
 } from "@/types/student-fees";
 
-const MEMORY_TTL_MS = 30 * 1000;
 let memoryAccounts = new Map<string, StudentFeeAccount>();
 let memoryAccountsAt = 0;
 let memoryYear = "";
-
-function accountKey(studentId: string, year: string): string {
-  return `${year}:${studentId}`;
-}
 
 function normalizeAccount(raw: StudentFeeAccount, year: string): StudentFeeAccount {
   return {
@@ -29,13 +31,12 @@ function normalizeAccount(raw: StudentFeeAccount, year: string): StudentFeeAccou
   };
 }
 
-async function loadAccountsFromBlob(year: string): Promise<Map<string, StudentFeeAccount>> {
-  const prefix = `${PORTAL_ROOT}/${year}/accounts/`;
-  const pathnames = await listBlobPathnames(prefix);
+async function loadAccountsFromManifest(year: string, extraStudentIds: string[] = []): Promise<Map<string, StudentFeeAccount>> {
+  const manifest = await ensurePortalManifest();
+  const paths = feeJsonPaths(manifest, year, extraStudentIds);
   const map = new Map<string, StudentFeeAccount>();
 
-  for (const path of pathnames) {
-    if (!path.endsWith(".json")) continue;
+  for (const path of paths) {
     const file = await readBlobJson<StudentFeeAccount>(path);
     if (!file?.studentId) continue;
     map.set(file.studentId, normalizeAccount(file, year));
@@ -44,19 +45,19 @@ async function loadAccountsFromBlob(year: string): Promise<Map<string, StudentFe
   return map;
 }
 
-async function getAccountMap(year: string, fresh?: boolean): Promise<Map<string, StudentFeeAccount>> {
-  if (!fresh && memoryYear === year && Date.now() - memoryAccountsAt < MEMORY_TTL_MS) {
+async function getAccountMap(year: string, fresh?: boolean, extraStudentIds: string[] = []): Promise<Map<string, StudentFeeAccount>> {
+  if (!fresh && memoryYear === year && Date.now() - memoryAccountsAt < BLOB_MEMORY_TTL_MS) {
     return memoryAccounts;
   }
 
-  if (!isBlobStorageConfigured()) {
+  if (!isStorageConfigured()) {
     memoryAccounts = new Map(memoryAccounts);
     memoryYear = year;
     memoryAccountsAt = Date.now();
     return memoryAccounts;
   }
 
-  memoryAccounts = await loadAccountsFromBlob(year);
+  memoryAccounts = await loadAccountsFromManifest(year, extraStudentIds);
   memoryYear = year;
   memoryAccountsAt = Date.now();
   return memoryAccounts;
@@ -67,8 +68,18 @@ export async function getStudentFeeAccount(
   year: string = academicYear()
 ): Promise<StudentFeeAccount> {
   noStore();
-  const map = await getAccountMap(year);
-  return map.get(studentId) ?? emptyFeeAccount(studentId, year);
+
+  if (!isStorageConfigured()) {
+    return emptyFeeAccount(studentId, year);
+  }
+
+  const path = studentFeesBlobPath(year, studentId);
+  const file = await readBlobJson<StudentFeeAccount>(path);
+  if (file?.studentId) {
+    return normalizeAccount(file, year);
+  }
+
+  return emptyFeeAccount(studentId, year);
 }
 
 export async function getStudentFeeSummary(
@@ -84,12 +95,12 @@ export async function getAllStudentFeeSummaries(
   year: string = academicYear()
 ): Promise<StudentFeeSummary[]> {
   noStore();
-  const map = await getAccountMap(year);
+  const map = await getAccountMap(year, false, studentIds);
   return studentIds.map((id) => toFeeSummary(map.get(id) ?? emptyFeeAccount(id, year)));
 }
 
 export async function saveStudentFeeAccount(account: StudentFeeAccount): Promise<StudentFeeAccount> {
-  if (!isBlobStorageConfigured()) {
+  if (!isStorageConfigured()) {
     throw new Error(blobStorageErrorMessage());
   }
 
@@ -100,6 +111,11 @@ export async function saveStudentFeeAccount(account: StudentFeeAccount): Promise
   };
 
   await writeBlobJson(studentFeesBlobPath(year, saved.studentId), saved);
+
+  await updatePortalYearIndex(year, (index) => ({
+    ...index,
+    feeStudentIds: uniqSorted([...index.feeStudentIds, saved.studentId]),
+  }));
 
   const map = await getAccountMap(year, true);
   map.set(saved.studentId, saved);

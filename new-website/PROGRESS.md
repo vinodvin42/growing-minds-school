@@ -1,6 +1,6 @@
 # Growing Minds — Migration Progress
 
-> **Target:** Vercel-deployable Next.js site with admin panel + student PWA.  
+> **Target:** Next.js site with admin panel + student PWA on **filesystem storage**.  
 > **Source:** `old/` static HTML + PHP  
 > **Output:** `new-website/`
 
@@ -8,9 +8,10 @@
 
 | Decision | Choice |
 |----------|--------|
-| Framework | Next.js 16 (App Router) on Vercel |
+| Framework | Next.js 16 (App Router) |
+| **Hosting** | **Railway** (Docker + `/data` volume) — not Vercel serverless |
+| **Storage** | **Filesystem** at `DATA_DIR` — not Vercel Blob |
 | Admin | Custom `/admin` panel (password auth) |
-| Content storage | Vercel Blob JSON + built-in defaults fallback |
 | Student portal | PWA at `/student/*` — homework, fees, calendar, push |
 | Email | Gmail SMTP (primary) + Resend fallback — see `EMAIL-SETUP.md` |
 | Push | Web Push (VAPID) — see `PUSH-SETUP.md` |
@@ -18,59 +19,44 @@
 
 ---
 
-## Phase checklist
-
-### Phases 1–6 — Public site + admin CMS
-- [x] Next.js scaffold, theme, public pages, admin panel
-- [x] Blob content API, image upload, contact/admission forms
-- [x] SEO, deployment docs, build verification
-
-### Phase 7 — Student app
-- [x] Student login (Blob-backed accounts, class-wise storage)
-- [x] Homework (class-wise Blob), messages, profile
-- [x] Fees & accounts (per-student Blob)
-- [x] Holiday calendar + reminders (fees, homework, PTM)
-- [x] School branding, bottom nav, mobile-first UI
-- [x] In-app reminders (banner + tab badges when admin posts)
-- [x] Web Push notifications (OS alerts when admin saves)
-- [x] Collapsible fee breakdown + payment history
-- [x] Fee statement print / save as PDF
-
----
-
 ## Current status
 
 **Last updated:** 2026-06-04  
 **Build:** Passing (`npm run build`)  
-**Live (Vercel):** `https://growing-minds-school.vercel.app`  
-**Custom domain:** Pending GoDaddy DNS — see **`DOMAIN-SETUP.md`**
+**Legacy (Vercel):** `https://growing-minds-school.vercel.app` — replace with Railway  
+**Custom domain:** `www.growingmindsschool.org` — see **`DOMAIN-SETUP-RAILWAY.md`**
 
 ---
 
-## Production checklist
+## Deployment checklist
 
-### Deploy & domain
-- [ ] Fix GoDaddy DNS → Vercel (`76.76.21.21` + `cname.vercel-dns.com`)
-- [ ] Set `NEXT_PUBLIC_SITE_URL=https://www.growingmindsschool.org`
-- [ ] Vercel Root Directory = `new-website`
-- [ ] Redeploy after env changes
+### Code & GitHub
+- [x] Filesystem storage backend
+- [x] Dockerfile, railway.toml, render.yaml
+- [x] Health check `/api/health`
+- [x] Blob → disk migration script
+- [ ] Push latest to `origin/main`
 
-### Vercel services
-- [ ] Blob store connected
-- [ ] `ADMIN_PASSWORD` (not default)
-- [ ] Gmail or Resend — **`EMAIL-SETUP.md`**
-- [ ] Web Push VAPID keys — **`PUSH-SETUP.md`** (`npm run generate:vapid`)
+### Railway
+- [ ] Create project from GitHub (root: `new-website`)
+- [ ] Mount volume at `/data`
+- [ ] Set env vars — see **`DEPLOY-PLAN.md`**
+- [ ] Migrate Blob data (`npm run migrate:blob-to-data`)
+- [ ] Verify `/api/health` → 200
 
-### School content (admin)
-- [ ] Save site content once (or `npm run seed`)
-- [ ] Add real students (replace demo login)
-- [ ] Post homework, messages, fees, calendar
-- [ ] Add tour videos in Video Library
+### Domain (GoDaddy)
+- [ ] Point DNS to Railway — **`DOMAIN-SETUP-RAILWAY.md`**
+- [ ] `NEXT_PUBLIC_SITE_URL=https://www.growingmindsschool.org`
 
-### Student app
-- [ ] Students install PWA / bookmark `/student/login`
-- [ ] Students tap **Enable** for phone alerts
-- [ ] Test homework → push + in-app badge
+### Production content
+- [ ] Admin password set (not default)
+- [ ] Students / fees / homework visible after migration
+- [ ] Email working — **`EMAIL-SETUP.md`**
+- [ ] VAPID keys — **`PUSH-SETUP.md`**
+
+### Decommission Vercel
+- [ ] Confirm Railway live for 1–2 weeks
+- [ ] Remove Blob store / pause Vercel project
 
 ---
 
@@ -78,31 +64,33 @@
 
 | Doc | Purpose |
 |-----|---------|
-| `DEPLOYMENT.md` | Vercel import & env |
-| `DOMAIN-SETUP.md` | GoDaddy DNS → Vercel |
+| **`DEPLOY-PLAN.md`** | Full deployment steps |
+| **`DEPLOY-FILE-STORAGE.md`** | Quick Railway / Docker guide |
+| **`STORAGE-SETUP.md`** | Filesystem layout & env |
+| **`DOMAIN-SETUP-RAILWAY.md`** | GoDaddy → Railway DNS |
 | `EMAIL-SETUP.md` | Gmail App Password or Resend |
 | `PUSH-SETUP.md` | Phone push notifications |
-| `PORTAL-STORAGE.md` | Blob folder layout |
 | `.env.example` | All env variables |
 
 ---
 
-## Environment variables
+## Environment variables (Railway)
 
 ```env
+STORAGE_BACKEND=filesystem
+DATA_DIR=/data
 ADMIN_PASSWORD=
-BLOB_READ_WRITE_TOKEN=
+NEXT_PUBLIC_SITE_URL=https://www.growingmindsschool.org
 GMAIL_USER=growingmindsenglishschool@gmail.com
 GMAIL_APP_PASSWORD=
 ADMIN_EMAIL=growingmindsenglishschool@gmail.com
 EMAIL_FROM_NAME=Growing Minds English School
-# EMAIL_PREFER=resend
-# RESEND_API_KEY=
-NEXT_PUBLIC_SITE_URL=https://www.growingmindsschool.org
 NEXT_PUBLIC_VAPID_PUBLIC_KEY=
 VAPID_PRIVATE_KEY=
 VAPID_SUBJECT=mailto:growingmindsenglishschool@gmail.com
 ```
+
+**Do not set** `BLOB_READ_WRITE_TOKEN` on Railway.
 
 ---
 
@@ -116,4 +104,4 @@ npm run dev
 
 - Site: http://localhost:3000  
 - Admin: http://localhost:3000/admin/login  
-- Student: http://localhost:3000/student/login (demo: `GMS2026001` / `student123`)
+- Data folder: `./data/`

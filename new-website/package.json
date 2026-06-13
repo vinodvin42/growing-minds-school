@@ -5,15 +5,16 @@
   "scripts": {
     "dev": "next dev",
     "build": "node scripts/generate-pwa-icons.mjs && next build",
-    "start": "next start",
+    "start": "node scripts/ensure-data-dir.mjs && next start",
     "lint": "eslint",
     "seed": "tsx scripts/seed-content.ts",
+    "migrate:storage": "tsx scripts/migrate-storage.ts",
+    "migrate:blob-to-data": "tsx scripts/migrate-storage.ts --to-disk",
     "test:email": "tsx scripts/test-email.ts",
     "generate:vapid": "node scripts/generate-vapid.mjs",
     "pwa:icons": "node scripts/generate-pwa-icons.mjs"
   },
   "dependencies": {
-    "@vercel/blob": "^2.4.0",
     "bcryptjs": "^3.0.3",
     "jose": "^6.2.3",
     "next": "16.2.7",
@@ -25,6 +26,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@vercel/blob": "^2.4.0",
     "@serwist/turbopack": "^9.5.11",
     "@tailwindcss/postcss": "^4",
     "@types/bcryptjs": "^2.4.6",

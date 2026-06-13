@@ -1,22 +1,26 @@
 import { unstable_noStore as noStore } from "next/cache";
-import { listBlobPathnames, readBlobJson, writeBlobJson } from "@/lib/blob-json";
+import { readBlobJson, writeBlobJson } from "@/lib/blob-json";
 import { readBlobJsonText } from "@/lib/blob-read";
 import { hashPassword } from "@/lib/password";
+import {
+  BLOB_MEMORY_TTL_MS,
+  ensurePortalManifest,
+  studentJsonPaths,
+  syncStudentClassSlugsAfterSave,
+  updatePortalYearIndex,
+} from "@/lib/portal-manifest";
 import {
   academicYear,
   classSlug,
   classStudentsBlobPath,
   LEGACY_STUDENTS_BLOB_PATH,
-  PORTAL_ROOT,
-  parseClassSlugFromStudentsPath,
 } from "@/lib/portal-storage-paths";
-import { blobStorageErrorMessage, isBlobStorageConfigured } from "@/lib/blob-storage";
+import { blobStorageErrorMessage, isStorageConfigured } from "@/lib/blob-storage";
 import type { StudentAdminInput, StudentRecord, StudentsRegistry } from "@/types/student";
 import { DEFAULT_STUDENT_LOGIN_ID, DEFAULT_STUDENT_PASSWORD } from "@/types/student";
 
 const DEFAULT_LOGIN_ID = DEFAULT_STUDENT_LOGIN_ID;
 const DEFAULT_PASSWORD = DEFAULT_STUDENT_PASSWORD;
-const MEMORY_TTL_MS = 30 * 1000;
 
 let memoryRegistry: StudentsRegistry | null = null;
 let memoryRegistryAt = 0;
@@ -28,7 +32,6 @@ export function clearStudentsRegistryCache(): void {
 
 async function buildDefaultRegistry(): Promise<StudentsRegistry> {
   const now = new Date().toISOString();
-  const year = academicYear();
   return {
     students: [
       {
@@ -62,12 +65,12 @@ async function loadLegacyRegistry(): Promise<StudentsRegistry | null> {
   }
 }
 
-async function loadStudentsFromClassFolders(): Promise<StudentRecord[]> {
-  const pathnames = await listBlobPathnames(`${PORTAL_ROOT}/`);
-  const studentPaths = pathnames.filter((p) => /\/classes\/[^/]+\/students\.json$/.test(p));
+async function loadStudentsFromManifest(): Promise<StudentRecord[]> {
+  const manifest = await ensurePortalManifest();
+  const paths = studentJsonPaths(manifest);
   const students: StudentRecord[] = [];
 
-  for (const path of studentPaths) {
+  for (const path of paths) {
     const file = await readBlobJson<{ students?: StudentRecord[] }>(path);
     if (file?.students?.length) {
       students.push(...file.students);
@@ -80,16 +83,16 @@ async function loadStudentsFromClassFolders(): Promise<StudentRecord[]> {
 export async function getStudentsRegistry(options?: { fresh?: boolean }): Promise<StudentsRegistry> {
   noStore();
 
-  if (!options?.fresh && memoryRegistry && Date.now() - memoryRegistryAt < MEMORY_TTL_MS) {
+  if (!options?.fresh && memoryRegistry && Date.now() - memoryRegistryAt < BLOB_MEMORY_TTL_MS) {
     return memoryRegistry;
   }
 
-  if (!isBlobStorageConfigured()) {
+  if (!isStorageConfigured()) {
     return buildDefaultRegistry();
   }
 
   try {
-    let students = await loadStudentsFromClassFolders();
+    let students = await loadStudentsFromManifest();
     if (students.length === 0) {
       const legacy = await loadLegacyRegistry();
       students = legacy?.students ?? [];
@@ -106,7 +109,7 @@ export async function getStudentsRegistry(options?: { fresh?: boolean }): Promis
 }
 
 export async function saveStudentsRegistry(registry: StudentsRegistry): Promise<void> {
-  if (!isBlobStorageConfigured()) {
+  if (!isStorageConfigured()) {
     throw new Error(blobStorageErrorMessage());
   }
 
@@ -120,24 +123,16 @@ export async function saveStudentsRegistry(registry: StudentsRegistry): Promise<
     byClass.set(slug, list);
   }
 
-  const existingPaths = (await listBlobPathnames(`${PORTAL_ROOT}/${year}/classes/`)).filter((p) =>
-    p.endsWith("/students.json")
-  );
-  const written = new Set<string>();
+  const activeSlugs = [...byClass.keys()];
+  const manifest = await ensurePortalManifest();
+  const knownSlugs = manifest.years[year]?.studentClassSlugs ?? [];
 
-  for (const [slug, students] of byClass) {
+  for (const slug of new Set([...activeSlugs, ...knownSlugs])) {
     const path = classStudentsBlobPath(year, slug);
-    await writeBlobJson(path, { students });
-    written.add(path);
+    await writeBlobJson(path, { students: byClass.get(slug) ?? [] });
   }
 
-  for (const path of existingPaths) {
-    if (written.has(path)) continue;
-    const parsed = parseClassSlugFromStudentsPath(path);
-    if (parsed?.year === year) {
-      await writeBlobJson(path, { students: [] });
-    }
-  }
+  await updatePortalYearIndex(year, (index) => syncStudentClassSlugsAfterSave(index, activeSlugs));
 
   memoryRegistry = registry;
   memoryRegistryAt = Date.now();

@@ -22,7 +22,7 @@ import {
   markStudentSectionSeen,
 } from "@/lib/student-seen-client";
 
-const POLL_MS = 45_000;
+const POLL_MS = 120_000;
 
 type StudentNotificationContextValue = {
   unseen: StudentNotification[];

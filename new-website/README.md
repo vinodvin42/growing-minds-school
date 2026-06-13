@@ -1,15 +1,16 @@
 # Growing Minds English School — Next.js Website
 
-Vercel-deployable website with admin panel for content, images, and video library management.
+School website with admin panel, student portal, admissions, and fees — data stored on **disk** (filesystem), not Vercel Blob.
 
 ## Features
 
 - Public pages: Home, About, Admissions, News, Videos, Contact
 - Admin panel at `/admin` — edit all content, upload images, manage video library
-- Admission form with document uploads (Vercel Blob)
-- Contact form with email notifications (Resend)
+- Student portal — homework, messages, fees, calendar
+- Admission form with document uploads
+- Contact form with email notifications
 - SEO: metadata, sitemap, robots.txt
-- Works immediately with built-in default content (no env vars needed to view)
+- Works immediately with built-in default content (no env vars needed to view locally)
 
 ## Quick Start (Local)
 
@@ -19,40 +20,41 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000)
+Open [http://localhost:3000](http://localhost:3000). Data is saved under `./data/`.
 
 **Admin login:** [http://localhost:3000/admin/login](http://localhost:3000/admin/login)
 - Dev password: `admin123` (when `ADMIN_PASSWORD` is not set)
 - Production: set `ADMIN_PASSWORD` in environment variables
 
-## Deploy to Vercel
+## Deploy (file storage)
 
-See **[DEPLOYMENT.md](./DEPLOYMENT.md)** for the full step-by-step guide.
+**Do not deploy to Vercel alone** — serverless has no persistent disk.
+
+See **[DEPLOY-FILE-STORAGE.md](./DEPLOY-FILE-STORAGE.md)** for Railway, Docker, or VPS setup.
 
 Quick summary:
 
-1. Push repo to GitHub (root contains `old/` + `new-website/`)
-2. Import in [Vercel Dashboard](https://vercel.com/new) — root directory: `new-website`
-3. Connect Vercel Blob store + set env vars (see `.env.example`)
-4. Deploy, then run `npm run seed` or save content via `/admin`
+1. Push repo to GitHub
+2. Deploy on **Railway** (or Docker) with a volume at `/data`
+3. Set `STORAGE_BACKEND=filesystem`, `DATA_DIR=/data`, `ADMIN_PASSWORD`, email vars
+4. Migrate existing Blob data once: `BLOB_READ_WRITE_TOKEN=xxx npm run migrate:blob-to-data`
 
 ### Required Environment Variables (Production)
 
 | Variable | Purpose |
 |----------|---------|
+| `STORAGE_BACKEND` | `filesystem` (default) |
+| `DATA_DIR` | `/data` on server with mounted volume |
 | `ADMIN_PASSWORD` | Admin panel login password |
-| `BLOB_READ_WRITE_TOKEN` | Content storage + file uploads ([Vercel Blob](https://vercel.com/docs/storage/vercel-blob)) |
-| `RESEND_API_KEY` | Email for forms ([Resend](https://resend.com)) |
+| `GMAIL_USER` / `GMAIL_APP_PASSWORD` or `RESEND_API_KEY` | Email for forms |
 | `ADMIN_EMAIL` | Where form submissions are sent |
-| `FROM_EMAIL` | Sender email address |
-| `NEXT_PUBLIC_SITE_URL` | Your domain (for sitemap/SEO) |
+| `NEXT_PUBLIC_SITE_URL` | Your domain (uploads + SEO) |
 
-### Setting up Vercel Blob
+See `.env.example` and `STORAGE-SETUP.md`.
 
-1. In Vercel project → Storage → Create Blob store
-2. Connect to project — `BLOB_READ_WRITE_TOKEN` is added automatically
+### Legacy: Vercel + Blob
 
-### Setting up Resend
+Only if you cannot move hosting: see **[DEPLOYMENT.md](./DEPLOYMENT.md)** and set `STORAGE_BACKEND=blob`.
 
 1. Create account at [resend.com](https://resend.com)
 2. Add and verify your domain
