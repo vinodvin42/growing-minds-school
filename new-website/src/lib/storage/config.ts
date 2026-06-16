@@ -6,23 +6,26 @@ export type StorageBackend = "filesystem" | "github";
 export function storageBackend(): StorageBackend {
   const configured = process.env.STORAGE_BACKEND?.trim().toLowerCase();
   if (configured === "github" || configured === "repo") return "github";
+  // Vercel serverless has a read-only filesystem — always use GitHub there.
+  if (process.env.VERCEL) return "github";
   if (configured === "filesystem") return "filesystem";
-  if (process.env.VERCEL && process.env.GITHUB_TOKEN) return "github";
   return "filesystem";
 }
 
 export function isStorageConfigured(): boolean {
   const backend = storageBackend();
-  if (backend === "filesystem") return true;
-  return Boolean(getGithubToken() && getGithubRepo());
+  if (backend === "github") {
+    return Boolean(getGithubToken() && getGithubRepo());
+  }
+  return !process.env.VERCEL;
 }
 
 export function storageErrorMessage(): string {
   const backend = storageBackend();
-  if (backend === "filesystem") {
-    return "File storage is not writable. Check DATA_DIR permissions.";
+  if (backend === "github") {
+    return "GitHub storage is not configured. On Vercel, set STORAGE_BACKEND=github, GITHUB_TOKEN, and GITHUB_REPO, then redeploy.";
   }
-  return "GitHub storage is not configured. Set GITHUB_TOKEN and GITHUB_REPO on Vercel.";
+  return "File storage is not writable. Check DATA_DIR permissions.";
 }
 
 export function getDataDir(): string {
