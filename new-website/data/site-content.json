@@ -219,8 +219,8 @@
   "teachers": [
     {
       "id": "1",
-      "name": "Mrs. Priya Sharma",
-      "role": "Head Teacher",
+      "name": "Mrs. Sufia Mohd Farooque bukhari",
+      "role": "Principle",
       "experience": "15+ years experience",
       "photoUrl": "/assets/images/teacher-1.jpg"
     },
@@ -365,11 +365,6 @@
     }
   ],
   "videos": [],
-  "newsAnnouncement": {
-    "title": "🎉 Admissions Open!",
-    "subtitle": "Academic Year 2026-2027",
-    "description": "We are excited to announce that admissions are now open for Nursery to 8th Standard"
-  },
   "news": [
     {
       "id": "1",
@@ -427,5 +422,10 @@
       "icon": "fa-chalkboard-teacher",
       "headerColor": "bg-red"
     }
-  ]
+  ],
+  "newsAnnouncement": {
+    "title": "🎉 Admissions Open!",
+    "subtitle": "Academic Year 2026-2027",
+    "description": "We are excited to announce that admissions are now open for Nursery to 8th Standard"
+  }
 }
