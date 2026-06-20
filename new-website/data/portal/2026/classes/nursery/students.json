@@ -11,7 +11,7 @@
       "parentPhone": "9967124989",
       "active": true,
       "createdAt": "2026-06-20T04:05:28.521Z",
-      "updatedAt": "2026-06-20T04:23:44.073Z"
+      "updatedAt": "2026-06-20T04:25:47.285Z"
     },
     {
       "id": "stu_iy99wsdcx",
@@ -24,7 +24,7 @@
       "parentPhone": "7710975722",
       "active": true,
       "createdAt": "2026-06-20T04:08:50.343Z",
-      "updatedAt": "2026-06-20T04:23:44.073Z"
+      "updatedAt": "2026-06-20T04:25:47.285Z"
     },
     {
       "id": "stu_kgcppr8ge",
@@ -37,7 +37,7 @@
       "parentPhone": "9967868609",
       "active": true,
       "createdAt": "2026-06-20T04:10:35.968Z",
-      "updatedAt": "2026-06-20T04:23:44.073Z"
+      "updatedAt": "2026-06-20T04:25:47.285Z"
     },
     {
       "id": "stu_cwknn3ed1",
@@ -50,7 +50,7 @@
       "parentPhone": "8369763631",
       "active": true,
       "createdAt": "2026-06-20T04:13:08.773Z",
-      "updatedAt": "2026-06-20T04:23:44.073Z"
+      "updatedAt": "2026-06-20T04:25:47.285Z"
     },
     {
       "id": "stu_1f2bw517p",
@@ -63,7 +63,7 @@
       "parentPhone": "",
       "active": true,
       "createdAt": "2026-06-20T04:16:37.951Z",
-      "updatedAt": "2026-06-20T04:23:44.073Z"
+      "updatedAt": "2026-06-20T04:25:47.285Z"
     },
     {
       "id": "stu_79ke8rgwu",
@@ -76,7 +76,7 @@
       "parentPhone": "9768437432",
       "active": true,
       "createdAt": "2026-06-20T04:19:21.976Z",
-      "updatedAt": "2026-06-20T04:23:44.073Z"
+      "updatedAt": "2026-06-20T04:25:47.285Z"
     },
     {
       "id": "stu_j6pj5l3s4",
@@ -89,7 +89,7 @@
       "parentPhone": "9819931124",
       "active": true,
       "createdAt": "2026-06-20T04:21:26.574Z",
-      "updatedAt": "2026-06-20T04:23:44.073Z"
+      "updatedAt": "2026-06-20T04:25:47.285Z"
     },
     {
       "id": "stu_px5q3hxds",
@@ -102,7 +102,20 @@
       "parentPhone": "9222348631",
       "active": true,
       "createdAt": "2026-06-20T04:23:44.073Z",
-      "updatedAt": "2026-06-20T04:23:44.073Z"
+      "updatedAt": "2026-06-20T04:25:47.285Z"
+    },
+    {
+      "id": "stu_x3rjz8zi2",
+      "loginId": "Tasmira2022",
+      "passwordHash": "$2b$10$vyUG1U8ASwvaDPbltO1I.Ofb8g0ePFjQWAebHIDrFqcF40MNaXMF6",
+      "name": "Tasmira Tasdik Patel",
+      "standard": "Nursery",
+      "rollNumber": "9",
+      "parentName": "Tasdik Raju Patel",
+      "parentPhone": "9967317990",
+      "active": true,
+      "createdAt": "2026-06-20T04:25:47.285Z",
+      "updatedAt": "2026-06-20T04:25:47.285Z"
     }
   ]
 }
