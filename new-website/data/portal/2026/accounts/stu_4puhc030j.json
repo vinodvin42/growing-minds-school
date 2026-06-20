@@ -15,12 +15,12 @@
     {
       "id": "pay_8y1548m5k",
       "date": "2026-06-20",
-      "amount": 0,
+      "amount": 5000,
       "mode": "upi",
       "reference": "",
       "notes": ""
     }
   ],
   "notes": "",
-  "updatedAt": "2026-06-20T06:53:07.654Z"
+  "updatedAt": "2026-06-20T08:00:41.197Z"
 }
