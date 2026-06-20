@@ -1,0 +1,17 @@
+{
+  "students": [
+    {
+      "id": "stu_4t4gxknpa",
+      "loginId": "Shakshi2017",
+      "passwordHash": "$2b$10$wcMkHb7Oal8uaFhgx5v.Ouhh3eOJ1IcWgS/DLE91yXI1eI5SMDHya",
+      "name": "Shakshi Sanjay Chauhan",
+      "standard": "5th Standard",
+      "rollNumber": "75",
+      "parentName": "Sanjay Chauhan",
+      "parentPhone": "9619056872",
+      "active": true,
+      "createdAt": "2026-06-20T10:24:37.751Z",
+      "updatedAt": "2026-06-20T10:24:37.751Z"
+    }
+  ]
+}
