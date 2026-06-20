@@ -4,7 +4,8 @@
     "2026": {
       "studentClassSlugs": [
         "lkg",
-        "nursery"
+        "nursery",
+        "ukg"
       ],
       "homeworkClassSlugs": [],
       "messageMonths": [],
@@ -17,5 +18,5 @@
       ]
     }
   },
-  "updatedAt": "2026-06-20T08:11:46.686Z"
+  "updatedAt": "2026-06-20T08:12:12.406Z"
 }
