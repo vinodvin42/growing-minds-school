@@ -1,0 +1,17 @@
+{
+  "students": [
+    {
+      "id": "stu_gvdp3ndzd",
+      "loginId": "Rabia2020",
+      "passwordHash": "$2b$10$L34KHwUxMB4Inp8NbpsSHOagBm/wji.mh0/.l6gGdNKPtvlXmQawK",
+      "name": "Rabia Ahmed Ansari",
+      "standard": "UKG",
+      "rollNumber": "45",
+      "parentName": "Ahmed Ansari",
+      "parentPhone": "9870198458",
+      "active": true,
+      "createdAt": "2026-06-20T08:12:10.091Z",
+      "updatedAt": "2026-06-20T08:12:10.091Z"
+    }
+  ]
+}
