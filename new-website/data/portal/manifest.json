@@ -2,11 +2,13 @@
   "version": 1,
   "years": {
     "2026": {
-      "studentClassSlugs": [],
+      "studentClassSlugs": [
+        "nursery"
+      ],
       "homeworkClassSlugs": [],
       "messageMonths": [],
       "feeStudentIds": []
     }
   },
-  "updatedAt": "2026-06-20T04:02:49.748Z"
+  "updatedAt": "2026-06-20T04:05:29.415Z"
 }
