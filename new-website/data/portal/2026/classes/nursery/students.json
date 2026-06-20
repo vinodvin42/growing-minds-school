@@ -11,7 +11,7 @@
       "parentPhone": "9967124989",
       "active": true,
       "createdAt": "2026-06-20T04:05:28.521Z",
-      "updatedAt": "2026-06-20T04:13:08.773Z"
+      "updatedAt": "2026-06-20T04:16:37.951Z"
     },
     {
       "id": "stu_iy99wsdcx",
@@ -24,7 +24,7 @@
       "parentPhone": "7710975722",
       "active": true,
       "createdAt": "2026-06-20T04:08:50.343Z",
-      "updatedAt": "2026-06-20T04:13:08.773Z"
+      "updatedAt": "2026-06-20T04:16:37.951Z"
     },
     {
       "id": "stu_kgcppr8ge",
@@ -37,7 +37,7 @@
       "parentPhone": "9967868609",
       "active": true,
       "createdAt": "2026-06-20T04:10:35.968Z",
-      "updatedAt": "2026-06-20T04:13:08.773Z"
+      "updatedAt": "2026-06-20T04:16:37.951Z"
     },
     {
       "id": "stu_cwknn3ed1",
@@ -50,7 +50,20 @@
       "parentPhone": "8369763631",
       "active": true,
       "createdAt": "2026-06-20T04:13:08.773Z",
-      "updatedAt": "2026-06-20T04:13:08.773Z"
+      "updatedAt": "2026-06-20T04:16:37.951Z"
+    },
+    {
+      "id": "stu_1f2bw517p",
+      "loginId": "Mehwish2023",
+      "passwordHash": "$2b$10$5hkQNBMj7yItT4TFjtsosuG17tazVc/DN4VHkLkIhaPi/rGF3vPOG",
+      "name": "Mehwish Mohd Naved Shaikh",
+      "standard": "Nursery",
+      "rollNumber": "5",
+      "parentName": "Mohd Naved Shaikh",
+      "parentPhone": "",
+      "active": true,
+      "createdAt": "2026-06-20T04:16:37.951Z",
+      "updatedAt": "2026-06-20T04:16:37.951Z"
     }
   ]
 }
