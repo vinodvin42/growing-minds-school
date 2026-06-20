@@ -11,7 +11,7 @@
       "parentPhone": "9870198458",
       "active": true,
       "createdAt": "2026-06-20T08:12:10.091Z",
-      "updatedAt": "2026-06-20T08:14:27.786Z"
+      "updatedAt": "2026-06-20T08:16:37.849Z"
     },
     {
       "id": "stu_vp0wu7u80",
@@ -24,7 +24,20 @@
       "parentPhone": "9326465119",
       "active": true,
       "createdAt": "2026-06-20T08:14:27.786Z",
-      "updatedAt": "2026-06-20T08:14:27.786Z"
+      "updatedAt": "2026-06-20T08:16:37.849Z"
+    },
+    {
+      "id": "stu_5psp2gasv",
+      "loginId": "Arhan2020",
+      "passwordHash": "$2b$10$AePemPw4piR3tbR7cKRPoeq8QcGIjlWVaEpBVAotyEJNcSvLe1ik6",
+      "name": "Arhan Tasdik Patel",
+      "standard": "UKG",
+      "rollNumber": "47",
+      "parentName": "Tasdik Patel",
+      "parentPhone": "8149353988",
+      "active": true,
+      "createdAt": "2026-06-20T08:16:37.849Z",
+      "updatedAt": "2026-06-20T08:16:37.849Z"
     }
   ]
 }
