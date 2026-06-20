@@ -1,0 +1,17 @@
+{
+  "students": [
+    {
+      "id": "stu_nma7tiiju",
+      "loginId": "Isal2020",
+      "passwordHash": "$2b$10$B/JO28FoEzoxJM1kl861dOGhGKrgLLbFU5yYMXAzMjm2vpKfRrWiO",
+      "name": "Isal Saddam Ansari",
+      "standard": "1st Standard",
+      "rollNumber": "65",
+      "parentName": "Saddam Ansari",
+      "parentPhone": "7715049213",
+      "active": true,
+      "createdAt": "2026-06-20T09:51:12.598Z",
+      "updatedAt": "2026-06-20T09:51:12.598Z"
+    }
+  ]
+}
