@@ -230,8 +230,11 @@ export default function StudentsEditor() {
                     className="form-control"
                     value={editing.password ?? ""}
                     onChange={(e) => patch(editing.id!, { password: e.target.value })}
-                    placeholder="Set or reset password"
+                    placeholder={`Default for new students: ${DEFAULT_STUDENT_PASSWORD}`}
                   />
+                  <p className="small text-muted mt-1 mb-0">
+                    New students get password <code>{DEFAULT_STUDENT_PASSWORD}</code> unless you set one here.
+                  </p>
                 </Field>
               </div>
               <div className="col-md-6">

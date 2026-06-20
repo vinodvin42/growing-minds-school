@@ -10,6 +10,7 @@
     "seed": "tsx scripts/seed-content.ts",
     "seed:portal": "tsx scripts/seed-portal.ts",
     "recover:from-blob": "tsx scripts/recover-from-blob.ts",
+    "reset:student-passwords": "tsx scripts/reset-student-passwords.ts",
     "test:email": "tsx scripts/test-email.ts",
     "generate:vapid": "node scripts/generate-vapid.mjs",
     "pwa:icons": "node scripts/generate-pwa-icons.mjs"
