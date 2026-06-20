@@ -11,7 +11,7 @@
       "parentPhone": "9870198458",
       "active": true,
       "createdAt": "2026-06-20T08:12:10.091Z",
-      "updatedAt": "2026-06-20T08:16:37.849Z"
+      "updatedAt": "2026-06-20T08:18:29.936Z"
     },
     {
       "id": "stu_vp0wu7u80",
@@ -24,7 +24,7 @@
       "parentPhone": "9326465119",
       "active": true,
       "createdAt": "2026-06-20T08:14:27.786Z",
-      "updatedAt": "2026-06-20T08:16:37.849Z"
+      "updatedAt": "2026-06-20T08:18:29.936Z"
     },
     {
       "id": "stu_5psp2gasv",
@@ -37,7 +37,20 @@
       "parentPhone": "8149353988",
       "active": true,
       "createdAt": "2026-06-20T08:16:37.849Z",
-      "updatedAt": "2026-06-20T08:16:37.849Z"
+      "updatedAt": "2026-06-20T08:18:29.936Z"
+    },
+    {
+      "id": "stu_c3vjyy8jq",
+      "loginId": "Sara2021",
+      "passwordHash": "$2b$10$gQHJva5NgDmsAsNuhqJ1QuzJXLmi2bK1JEe1oJtPvrayuA6uz2Svu",
+      "name": "Sara Noor Ahmed Ansari",
+      "standard": "UKG",
+      "rollNumber": "48",
+      "parentName": "Noor Ahmed Ansari",
+      "parentPhone": "8108614518",
+      "active": true,
+      "createdAt": "2026-06-20T08:18:29.936Z",
+      "updatedAt": "2026-06-20T08:18:29.936Z"
     }
   ]
 }
