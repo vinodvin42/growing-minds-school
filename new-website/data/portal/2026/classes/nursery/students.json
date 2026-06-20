@@ -11,7 +11,20 @@
       "parentPhone": "9967124989",
       "active": true,
       "createdAt": "2026-06-20T04:05:28.521Z",
-      "updatedAt": "2026-06-20T04:05:28.521Z"
+      "updatedAt": "2026-06-20T04:08:50.343Z"
+    },
+    {
+      "id": "stu_iy99wsdcx",
+      "loginId": "Hasnain2023",
+      "passwordHash": "$2b$10$848.XoWoA4YYCc63B3jD3epDN1x7lqu5c784OaKK1lJESuEVuxJKm",
+      "name": "Hasnain Imran Mansuri",
+      "standard": "Nursery",
+      "rollNumber": "2",
+      "parentName": "Imran mansuri",
+      "parentPhone": "7710975722",
+      "active": true,
+      "createdAt": "2026-06-20T04:08:50.343Z",
+      "updatedAt": "2026-06-20T04:08:50.343Z"
     }
   ]
 }
