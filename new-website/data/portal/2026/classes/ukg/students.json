@@ -11,7 +11,7 @@
       "parentPhone": "9870198458",
       "active": true,
       "createdAt": "2026-06-20T08:12:10.091Z",
-      "updatedAt": "2026-06-20T08:20:53.990Z"
+      "updatedAt": "2026-06-20T08:22:20.369Z"
     },
     {
       "id": "stu_vp0wu7u80",
@@ -24,7 +24,7 @@
       "parentPhone": "9326465119",
       "active": true,
       "createdAt": "2026-06-20T08:14:27.786Z",
-      "updatedAt": "2026-06-20T08:20:53.990Z"
+      "updatedAt": "2026-06-20T08:22:20.369Z"
     },
     {
       "id": "stu_5psp2gasv",
@@ -37,7 +37,7 @@
       "parentPhone": "8149353988",
       "active": true,
       "createdAt": "2026-06-20T08:16:37.849Z",
-      "updatedAt": "2026-06-20T08:20:53.990Z"
+      "updatedAt": "2026-06-20T08:22:20.369Z"
     },
     {
       "id": "stu_c3vjyy8jq",
@@ -50,7 +50,7 @@
       "parentPhone": "8108614518",
       "active": true,
       "createdAt": "2026-06-20T08:18:29.936Z",
-      "updatedAt": "2026-06-20T08:20:53.990Z"
+      "updatedAt": "2026-06-20T08:22:20.369Z"
     },
     {
       "id": "stu_8lc4dnemy",
@@ -63,7 +63,20 @@
       "parentPhone": "9222113241",
       "active": true,
       "createdAt": "2026-06-20T08:20:53.990Z",
-      "updatedAt": "2026-06-20T08:20:53.990Z"
+      "updatedAt": "2026-06-20T08:22:20.369Z"
+    },
+    {
+      "id": "stu_48jn8ht1d",
+      "loginId": "Rohana2020",
+      "passwordHash": "$2b$10$cFoDJUy17AcxLSe6KgHtZeKpM6GK8BnvBjQx7JromwOHjAjhrnUqK",
+      "name": "Rohana Wasim Khan",
+      "standard": "UKG",
+      "rollNumber": "50",
+      "parentName": "Wasim Amin Khan",
+      "parentPhone": "9768937229",
+      "active": true,
+      "createdAt": "2026-06-20T08:22:20.369Z",
+      "updatedAt": "2026-06-20T08:22:20.369Z"
     }
   ]
 }
