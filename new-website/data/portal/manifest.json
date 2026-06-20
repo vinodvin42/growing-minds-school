@@ -3,6 +3,7 @@
   "years": {
     "2026": {
       "studentClassSlugs": [
+        "lkg",
         "nursery"
       ],
       "homeworkClassSlugs": [],
@@ -10,5 +11,5 @@
       "feeStudentIds": []
     }
   },
-  "updatedAt": "2026-06-20T05:07:08.374Z"
+  "updatedAt": "2026-06-20T06:33:43.643Z"
 }
