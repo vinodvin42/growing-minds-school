@@ -1,0 +1,17 @@
+{
+  "students": [
+    {
+      "id": "stu_ooi7sffu8",
+      "loginId": "Aliya2013",
+      "passwordHash": "$2b$10$oOKCBu6Bu4/2DtDSLdjze.A46ZC7UhTVWMGyQYVL.NDVLcHzpPz7y",
+      "name": "Aliya Sharif Shaikh",
+      "standard": "7th Standard",
+      "rollNumber": "79",
+      "parentName": "Sharif Shaikh",
+      "parentPhone": "7718965771",
+      "active": true,
+      "createdAt": "2026-06-20T10:36:27.661Z",
+      "updatedAt": "2026-06-20T10:36:27.661Z"
+    }
+  ]
+}
