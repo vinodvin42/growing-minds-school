@@ -6,7 +6,7 @@
       "id": "fee_t2s1dfq3v",
       "label": "",
       "category": "tuition",
-      "amount": 22500,
+      "amount": 0,
       "dueDate": "",
       "notes": ""
     }
@@ -15,12 +15,12 @@
     {
       "id": "pay_8y1548m5k",
       "date": "2026-06-20",
-      "amount": 5000,
+      "amount": 0,
       "mode": "upi",
       "reference": "",
       "notes": ""
     }
   ],
   "notes": "",
-  "updatedAt": "2026-06-20T06:52:43.455Z"
+  "updatedAt": "2026-06-20T06:53:07.654Z"
 }
