@@ -3,7 +3,7 @@
     {
       "id": "stu_nma7tiiju",
       "loginId": "Isal2020",
-      "passwordHash": "$2b$10$B/JO28FoEzoxJM1kl861dOGhGKrgLLbFU5yYMXAzMjm2vpKfRrWiO",
+      "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Isal Saddam Ansari",
       "standard": "1st Standard",
       "rollNumber": "65",
@@ -11,12 +11,12 @@
       "parentPhone": "7715049213",
       "active": true,
       "createdAt": "2026-06-20T09:51:12.598Z",
-      "updatedAt": "2026-06-20T10:16:47.002Z"
+      "updatedAt": "2026-06-20T10:18:29.441Z"
     },
     {
       "id": "stu_zvq1sxwnc",
       "loginId": "MohdKhizar2019",
-      "passwordHash": "$2b$10$OE0gMIKa6jUzx6ZndiE6kus.7i4Wgsl4Xu09oTCKPApUG.C9B.8j6",
+      "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Mohammed Khizar Afzal Haji Attar",
       "standard": "1st Standard",
       "rollNumber": "66",
@@ -24,12 +24,12 @@
       "parentPhone": "9930543232",
       "active": true,
       "createdAt": "2026-06-20T09:56:09.428Z",
-      "updatedAt": "2026-06-20T10:16:47.002Z"
+      "updatedAt": "2026-06-20T10:18:29.442Z"
     },
     {
       "id": "stu_6zhempb2d",
       "loginId": "Altaf2019",
-      "passwordHash": "$2b$10$jFaNexyx2Xau9ghC6Vf5iuKBb0xVDTe1X3VAOY8l.LBG9dGeZLMqi",
+      "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Altaf Jamirul Haq Fazal",
       "standard": "1st Standard",
       "rollNumber": "67",
@@ -37,12 +37,12 @@
       "parentPhone": "9167002836",
       "active": true,
       "createdAt": "2026-06-20T10:07:15.136Z",
-      "updatedAt": "2026-06-20T10:16:47.002Z"
+      "updatedAt": "2026-06-20T10:18:29.442Z"
     },
     {
       "id": "stu_zfrslhdmw",
       "loginId": "Harsh2019",
-      "passwordHash": "$2b$10$ynfkx7z9Ci0XS6UnS4VtTeFAHhmIip9oNfuqv6Ed2pFZ5ZRe4Wosa",
+      "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Harsh Sanjay Chauhan",
       "standard": "1st Standard",
       "rollNumber": "68",
@@ -50,12 +50,12 @@
       "parentPhone": "9619056872",
       "active": true,
       "createdAt": "2026-06-20T10:08:45.766Z",
-      "updatedAt": "2026-06-20T10:16:47.002Z"
+      "updatedAt": "2026-06-20T10:18:29.442Z"
     },
     {
       "id": "stu_udcgraumz",
       "loginId": "Arhab2020",
-      "passwordHash": "$2b$10$j5NmVpG7Z/25MAxPV9e1Je8FpaGIgFVa.PDrpSMiE2baAm1EQDwuG",
+      "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Arhab Faheem Sayyed",
       "standard": "1st Standard",
       "rollNumber": "69",
@@ -63,12 +63,12 @@
       "parentPhone": "9152404867",
       "active": true,
       "createdAt": "2026-06-20T10:10:48.117Z",
-      "updatedAt": "2026-06-20T10:16:47.002Z"
+      "updatedAt": "2026-06-20T10:18:29.442Z"
     },
     {
       "id": "stu_4qzmaa2nt",
       "loginId": "Adina2020",
-      "passwordHash": "$2b$10$73Sk8PTlJs12j9sPtveIs.N/pczlm.j0IiGB82c913OSCWdCnY66G",
+      "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Adina Mohd Shafi Shaikh",
       "standard": "1st Standard",
       "rollNumber": "70",
@@ -76,12 +76,12 @@
       "parentPhone": "9967372644",
       "active": true,
       "createdAt": "2026-06-20T10:12:10.811Z",
-      "updatedAt": "2026-06-20T10:16:47.002Z"
+      "updatedAt": "2026-06-20T10:18:29.442Z"
     },
     {
       "id": "stu_rn3tvk4be",
       "loginId": "Anaya2020",
-      "passwordHash": "$2b$10$Q/qA2m0O0FUfX.L.5j4DhOYCyx4CFLYnJa6lALIwN4.IMIt72.NTu",
+      "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Anaya Mohd Shafi Shaikh",
       "standard": "1st Standard",
       "rollNumber": "71",
@@ -89,12 +89,12 @@
       "parentPhone": "9967375664",
       "active": true,
       "createdAt": "2026-06-20T10:13:50.716Z",
-      "updatedAt": "2026-06-20T10:16:47.002Z"
+      "updatedAt": "2026-06-20T10:18:29.442Z"
     },
     {
       "id": "stu_69slqqlgn",
       "loginId": "Javeria2019",
-      "passwordHash": "$2b$10$xMrbmMK6tBEayhEdHercv.gGeISPccOgz4WjgUFM9wixh8w5jNIG6",
+      "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Javeria Matin Patel",
       "standard": "1st Standard",
       "rollNumber": "72",
@@ -102,7 +102,7 @@
       "parentPhone": "9881443725",
       "active": true,
       "createdAt": "2026-06-20T10:16:47.002Z",
-      "updatedAt": "2026-06-20T10:16:47.002Z"
+      "updatedAt": "2026-06-20T10:18:29.442Z"
     }
   ]
 }
