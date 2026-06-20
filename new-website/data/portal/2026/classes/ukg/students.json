@@ -11,7 +11,7 @@
       "parentPhone": "9870198458",
       "active": true,
       "createdAt": "2026-06-20T08:12:10.091Z",
-      "updatedAt": "2026-06-20T08:30:23.228Z"
+      "updatedAt": "2026-06-20T08:32:48.468Z"
     },
     {
       "id": "stu_vp0wu7u80",
@@ -24,7 +24,7 @@
       "parentPhone": "9326465119",
       "active": true,
       "createdAt": "2026-06-20T08:14:27.786Z",
-      "updatedAt": "2026-06-20T08:30:23.228Z"
+      "updatedAt": "2026-06-20T08:32:48.468Z"
     },
     {
       "id": "stu_5psp2gasv",
@@ -37,7 +37,7 @@
       "parentPhone": "8149353988",
       "active": true,
       "createdAt": "2026-06-20T08:16:37.849Z",
-      "updatedAt": "2026-06-20T08:30:23.228Z"
+      "updatedAt": "2026-06-20T08:32:48.468Z"
     },
     {
       "id": "stu_c3vjyy8jq",
@@ -50,7 +50,7 @@
       "parentPhone": "8108614518",
       "active": true,
       "createdAt": "2026-06-20T08:18:29.936Z",
-      "updatedAt": "2026-06-20T08:30:23.228Z"
+      "updatedAt": "2026-06-20T08:32:48.468Z"
     },
     {
       "id": "stu_8lc4dnemy",
@@ -63,7 +63,7 @@
       "parentPhone": "9222113241",
       "active": true,
       "createdAt": "2026-06-20T08:20:53.990Z",
-      "updatedAt": "2026-06-20T08:30:23.228Z"
+      "updatedAt": "2026-06-20T08:32:48.468Z"
     },
     {
       "id": "stu_48jn8ht1d",
@@ -76,7 +76,7 @@
       "parentPhone": "9768937229",
       "active": true,
       "createdAt": "2026-06-20T08:22:20.369Z",
-      "updatedAt": "2026-06-20T08:30:23.228Z"
+      "updatedAt": "2026-06-20T08:32:48.468Z"
     },
     {
       "id": "stu_urc384xru",
@@ -89,7 +89,7 @@
       "parentPhone": "9167002836",
       "active": true,
       "createdAt": "2026-06-20T08:25:06.996Z",
-      "updatedAt": "2026-06-20T08:30:23.228Z"
+      "updatedAt": "2026-06-20T08:32:48.468Z"
     },
     {
       "id": "stu_5i7r7xnd3",
@@ -102,7 +102,7 @@
       "parentPhone": "9324641499",
       "active": true,
       "createdAt": "2026-06-20T08:26:14.116Z",
-      "updatedAt": "2026-06-20T08:30:23.228Z"
+      "updatedAt": "2026-06-20T08:32:48.468Z"
     },
     {
       "id": "stu_9z6888cbe",
@@ -115,7 +115,7 @@
       "parentPhone": "7738089364",
       "active": true,
       "createdAt": "2026-06-20T08:27:55.240Z",
-      "updatedAt": "2026-06-20T08:30:23.228Z"
+      "updatedAt": "2026-06-20T08:32:48.468Z"
     },
     {
       "id": "stu_dnrfo1z7b",
@@ -128,7 +128,20 @@
       "parentPhone": "8879149543",
       "active": true,
       "createdAt": "2026-06-20T08:30:23.228Z",
-      "updatedAt": "2026-06-20T08:30:23.228Z"
+      "updatedAt": "2026-06-20T08:32:48.468Z"
+    },
+    {
+      "id": "stu_cv7ygaovr",
+      "loginId": "Hasan2021",
+      "passwordHash": "$2b$10$5UyE4nMEOG8Aybd2RXCTIeOlEFzxDshotIaHFDluIDg7Q6DmTZlVW",
+      "name": "Hasan Mohd Sagir Ansari",
+      "standard": "UKG",
+      "rollNumber": "55",
+      "parentName": "Mohd Sagir Shahkat Ali Ansari",
+      "parentPhone": "9892831309",
+      "active": true,
+      "createdAt": "2026-06-20T08:32:48.468Z",
+      "updatedAt": "2026-06-20T08:32:48.468Z"
     }
   ]
 }
