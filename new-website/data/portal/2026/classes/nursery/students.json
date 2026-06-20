@@ -1,0 +1,17 @@
+{
+  "students": [
+    {
+      "id": "stu_anc0m9f5h",
+      "loginId": "Aairah2023",
+      "passwordHash": "$2b$10$jDHtDgVIeW41KPOpdxgbg.p/5i8QiGaRCu3D5tVSf6nI/bh.K2wVm",
+      "name": "Aairah mohd salman ansari",
+      "standard": "Nursery",
+      "rollNumber": "1",
+      "parentName": "mohd salman ansari",
+      "parentPhone": "9967124989",
+      "active": true,
+      "createdAt": "2026-06-20T04:05:28.521Z",
+      "updatedAt": "2026-06-20T04:05:28.521Z"
+    }
+  ]
+}
