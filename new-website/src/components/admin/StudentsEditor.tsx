@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   AdminBadge,
@@ -10,7 +10,20 @@ import {
   AdminTable,
   AdminTableActions,
 } from "@/components/admin/AdminListUi";
-import { STUDENT_STANDARDS, DEFAULT_STUDENT_LOGIN_ID, DEFAULT_STUDENT_PASSWORD, type StudentAdminInput, type StudentProfile } from "@/types/student";
+import {
+  downloadStudentCsvTemplate,
+  exportStudentsCsv,
+  filterStudents,
+  mergeImportedStudents,
+  parseStudentCsv,
+} from "@/lib/student-csv";
+import {
+  STUDENT_STANDARDS,
+  DEFAULT_STUDENT_LOGIN_ID,
+  DEFAULT_STUDENT_PASSWORD,
+  type StudentAdminInput,
+  type StudentProfile,
+} from "@/types/student";
 
 function uid() {
   return `stu_${Math.random().toString(36).slice(2, 11)}`;
@@ -58,11 +71,29 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 
 export default function StudentsEditor() {
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [students, setStudents] = useState<StudentAdminInput[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [status, setStatus] = useState("");
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterStandard, setFilterStandard] = useState("all");
+  const [filterStatus, setFilterStatus] = useState<"all" | "active" | "inactive">("all");
+  const [importing, setImporting] = useState(false);
+
+  const filteredStudents = useMemo(
+    () =>
+      filterStudents(students, {
+        query: searchQuery,
+        standard: filterStandard,
+        status: filterStatus,
+      }),
+    [students, searchQuery, filterStandard, filterStatus]
+  );
+
+  const filtersActive =
+    searchQuery.trim() !== "" || filterStandard !== "all" || filterStatus !== "all";
 
   const load = useCallback(async () => {
     const res = await fetch("/api/admin/students", { cache: "no-store" });
@@ -122,6 +153,34 @@ export default function StudentsEditor() {
     if (editingId === id) setEditingId(null);
   }
 
+  async function handleBulkImport(file: File) {
+    setImporting(true);
+    setStatus("");
+    try {
+      const text = await file.text();
+      const { rows, errors } = parseStudentCsv(text);
+      if (errors.length) {
+        setStatus(errors.slice(0, 5).join(" ") + (errors.length > 5 ? ` (+${errors.length - 5} more)` : ""));
+        return;
+      }
+      if (rows.length === 0) {
+        setStatus("No student rows found in file.");
+        return;
+      }
+      const { merged, added, updated } = mergeImportedStudents(students, rows);
+      setStudents(merged);
+      const ok = await save(merged);
+      if (ok) {
+        setStatus(`Imported ${rows.length} row(s): ${added} added, ${updated} updated.`);
+      }
+    } catch {
+      setStatus("Could not read CSV file.");
+    } finally {
+      setImporting(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  }
+
   if (loading) {
     return (
       <div className="text-center py-4">
@@ -134,51 +193,160 @@ export default function StudentsEditor() {
     <>
       <AdminCollapsibleSection
         title="Student Management"
-        hint="Saved per class in portal/2026/classes/3rd-standard/students.json. Save after edits — students sign in at /student/login."
-        count={students.length}
+        hint="Saved per class in portal/2026/classes/{class}/students.json. Default password: student123."
+        count={filtersActive ? filteredStudents.length : students.length}
         addLabel="Add Student"
         onAdd={addStudent}
         defaultOpen
       >
-      {students.length === 0 ? (
-        <div className="admin-empty-list">
-          <i className="fas fa-user-graduate d-block" />
-          <p className="mb-2">No students yet. Add students to enable app login.</p>
-          <p className="small text-muted mb-0">
-            Until saved, demo login works locally: <code>{DEFAULT_STUDENT_LOGIN_ID}</code> / <code>{DEFAULT_STUDENT_PASSWORD}</code>
-          </p>
+        <div className="admin-student-toolbar mb-3">
+          <div className="row g-2 align-items-end">
+            <div className="col-md-4">
+              <label className="form-label small mb-1">Search</label>
+              <input
+                type="search"
+                className="form-control form-control-sm"
+                placeholder="Name, ID, roll, parent, phone…"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+            <div className="col-md-3">
+              <label className="form-label small mb-1">Class</label>
+              <select
+                className="form-select form-select-sm"
+                value={filterStandard}
+                onChange={(e) => setFilterStandard(e.target.value)}
+              >
+                <option value="all">All classes</option>
+                {STUDENT_STANDARDS.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="col-md-2">
+              <label className="form-label small mb-1">Status</label>
+              <select
+                className="form-select form-select-sm"
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value as "all" | "active" | "inactive")}
+              >
+                <option value="all">All</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </div>
+            <div className="col-md-3">
+              {filtersActive && (
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary btn-sm w-100"
+                  onClick={() => {
+                    setSearchQuery("");
+                    setFilterStandard("all");
+                    setFilterStatus("all");
+                  }}
+                >
+                  Clear filters
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div className="admin-student-bulk mt-3 p-3 border rounded bg-light">
+            <p className="small fw-semibold mb-2 mb-md-1">
+              <i className="fas fa-file-csv me-1 text-orange" />
+              Bulk upload (CSV)
+            </p>
+            <p className="small text-muted mb-2">
+              Download the template, fill in rows, then upload. Existing login IDs are updated; new IDs are added.
+              Leave password blank for default <code>{DEFAULT_STUDENT_PASSWORD}</code>.
+            </p>
+            <div className="d-flex flex-wrap gap-2 align-items-center">
+              <button type="button" className="btn btn-outline-orange btn-sm" onClick={downloadStudentCsvTemplate}>
+                <i className="fas fa-download me-1" />
+                Sample template
+              </button>
+              <button
+                type="button"
+                className="btn btn-outline-secondary btn-sm"
+                onClick={() => exportStudentsCsv(students)}
+                disabled={students.length === 0}
+              >
+                <i className="fas fa-file-export me-1" />
+                Export current list
+              </button>
+              <label className="btn btn-orange btn-sm mb-0">
+                <i className="fas fa-upload me-1" />
+                {importing ? "Importing…" : "Upload CSV"}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".csv,text/csv"
+                  className="d-none"
+                  disabled={importing || saving}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) void handleBulkImport(file);
+                  }}
+                />
+              </label>
+            </div>
+          </div>
+
+          {filtersActive && (
+            <p className="small text-muted mb-2">
+              Showing {filteredStudents.length} of {students.length} students
+            </p>
+          )}
         </div>
-      ) : (
-        <AdminTable>
-          <thead>
-            <tr>
-              <th>Login ID</th>
-              <th>Name</th>
-              <th>Class</th>
-              <th>Parent</th>
-              <th>Status</th>
-              <th aria-label="Actions" />
-            </tr>
-          </thead>
-          <tbody>
-            {students.map((s) => (
-              <tr key={s.id}>
-                <AdminCellText primary={s.loginId || "—"} secondary={s.rollNumber ? `Roll ${s.rollNumber}` : undefined} />
-                <AdminCellText primary={s.name || "Unnamed"} />
-                <td>
-                  {s.standard}
-                  {s.section ? ` · ${s.section}` : ""}
-                </td>
-                <AdminCellText primary={s.parentName || "—"} secondary={s.parentPhone} />
-                <td>
-                  <AdminBadge tone={s.active ? "success" : "muted"}>{s.active ? "Active" : "Inactive"}</AdminBadge>
-                </td>
-                <AdminTableActions onEdit={() => setEditingId(s.id!)} onDelete={() => removeStudent(s.id!)} />
+
+        {students.length === 0 ? (
+          <div className="admin-empty-list">
+            <i className="fas fa-user-graduate d-block" />
+            <p className="mb-2">No students yet. Add students or upload a CSV to enable app login.</p>
+            <p className="small text-muted mb-0">
+              Demo login (local): <code>{DEFAULT_STUDENT_LOGIN_ID}</code> / <code>{DEFAULT_STUDENT_PASSWORD}</code>
+            </p>
+          </div>
+        ) : filteredStudents.length === 0 ? (
+          <div className="admin-empty-list">
+            <i className="fas fa-search d-block" />
+            <p className="mb-0">No students match your search or filters.</p>
+          </div>
+        ) : (
+          <AdminTable>
+            <thead>
+              <tr>
+                <th>Login ID</th>
+                <th>Name</th>
+                <th>Class</th>
+                <th>Parent</th>
+                <th>Status</th>
+                <th aria-label="Actions" />
               </tr>
-            ))}
-          </tbody>
-        </AdminTable>
-      )}
+            </thead>
+            <tbody>
+              {filteredStudents.map((s) => (
+                <tr key={s.id}>
+                  <AdminCellText primary={s.loginId || "—"} secondary={s.rollNumber ? `Roll ${s.rollNumber}` : undefined} />
+                  <AdminCellText primary={s.name || "Unnamed"} />
+                  <td>
+                    {s.standard}
+                    {s.section ? ` · ${s.section}` : ""}
+                  </td>
+                  <AdminCellText primary={s.parentName || "—"} secondary={s.parentPhone} />
+                  <td>
+                    <AdminBadge tone={s.active ? "success" : "muted"}>{s.active ? "Active" : "Inactive"}</AdminBadge>
+                  </td>
+                  <AdminTableActions onEdit={() => setEditingId(s.id!)} onDelete={() => removeStudent(s.id!)} />
+                </tr>
+              ))}
+            </tbody>
+          </AdminTable>
+        )}
       </AdminCollapsibleSection>
       <div className="d-flex align-items-center gap-3 mt-3">
         <button type="button" className="btn btn-orange" disabled={saving} onClick={() => save()}>
@@ -209,8 +377,7 @@ export default function StudentsEditor() {
         {editing && (
           <>
             <p className="admin-hint mb-3">
-              Demo login (until you save new students): ID <code>{DEFAULT_STUDENT_LOGIN_ID}</code> / password{" "}
-              <code>{DEFAULT_STUDENT_PASSWORD}</code>
+              Default password for new students: <code>{DEFAULT_STUDENT_PASSWORD}</code>
             </p>
             <div className="row g-2">
               <div className="col-md-6">
