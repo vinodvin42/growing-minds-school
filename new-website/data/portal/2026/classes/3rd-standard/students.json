@@ -1,3 +1,17 @@
 {
-  "students": []
+  "students": [
+    {
+      "id": "stu_zmwuvvbqj",
+      "loginId": "Ayza2017",
+      "passwordHash": "$2b$10$Yx899RTN.aXGuxrXDGcwb.zexfP7ly81B3PQts9UEoei13TcTKtQ.",
+      "name": "Ayaz Imran Shaikh",
+      "standard": "3rd Standard",
+      "rollNumber": "73",
+      "parentName": "Imran Shaikh",
+      "parentPhone": "8424090049",
+      "active": true,
+      "createdAt": "2026-06-20T10:19:50.710Z",
+      "updatedAt": "2026-06-20T10:19:50.710Z"
+    }
+  ]
 }
