@@ -1,0 +1,17 @@
+{
+  "students": [
+    {
+      "id": "stu_nr77ningy",
+      "loginId": "Ashna2014",
+      "passwordHash": "$2b$10$RntmwVBFVopBBkq39dGDseVdbAWAmNdRZnYIJhAEgB8xXb0ihsNZW",
+      "name": "Ashna Imran Shaikh",
+      "standard": "6th Standard",
+      "rollNumber": "76",
+      "parentName": "Imran Shaikh",
+      "parentPhone": "8424090049",
+      "active": true,
+      "createdAt": "2026-06-20T10:26:31.126Z",
+      "updatedAt": "2026-06-20T10:26:31.126Z"
+    }
+  ]
+}
