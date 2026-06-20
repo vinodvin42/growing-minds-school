@@ -1,0 +1,17 @@
+{
+  "students": [
+    {
+      "id": "stu_brczxvit9",
+      "loginId": "Shifa2016",
+      "passwordHash": "$2b$10$MitILXaQCSNKOVwTFfKy4.4uG24i9jV1/4geq68sk..sljbfTnF0O",
+      "name": "Shifa Sharif Manyar",
+      "standard": "4th Standard",
+      "rollNumber": "74",
+      "parentName": "Sharif Haroon Manyar",
+      "parentPhone": "8879166388",
+      "active": true,
+      "createdAt": "2026-06-20T10:22:45.889Z",
+      "updatedAt": "2026-06-20T10:22:45.889Z"
+    }
+  ]
+}
