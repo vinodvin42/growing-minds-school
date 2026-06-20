@@ -3,7 +3,7 @@
     {
       "id": "stu_anc0m9f5h",
       "loginId": "Aairah2023",
-      "passwordHash": "$2b$10$HEVrpMNAeSMoYbNUXdu6ruY6ycVXX6u8Wtv9Hu3zwc88EU80/eIG6",
+      "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Aairah Mohd Salman Ansari",
       "standard": "Nursery",
       "rollNumber": "1",
@@ -11,12 +11,12 @@
       "parentPhone": "9967124989",
       "active": true,
       "createdAt": "2026-06-20T04:05:28.521Z",
-      "updatedAt": "2026-06-20T10:16:47.002Z"
+      "updatedAt": "2026-06-20T10:18:32.162Z"
     },
     {
       "id": "stu_iy99wsdcx",
       "loginId": "Hasnain2023",
-      "passwordHash": "$2b$10$848.XoWoA4YYCc63B3jD3epDN1x7lqu5c784OaKK1lJESuEVuxJKm",
+      "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Hasnain Imran Mansuri",
       "standard": "Nursery",
       "rollNumber": "2",
@@ -24,12 +24,12 @@
       "parentPhone": "7710975722",
       "active": true,
       "createdAt": "2026-06-20T04:08:50.343Z",
-      "updatedAt": "2026-06-20T10:16:47.002Z"
+      "updatedAt": "2026-06-20T10:18:32.162Z"
     },
     {
       "id": "stu_kgcppr8ge",
       "loginId": "Zoya2023",
-      "passwordHash": "$2b$10$bHBEKV3dZInbN1gSe.9h.OVMOf1rY8RrDzbmM47VFSoqXeOlYI50W",
+      "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Zoya Arif Mansuri",
       "standard": "Nursery",
       "rollNumber": "3",
@@ -37,12 +37,12 @@
       "parentPhone": "9967868609",
       "active": true,
       "createdAt": "2026-06-20T04:10:35.968Z",
-      "updatedAt": "2026-06-20T10:16:47.002Z"
+      "updatedAt": "2026-06-20T10:18:32.162Z"
     },
     {
       "id": "stu_cwknn3ed1",
       "loginId": "Ayzal2023",
-      "passwordHash": "$2b$10$o5l.qz7BUN5acD6DjpOdJOqqpqq9wDRziFvb4kCjeeSbPkup8xCJu",
+      "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Ayzal Sahil Varunkar",
       "standard": "Nursery",
       "rollNumber": "4",
@@ -50,12 +50,12 @@
       "parentPhone": "8369763631",
       "active": true,
       "createdAt": "2026-06-20T04:13:08.773Z",
-      "updatedAt": "2026-06-20T10:16:47.002Z"
+      "updatedAt": "2026-06-20T10:18:32.162Z"
     },
     {
       "id": "stu_1f2bw517p",
       "loginId": "Mehwish2023",
-      "passwordHash": "$2b$10$pRpro5HjR4zFC86tsn0xmOvR.kX41obY.3BE8nfarl7aJ2kIOAU4K",
+      "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Mehwish Mohd Naved Shaikh",
       "standard": "Nursery",
       "rollNumber": "5",
@@ -63,12 +63,12 @@
       "parentPhone": "",
       "active": true,
       "createdAt": "2026-06-20T04:16:37.951Z",
-      "updatedAt": "2026-06-20T10:16:47.002Z"
+      "updatedAt": "2026-06-20T10:18:32.162Z"
     },
     {
       "id": "stu_79ke8rgwu",
       "loginId": "MohdAhmed2023",
-      "passwordHash": "$2b$10$cwwZkpSJ2FVpfECCn7TmY.VwsrHhl6ySuwZhUpGZIV0YrCWXZAVnm",
+      "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Mohammed Ahmed Sohail Shaikh",
       "standard": "Nursery",
       "rollNumber": "6",
@@ -76,12 +76,12 @@
       "parentPhone": "9768437432",
       "active": true,
       "createdAt": "2026-06-20T04:19:21.976Z",
-      "updatedAt": "2026-06-20T10:16:47.002Z"
+      "updatedAt": "2026-06-20T10:18:32.162Z"
     },
     {
       "id": "stu_j6pj5l3s4",
       "loginId": "Arnav2023",
-      "passwordHash": "$2b$10$8pAEH.8RbSyOsSKGxGeQVefDgt7w7eVAEqapv4ccwRQNyGLIzbCH6",
+      "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Arnav Yash Parab",
       "standard": "Nursery",
       "rollNumber": "7",
@@ -89,12 +89,12 @@
       "parentPhone": "9819931124",
       "active": true,
       "createdAt": "2026-06-20T04:21:26.574Z",
-      "updatedAt": "2026-06-20T10:16:47.002Z"
+      "updatedAt": "2026-06-20T10:18:32.162Z"
     },
     {
       "id": "stu_px5q3hxds",
       "loginId": "Anaaya2023",
-      "passwordHash": "$2b$10$IGLCZpoLMYBP6OdqTZRWLuYv8U7Qy4E46tIPEA4T842TpgYF3HN82",
+      "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Anaaya Mohamad Shafiq Shah",
       "standard": "Nursery",
       "rollNumber": "8",
@@ -102,12 +102,12 @@
       "parentPhone": "9222348631",
       "active": true,
       "createdAt": "2026-06-20T04:23:44.073Z",
-      "updatedAt": "2026-06-20T10:16:47.002Z"
+      "updatedAt": "2026-06-20T10:18:32.162Z"
     },
     {
       "id": "stu_x3rjz8zi2",
       "loginId": "Tasmira2022",
-      "passwordHash": "$2b$10$vyUG1U8ASwvaDPbltO1I.Ofb8g0ePFjQWAebHIDrFqcF40MNaXMF6",
+      "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Tasmira Tasdik Patel",
       "standard": "Nursery",
       "rollNumber": "9",
@@ -115,12 +115,12 @@
       "parentPhone": "9967317990",
       "active": true,
       "createdAt": "2026-06-20T04:25:47.285Z",
-      "updatedAt": "2026-06-20T10:16:47.002Z"
+      "updatedAt": "2026-06-20T10:18:32.162Z"
     },
     {
       "id": "stu_w8q5m1d1h",
       "loginId": "Zoreed2023",
-      "passwordHash": "$2b$10$v3MOmzmah0Hl2Pk50CWk8uCj7FSIJUT/iLOkGnJ9EphnHdfAy0t7i",
+      "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Zoreed Rafiuddin Khan",
       "standard": "Nursery",
       "rollNumber": "10",
@@ -128,12 +128,12 @@
       "parentPhone": "8108686316",
       "active": true,
       "createdAt": "2026-06-20T04:27:31.850Z",
-      "updatedAt": "2026-06-20T10:16:47.002Z"
+      "updatedAt": "2026-06-20T10:18:32.162Z"
     },
     {
       "id": "stu_0ewjzqgvr",
       "loginId": "Arena2023",
-      "passwordHash": "$2b$10$xjSEqpy.gO5/hxrpnqO4feRWA1aENWTBZfjHbUONQR/2oZsNhkAuW",
+      "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Arena Sharif Shaikh",
       "standard": "Nursery",
       "rollNumber": "11",
@@ -141,12 +141,12 @@
       "parentPhone": "7718965771",
       "active": true,
       "createdAt": "2026-06-20T04:30:07.581Z",
-      "updatedAt": "2026-06-20T10:16:47.002Z"
+      "updatedAt": "2026-06-20T10:18:32.162Z"
     },
     {
       "id": "stu_9w22fu7ye",
       "loginId": "Inaya2023",
-      "passwordHash": "$2b$10$xd4MSsdbVigwa91R4cCqoeMWcsLUuN4iQPVPdASG4ybW1Whhqbiwq",
+      "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Inaya Sharif Shaikh",
       "standard": "Nursery",
       "rollNumber": "12",
@@ -154,12 +154,12 @@
       "parentPhone": "7718965771",
       "active": true,
       "createdAt": "2026-06-20T04:31:38.261Z",
-      "updatedAt": "2026-06-20T10:16:47.002Z"
+      "updatedAt": "2026-06-20T10:18:32.162Z"
     },
     {
       "id": "stu_jvw7phch8",
       "loginId": "Haniya2023",
-      "passwordHash": "$2b$10$Jq4DQR9.1Z9evG3ms4Xyf.NL2hJYN4LfHpNWBO5PrLANfGI5cviNq",
+      "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Haniya Sharukh Khan",
       "standard": "Nursery",
       "rollNumber": "13",
@@ -167,12 +167,12 @@
       "parentPhone": "7021377205",
       "active": true,
       "createdAt": "2026-06-20T04:33:30.938Z",
-      "updatedAt": "2026-06-20T10:16:47.002Z"
+      "updatedAt": "2026-06-20T10:18:32.162Z"
     },
     {
       "id": "stu_803ycgir9",
       "loginId": "Fatima2023",
-      "passwordHash": "$2b$10$WNMK3EdZglU0UL762hFMpuelBrCiSApttFSxvsF68JhK.FMqtSCUy",
+      "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Fatima Shadab Ansari",
       "standard": "Nursery",
       "rollNumber": "14",
@@ -180,12 +180,12 @@
       "parentPhone": "9084052156",
       "active": true,
       "createdAt": "2026-06-20T04:35:00.717Z",
-      "updatedAt": "2026-06-20T10:16:47.002Z"
+      "updatedAt": "2026-06-20T10:18:32.162Z"
     },
     {
       "id": "stu_yy1ccdu21",
       "loginId": "Krisha2023",
-      "passwordHash": "$2b$10$9Alcl4xLDa8F/5eidHPhtePppg6HshMG.j5UciMCbfhLKAoGJ1gKS",
+      "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Krisha Shyam Sundar Jaiswal",
       "standard": "Nursery",
       "rollNumber": "15",
@@ -193,12 +193,12 @@
       "parentPhone": "8928746141",
       "active": true,
       "createdAt": "2026-06-20T04:37:02.547Z",
-      "updatedAt": "2026-06-20T10:16:47.002Z"
+      "updatedAt": "2026-06-20T10:18:32.162Z"
     },
     {
       "id": "stu_ut6naqfa7",
       "loginId": "Azka2023",
-      "passwordHash": "$2b$10$22.Be3PTVKSRzdh0GR1lEu8LA5F27CKNPiR6IWeOB4uHs6.40qG8a",
+      "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Azka Sagir Shaikh",
       "standard": "Nursery",
       "rollNumber": "16",
@@ -206,12 +206,12 @@
       "parentPhone": "9699978697",
       "active": true,
       "createdAt": "2026-06-20T04:41:57.597Z",
-      "updatedAt": "2026-06-20T10:16:47.002Z"
+      "updatedAt": "2026-06-20T10:18:32.162Z"
     },
     {
       "id": "stu_ezkb8n95f",
       "loginId": "Zohan2023",
-      "passwordHash": "$2b$10$KmozSW7.qU95RTolCH8PiOKLnIwtIKj2Wlfun.tpRHvl6ePkUPuVK",
+      "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Zohan Iqbal Shaikh",
       "standard": "Nursery",
       "rollNumber": "17",
@@ -219,12 +219,12 @@
       "parentPhone": "9892318763",
       "active": true,
       "createdAt": "2026-06-20T04:43:53.167Z",
-      "updatedAt": "2026-06-20T10:16:47.002Z"
+      "updatedAt": "2026-06-20T10:18:32.162Z"
     },
     {
       "id": "stu_1pdxtw8az",
       "loginId": "Yahya2023",
-      "passwordHash": "$2b$10$5EZdk5./S9Ma6s0Tydx0oeafaps9GDqws5JkHr9sY/TXVTGdQxX6i",
+      "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Yahya Imran Shaikh",
       "standard": "Nursery",
       "rollNumber": "18",
@@ -232,12 +232,12 @@
       "parentPhone": "8424090040",
       "active": true,
       "createdAt": "2026-06-20T04:45:29.343Z",
-      "updatedAt": "2026-06-20T10:16:47.002Z"
+      "updatedAt": "2026-06-20T10:18:32.162Z"
     },
     {
       "id": "stu_1zcqdth6j",
       "loginId": "Areesha2023",
-      "passwordHash": "$2b$10$m/R2O4OCMXN0n9LODO.7mev81uiZMCUSpSjUf2NRvqlyY4oITMN7i",
+      "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Areesha Afzal Ahmed Mansuri",
       "standard": "Nursery",
       "rollNumber": "19",
@@ -245,12 +245,12 @@
       "parentPhone": "7303144954",
       "active": true,
       "createdAt": "2026-06-20T04:50:00.813Z",
-      "updatedAt": "2026-06-20T10:16:47.002Z"
+      "updatedAt": "2026-06-20T10:18:32.162Z"
     },
     {
       "id": "stu_6z3uwctop",
       "loginId": "Arhan2022",
-      "passwordHash": "$2b$10$9vtcwgtfTJSTrVWfSb1y3uUnBPuEZatpnnH.HyXkT2f5Z1mdbzHXa",
+      "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Arhan Afsar Shaikh",
       "standard": "Nursery",
       "rollNumber": "20",
@@ -258,12 +258,12 @@
       "parentPhone": "9819971293",
       "active": true,
       "createdAt": "2026-06-20T04:57:02.030Z",
-      "updatedAt": "2026-06-20T10:16:47.002Z"
+      "updatedAt": "2026-06-20T10:18:32.162Z"
     },
     {
       "id": "stu_4uwmncfe2",
       "loginId": "Dua2023",
-      "passwordHash": "$2b$10$HABnfW9dl3AMv9iq1G.f5OxQtJ7ysz40QWhy3undyfZ.D8pf6Utr2",
+      "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Dua Tanvir Ali Shaikh",
       "standard": "Nursery",
       "rollNumber": "21",
@@ -271,7 +271,7 @@
       "parentPhone": "9664097840",
       "active": true,
       "createdAt": "2026-06-20T04:59:08.359Z",
-      "updatedAt": "2026-06-20T10:16:47.002Z"
+      "updatedAt": "2026-06-20T10:18:32.162Z"
     }
   ]
 }
