@@ -11,7 +11,7 @@
       "parentPhone": "9870198458",
       "active": true,
       "createdAt": "2026-06-20T08:12:10.091Z",
-      "updatedAt": "2026-06-20T08:18:29.936Z"
+      "updatedAt": "2026-06-20T08:20:53.990Z"
     },
     {
       "id": "stu_vp0wu7u80",
@@ -24,7 +24,7 @@
       "parentPhone": "9326465119",
       "active": true,
       "createdAt": "2026-06-20T08:14:27.786Z",
-      "updatedAt": "2026-06-20T08:18:29.936Z"
+      "updatedAt": "2026-06-20T08:20:53.990Z"
     },
     {
       "id": "stu_5psp2gasv",
@@ -37,7 +37,7 @@
       "parentPhone": "8149353988",
       "active": true,
       "createdAt": "2026-06-20T08:16:37.849Z",
-      "updatedAt": "2026-06-20T08:18:29.936Z"
+      "updatedAt": "2026-06-20T08:20:53.990Z"
     },
     {
       "id": "stu_c3vjyy8jq",
@@ -50,7 +50,20 @@
       "parentPhone": "8108614518",
       "active": true,
       "createdAt": "2026-06-20T08:18:29.936Z",
-      "updatedAt": "2026-06-20T08:18:29.936Z"
+      "updatedAt": "2026-06-20T08:20:53.990Z"
+    },
+    {
+      "id": "stu_8lc4dnemy",
+      "loginId": "Hammad2021",
+      "passwordHash": "$2b$10$EHRLSJieskZm.yLVxYP2wuhz07gCbVDTB1N12hzvsffuaP6ZHxtU.",
+      "name": "Hammad Ali Salamat Ali Sayed",
+      "standard": "UKG",
+      "rollNumber": "49",
+      "parentName": "Salamat Ali Sayed",
+      "parentPhone": "9222113241",
+      "active": true,
+      "createdAt": "2026-06-20T08:20:53.990Z",
+      "updatedAt": "2026-06-20T08:20:53.990Z"
     }
   ]
 }
