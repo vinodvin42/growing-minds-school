@@ -11,7 +11,20 @@
       "parentPhone": "9870198458",
       "active": true,
       "createdAt": "2026-06-20T08:12:10.091Z",
-      "updatedAt": "2026-06-20T08:12:10.091Z"
+      "updatedAt": "2026-06-20T08:14:27.786Z"
+    },
+    {
+      "id": "stu_vp0wu7u80",
+      "loginId": "Fatima2020",
+      "passwordHash": "$2b$10$h9USdLsLkUUfQ2P22DmvmuNqjFeBqO7slpEfTVlZjk4HZiIqame7a",
+      "name": "Fatima Tahir Khan",
+      "standard": "UKG",
+      "rollNumber": "46",
+      "parentName": "Tahir Khan",
+      "parentPhone": "9326465119",
+      "active": true,
+      "createdAt": "2026-06-20T08:14:27.786Z",
+      "updatedAt": "2026-06-20T08:14:27.786Z"
     }
   ]
 }
