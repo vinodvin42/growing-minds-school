@@ -13,7 +13,9 @@
         "nursery",
         "ukg"
       ],
-      "homeworkClassSlugs": [],
+      "homeworkClassSlugs": [
+        "all-classes"
+      ],
       "messageMonths": [],
       "feeStudentIds": [
         "stu_4puhc030j",
@@ -43,5 +45,5 @@
       ]
     }
   },
-  "updatedAt": "2026-06-21T13:43:54.656Z"
+  "updatedAt": "2026-06-21T13:50:21.521Z"
 }
