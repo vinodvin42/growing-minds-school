@@ -11,7 +11,19 @@
       "parentPhone": "8879166388",
       "active": true,
       "createdAt": "2026-06-20T10:22:45.889Z",
-      "updatedAt": "2026-06-20T11:08:28.845Z"
+      "updatedAt": "2026-06-21T13:43:49.156Z"
+    },
+    {
+      "id": "stu_1j7izyphb",
+      "loginId": "ARHA2022",
+      "passwordHash": "$2b$10$9jDC1rUXyEChqUPc1jRejeGmpY0MvnI8Rg7u25CK06dtD4Yg6sxHq",
+      "name": "Arha",
+      "standard": "4th Standard",
+      "parentName": "Abc",
+      "parentPhone": "12345",
+      "active": true,
+      "createdAt": "2026-06-21T13:43:49.156Z",
+      "updatedAt": "2026-06-21T13:43:49.156Z"
     }
   ]
 }
