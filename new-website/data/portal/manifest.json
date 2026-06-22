@@ -16,7 +16,9 @@
       "homeworkClassSlugs": [
         "all-classes"
       ],
-      "messageMonths": [],
+      "messageMonths": [
+        "2026/06"
+      ],
       "feeStudentIds": [
         "stu_4puhc030j",
         "stu_4qzmaa2nt",
@@ -45,5 +47,5 @@
       ]
     }
   },
-  "updatedAt": "2026-06-22T10:21:21.712Z"
+  "updatedAt": "2026-06-22T10:21:23.365Z"
 }
