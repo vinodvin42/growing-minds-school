@@ -10,14 +10,8 @@ import {
   AdminTable,
   AdminTableActions,
   AdminFloatingSaveBar,
-  AdminBulkCsvPanel,
 } from "@/components/admin/AdminListUi";
-import {
-  downloadFeeLineCsvTemplate,
-  exportFeeSummaryCsv,
-  mergeImportedFeeLines,
-  parseFeeLineCsv,
-} from "@/lib/fee-csv";
+import { exportFeeSummaryCsv } from "@/lib/fee-csv";
 import {
   openReceiptInNewTab,
   adminFeeStatementReceiptUrl,
@@ -85,7 +79,6 @@ export default function StudentFeesEditor() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStandard, setFilterStandard] = useState("all");
   const [filterFeeStatus, setFilterFeeStatus] = useState<"all" | FeeAccountStatus>("all");
-  const [importing, setImporting] = useState(false);
   const [bulkStandard, setBulkStandard] = useState("all");
   const [bulkLabel, setBulkLabel] = useState("");
   const [bulkCategory, setBulkCategory] = useState<FeeLineItem["category"]>("tuition");
@@ -325,37 +318,6 @@ export default function StudentFeesEditor() {
     setStatus(`Added "${label}" to ${targets.length} student(s). Click Save All Fee Accounts.`);
   }
 
-  async function handleFeeCsvImport(file: File) {
-    setImporting(true);
-    setStatus("");
-    try {
-      const text = await file.text();
-      const { rows, errors } = parseFeeLineCsv(text);
-      if (errors.length) {
-        setStatus(errors.slice(0, 5).join(" ") + (errors.length > 5 ? ` (+${errors.length - 5} more)` : ""));
-        return;
-      }
-      if (rows.length === 0) {
-        setStatus("No fee rows found in file.");
-        return;
-      }
-      const { merged, added, skipped, unknownLogins } = mergeImportedFeeLines(accounts, students, academicYear, rows);
-      setAccounts(merged);
-      setDirty(true);
-      let msg = `Imported ${added} fee item(s).`;
-      if (skipped) msg += ` Skipped ${skipped} (unknown loginId).`;
-      if (unknownLogins.length) {
-        msg += ` Unknown IDs: ${unknownLogins.slice(0, 3).join(", ")}${unknownLogins.length > 3 ? "…" : ""}.`;
-      }
-      msg += " Click Save All Fee Accounts.";
-      setStatus(msg);
-    } catch {
-      setStatus("Could not read CSV file.");
-    } finally {
-      setImporting(false);
-    }
-  }
-
   function exportFeeSummary() {
     exportFeeSummaryCsv(
       summaries.map(({ student, totalDue, totalPaid, balance, status: feeStatus }) => ({
@@ -401,7 +363,7 @@ export default function StudentFeesEditor() {
               title="Bulk operations"
               level="subsection"
               collapsible={false}
-              hint="Assign the same fee to a class or import/export via CSV. Click Save All Fee Accounts when finished."
+              hint="Assign the same fee to a class, then click Save All Fee Accounts when finished."
             >
               <p className="admin-bulk-assign__label">
                 <i className="fas fa-layer-group me-1 text-orange" />
@@ -470,29 +432,13 @@ export default function StudentFeesEditor() {
                   <button
                     type="button"
                     className="btn btn-orange btn-sm w-100"
-                    disabled={saving || importing}
+                    disabled={saving}
                     onClick={applyBulkFeeToClass}
                   >
                     Apply
                   </button>
                 </div>
               </div>
-
-              <AdminBulkCsvPanel
-                embedded
-                hint={
-                  <>
-                    Import fee line items by student login ID, or export a summary of all balances. Unknown login IDs
-                    are skipped.
-                  </>
-                }
-                uploading={importing}
-                uploadDisabled={saving}
-                onDownloadTemplate={downloadFeeLineCsvTemplate}
-                onExport={exportFeeSummary}
-                exportDisabled={students.length === 0}
-                onFileSelected={(file) => void handleFeeCsvImport(file)}
-              />
             </AdminCollapsibleSection>
 
             <div className="admin-table-toolbar">
@@ -537,19 +483,32 @@ export default function StudentFeesEditor() {
                   </select>
                 </div>
                 <div className="col-md-2">
-                  {filtersActive && (
+                  <label className="form-label small mb-1 d-none d-md-block">&nbsp;</label>
+                  <div className="d-flex gap-1">
+                    {filtersActive && (
+                      <button
+                        type="button"
+                        className="btn btn-outline-secondary btn-sm flex-grow-1"
+                        onClick={() => {
+                          setSearchQuery("");
+                          setFilterStandard("all");
+                          setFilterFeeStatus("all");
+                        }}
+                      >
+                        Clear
+                      </button>
+                    )}
                     <button
                       type="button"
-                      className="btn btn-outline-secondary btn-sm w-100"
-                      onClick={() => {
-                        setSearchQuery("");
-                        setFilterStandard("all");
-                        setFilterFeeStatus("all");
-                      }}
+                      className="btn btn-outline-secondary btn-sm admin-toolbar-icon"
+                      title="Export fee summary (CSV)"
+                      aria-label="Export fee summary"
+                      disabled={students.length === 0}
+                      onClick={exportFeeSummary}
                     >
-                      Clear
+                      <i className="fas fa-file-export" aria-hidden="true" />
                     </button>
-                  )}
+                  </div>
                 </div>
               </div>
               {filtersActive && (

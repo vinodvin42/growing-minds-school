@@ -894,6 +894,12 @@
 .admin-table-toolbar {
     padding: 0.75rem 0 0.25rem;
 }
+.admin-toolbar-icon {
+    width: 2.125rem;
+    padding-left: 0;
+    padding-right: 0;
+    flex-shrink: 0;
+}
 .admin-bulk-panel__embedded {
     padding-top: 1rem;
     margin-top: 1rem;
