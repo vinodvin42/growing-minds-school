@@ -32,6 +32,7 @@ type AdminCollapsibleSectionProps = {
   title: string;
   hint?: string;
   defaultOpen?: boolean;
+  collapsible?: boolean;
   level?: "section" | "subsection";
   count?: number;
   addLabel?: string;
@@ -43,6 +44,7 @@ export function AdminCollapsibleSection({
   title,
   hint,
   defaultOpen = true,
+  collapsible = true,
   level = "section",
   count,
   addLabel,
@@ -51,24 +53,32 @@ export function AdminCollapsibleSection({
 }: AdminCollapsibleSectionProps) {
   const [open, setOpen] = useState(defaultOpen);
   const panelId = useId();
+  const isOpen = collapsible ? open : true;
+  const TitleTag = level === "section" ? "h2" : "h3";
+  const titleClass =
+    level === "section" ? "admin-section-title admin-collapse__title" : "admin-section-subtitle admin-collapse__title";
 
   return (
-    <section className={`admin-collapse ${open ? "is-open" : ""} ${level === "subsection" ? "admin-collapse--sub" : ""}`}>
+    <section
+      className={`admin-collapse ${isOpen ? "is-open" : ""}${collapsible ? "" : " admin-collapse--static"}${level === "subsection" ? " admin-collapse--sub" : ""}`}
+    >
       <div className="admin-collapse__header">
-        <button
-          type="button"
-          className="admin-collapse__toggle"
-          onClick={() => setOpen((v) => !v)}
-          aria-expanded={open}
-          aria-controls={panelId}
-        >
-          {level === "section" ? (
-            <h2 className="admin-section-title admin-collapse__title">{title}</h2>
-          ) : (
-            <h3 className="admin-section-subtitle admin-collapse__title">{title}</h3>
-          )}
-          <i className={`fas fa-chevron-down admin-collapse__chevron${open ? " is-open" : ""}`} aria-hidden="true" />
-        </button>
+        {collapsible ? (
+          <button
+            type="button"
+            className="admin-collapse__toggle"
+            onClick={() => setOpen((v) => !v)}
+            aria-expanded={isOpen}
+            aria-controls={panelId}
+          >
+            <TitleTag className={titleClass}>{title}</TitleTag>
+            <i className={`fas fa-chevron-down admin-collapse__chevron${isOpen ? " is-open" : ""}`} aria-hidden="true" />
+          </button>
+        ) : (
+          <div className="admin-collapse__toggle admin-collapse__toggle--static">
+            <TitleTag className={titleClass}>{title}</TitleTag>
+          </div>
+        )}
         {(count !== undefined || onAdd) && (
           <div className="admin-collapse__actions">
             {count !== undefined && (
@@ -83,7 +93,7 @@ export function AdminCollapsibleSection({
           </div>
         )}
       </div>
-      <div id={panelId} className="admin-collapse__body" hidden={!open}>
+      <div id={panelId} className="admin-collapse__body" hidden={!isOpen}>
         {hint && <p className="admin-hint admin-collapse__hint">{hint}</p>}
         {children}
       </div>
@@ -306,6 +316,7 @@ type AdminBulkCsvPanelProps = {
   hint: React.ReactNode;
   uploading?: boolean;
   uploadDisabled?: boolean;
+  embedded?: boolean;
   onDownloadTemplate: () => void;
   onExport?: () => void;
   exportDisabled?: boolean;
@@ -317,6 +328,7 @@ export function AdminBulkCsvPanel({
   hint,
   uploading,
   uploadDisabled,
+  embedded,
   onDownloadTemplate,
   onExport,
   exportDisabled,
@@ -325,11 +337,19 @@ export function AdminBulkCsvPanel({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   return (
-    <div className="admin-bulk-panel mt-3 p-3 border rounded bg-light">
-      <p className="small fw-semibold mb-2 mb-md-1">
-        <i className="fas fa-file-csv me-1 text-orange" />
-        Bulk upload (CSV)
-      </p>
+    <div className={embedded ? "admin-bulk-panel__embedded" : "admin-bulk-panel mt-3 p-3 border rounded bg-light"}>
+      {!embedded && (
+        <p className="small fw-semibold mb-2 mb-md-1">
+          <i className="fas fa-file-csv me-1 text-orange" />
+          Bulk upload (CSV)
+        </p>
+      )}
+      {embedded && (
+        <p className="small fw-semibold mb-2">
+          <i className="fas fa-file-csv me-1 text-orange" />
+          CSV import / export
+        </p>
+      )}
       <p className="small text-muted mb-2">{hint}</p>
       <div className="d-flex flex-wrap gap-2 align-items-center">
         <button type="button" className="btn btn-outline-orange btn-sm" onClick={onDownloadTemplate}>

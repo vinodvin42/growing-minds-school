@@ -380,77 +380,22 @@ export default function StudentFeesEditor() {
         count={filtersActive ? filteredSummaries.length : students.length}
         defaultOpen
       >
-        {students.length > 0 && (
-          <div className="admin-student-toolbar mb-3">
-            <div className="row g-2 align-items-end">
-              <div className="col-md-4">
-                <label className="form-label small mb-1">Search</label>
-                <input
-                  type="search"
-                  className="form-control form-control-sm"
-                  placeholder="Name, ID, roll, parent, phone…"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>
-              <div className="col-md-3">
-                <label className="form-label small mb-1">Class</label>
-                <select
-                  className="form-select form-select-sm"
-                  value={filterStandard}
-                  onChange={(e) => setFilterStandard(e.target.value)}
-                >
-                  <option value="all">All classes</option>
-                  {STUDENT_STANDARDS.map((s) => (
-                    <option key={s} value={s}>
-                      {s}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="col-md-3">
-                <label className="form-label small mb-1">Fee status</label>
-                <select
-                  className="form-select form-select-sm"
-                  value={filterFeeStatus}
-                  onChange={(e) => setFilterFeeStatus(e.target.value as "all" | FeeAccountStatus)}
-                >
-                  <option value="all">All statuses</option>
-                  <option value="pending">Pending</option>
-                  <option value="partial">Partial</option>
-                  <option value="paid">Paid</option>
-                  <option value="overdue">Overdue</option>
-                </select>
-              </div>
-              <div className="col-md-2">
-                {filtersActive && (
-                  <button
-                    type="button"
-                    className="btn btn-outline-secondary btn-sm w-100"
-                    onClick={() => {
-                      setSearchQuery("");
-                      setFilterStandard("all");
-                      setFilterFeeStatus("all");
-                    }}
-                  >
-                    Clear
-                  </button>
-                )}
-              </div>
-            </div>
-            {filtersActive && (
-              <p className="small text-muted mb-0 mt-2">
-                Showing {filteredSummaries.length} of {students.length} students
-              </p>
-            )}
-
-            <div className="admin-bulk-panel mt-3 p-3 border rounded bg-light">
-              <p className="small fw-semibold mb-2">
+        {students.length === 0 ? (
+          <div className="admin-empty-list">
+            <i className="fas fa-wallet d-block" />
+            <p className="mb-0">Add students first, then set up their fee accounts here.</p>
+          </div>
+        ) : (
+          <>
+            <AdminCollapsibleSection
+              title="Bulk operations"
+              level="subsection"
+              collapsible={false}
+              hint="Assign the same fee to a class or import/export via CSV. Click Save All Fee Accounts when finished."
+            >
+              <p className="admin-bulk-assign__label">
                 <i className="fas fa-layer-group me-1 text-orange" />
-                Bulk assign fee
-              </p>
-              <p className="small text-muted mb-2">
-                Add the same fee item to every student in a class (or all students). Save when done.
+                Assign fee to class
               </p>
               <div className="row g-2 align-items-end">
                 <div className="col-md-2">
@@ -522,72 +467,132 @@ export default function StudentFeesEditor() {
                   </button>
                 </div>
               </div>
+
+              <AdminBulkCsvPanel
+                embedded
+                hint={
+                  <>
+                    Import fee line items by student login ID, or export a summary of all balances. Unknown login IDs
+                    are skipped.
+                  </>
+                }
+                uploading={importing}
+                uploadDisabled={saving}
+                onDownloadTemplate={downloadFeeLineCsvTemplate}
+                onExport={exportFeeSummary}
+                exportDisabled={students.length === 0}
+                onFileSelected={(file) => void handleFeeCsvImport(file)}
+              />
+            </AdminCollapsibleSection>
+
+            <div className="admin-table-toolbar">
+              <div className="row g-2 align-items-end">
+                <div className="col-md-4">
+                  <label className="form-label small mb-1">Search</label>
+                  <input
+                    type="search"
+                    className="form-control form-control-sm"
+                    placeholder="Name, ID, roll, parent, phone…"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
+                <div className="col-md-3">
+                  <label className="form-label small mb-1">Class</label>
+                  <select
+                    className="form-select form-select-sm"
+                    value={filterStandard}
+                    onChange={(e) => setFilterStandard(e.target.value)}
+                  >
+                    <option value="all">All classes</option>
+                    {STUDENT_STANDARDS.map((s) => (
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="col-md-3">
+                  <label className="form-label small mb-1">Fee status</label>
+                  <select
+                    className="form-select form-select-sm"
+                    value={filterFeeStatus}
+                    onChange={(e) => setFilterFeeStatus(e.target.value as "all" | FeeAccountStatus)}
+                  >
+                    <option value="all">All statuses</option>
+                    <option value="pending">Pending</option>
+                    <option value="partial">Partial</option>
+                    <option value="paid">Paid</option>
+                    <option value="overdue">Overdue</option>
+                  </select>
+                </div>
+                <div className="col-md-2">
+                  {filtersActive && (
+                    <button
+                      type="button"
+                      className="btn btn-outline-secondary btn-sm w-100"
+                      onClick={() => {
+                        setSearchQuery("");
+                        setFilterStandard("all");
+                        setFilterFeeStatus("all");
+                      }}
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+              </div>
+              {filtersActive && (
+                <p className="small text-muted mb-0 mt-2">
+                  Showing {filteredSummaries.length} of {students.length} students
+                </p>
+              )}
             </div>
 
-            <AdminBulkCsvPanel
-              hint={
-                <>
-                  Import fee line items by student login ID, or export a summary of all balances. Unknown login IDs are
-                  skipped.
-                </>
-              }
-              uploading={importing}
-              uploadDisabled={saving}
-              onDownloadTemplate={downloadFeeLineCsvTemplate}
-              onExport={exportFeeSummary}
-              exportDisabled={students.length === 0}
-              onFileSelected={(file) => void handleFeeCsvImport(file)}
-            />
-          </div>
-        )}
-
-        {students.length === 0 ? (
-          <div className="admin-empty-list">
-            <i className="fas fa-wallet d-block" />
-            <p className="mb-0">Add students first, then set up their fee accounts here.</p>
-          </div>
-        ) : filteredSummaries.length === 0 ? (
-          <div className="admin-empty-list">
-            <i className="fas fa-search d-block" />
-            <p className="mb-0">No students match your search or filters.</p>
-          </div>
-        ) : (
-          <AdminTable>
-            <thead>
-              <tr>
-                <th>Student</th>
-                <th>Class</th>
-                <th>Total due</th>
-                <th>Paid</th>
-                <th>Balance</th>
-                <th>Status</th>
-                <th aria-label="Actions" />
-              </tr>
-            </thead>
-            <tbody>
-              {filteredSummaries.map(({ student, totalDue, totalPaid, balance, status: feeStatus }) => (
-                <tr key={student.id}>
-                  <AdminCellText primary={student.name} secondary={student.loginId} />
-                  <td>
-                    {student.standard}
-                    {student.section ? ` · ${student.section}` : ""}
-                  </td>
-                  <td>{formatInr(totalDue)}</td>
-                  <td>{formatInr(totalPaid)}</td>
-                  <td>{formatInr(balance)}</td>
-                  <td>
-                    <AdminBadge tone={statusTone(feeStatus)}>{feeStatusLabel(feeStatus)}</AdminBadge>
-                  </td>
-                  <AdminTableActions
-                    onEdit={() => openEditor(student.id)}
-                    onDelete={() => patchAccount(student.id, emptyFeeAccount(student.id, academicYear))}
-                    onReceipt={() => openReceiptInNewTab(adminFeeStatementReceiptUrl(student.id))}
-                    editLabel="Manage"
-                  />
-                </tr>
-              ))}
-            </tbody>
-          </AdminTable>
+            {filteredSummaries.length === 0 ? (
+              <div className="admin-empty-list">
+                <i className="fas fa-search d-block" />
+                <p className="mb-0">No students match your search or filters.</p>
+              </div>
+            ) : (
+              <AdminTable>
+                <thead>
+                  <tr>
+                    <th>Student</th>
+                    <th>Class</th>
+                    <th>Total due</th>
+                    <th>Paid</th>
+                    <th>Balance</th>
+                    <th>Status</th>
+                    <th aria-label="Actions" />
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredSummaries.map(({ student, totalDue, totalPaid, balance, status: feeStatus }) => (
+                    <tr key={student.id}>
+                      <AdminCellText primary={student.name} secondary={student.loginId} />
+                      <td>
+                        {student.standard}
+                        {student.section ? ` · ${student.section}` : ""}
+                      </td>
+                      <td>{formatInr(totalDue)}</td>
+                      <td>{formatInr(totalPaid)}</td>
+                      <td>{formatInr(balance)}</td>
+                      <td>
+                        <AdminBadge tone={statusTone(feeStatus)}>{feeStatusLabel(feeStatus)}</AdminBadge>
+                      </td>
+                      <AdminTableActions
+                        onEdit={() => openEditor(student.id)}
+                        onDelete={() => patchAccount(student.id, emptyFeeAccount(student.id, academicYear))}
+                        onReceipt={() => openReceiptInNewTab(adminFeeStatementReceiptUrl(student.id))}
+                        editLabel="Manage"
+                      />
+                    </tr>
+                  ))}
+                </tbody>
+              </AdminTable>
+            )}
+          </>
         )}
       </AdminCollapsibleSection>
 
