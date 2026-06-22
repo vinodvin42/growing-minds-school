@@ -1363,6 +1363,13 @@
     font-weight: 700;
     box-shadow: var(--shadow-md);
 }
+.admin-floating-save__btn--dirty {
+    box-shadow: 0 0 0 2px rgba(232, 93, 44, 0.35), var(--shadow-md);
+}
+.admin-floating-save__status--dirty {
+    color: var(--orange);
+    font-weight: 600;
+}
 @media (max-width: 575px) {
     .admin-floating-save__inner {
         flex-direction: column-reverse;

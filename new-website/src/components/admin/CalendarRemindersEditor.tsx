@@ -74,6 +74,7 @@ export default function CalendarRemindersEditor() {
   const [status, setStatus] = useState("");
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [dirty, setDirty] = useState(false);
 
   const load = useCallback(async () => {
     const [calRes, studentsRes] = await Promise.all([
@@ -88,6 +89,7 @@ export default function CalendarRemindersEditor() {
     if (calData.success) {
       setData({ holidays: calData.holidays ?? [], reminders: calData.reminders ?? [] });
       setAcademicYear(calData.academicYear ?? String(new Date().getFullYear()));
+      setDirty(false);
     }
     const studentsData = await studentsRes.json();
     if (studentsData.success) setStudents(studentsData.students ?? []);
@@ -112,6 +114,7 @@ export default function CalendarRemindersEditor() {
       if (result.success) {
         setData({ holidays: result.holidays ?? [], reminders: result.reminders ?? [] });
         setStatus("Calendar saved!");
+        setDirty(false);
         return true;
       }
       setStatus(result.message || "Save failed");
@@ -125,6 +128,7 @@ export default function CalendarRemindersEditor() {
   const editingReminder = data.reminders.find((r) => r.id === editingReminderId);
 
   function patchHoliday(id: string, patch: Partial<HolidayItem>) {
+    setDirty(true);
     setData((d) => ({
       ...d,
       holidays: d.holidays.map((h) => (h.id === id ? { ...h, ...patch } : h)),
@@ -132,6 +136,7 @@ export default function CalendarRemindersEditor() {
   }
 
   function patchReminder(id: string, patch: Partial<PortalReminder>) {
+    setDirty(true);
     setData((d) => ({
       ...d,
       reminders: d.reminders.map((r) => (r.id === id ? { ...r, ...patch } : r)),
@@ -154,6 +159,7 @@ export default function CalendarRemindersEditor() {
         count={data.holidays.length}
         addLabel="Add Holiday"
         onAdd={() => {
+          setDirty(true);
           const item = emptyHoliday();
           setData((d) => ({ ...d, holidays: [item, ...d.holidays] }));
           setEditingHolidayId(item.id);
@@ -188,6 +194,7 @@ export default function CalendarRemindersEditor() {
                   <AdminTableActions
                     onEdit={() => setEditingHolidayId(h.id)}
                     onDelete={() => {
+                      setDirty(true);
                       setData((d) => ({ ...d, holidays: d.holidays.filter((x) => x.id !== h.id) }));
                       if (editingHolidayId === h.id) setEditingHolidayId(null);
                     }}
@@ -205,6 +212,7 @@ export default function CalendarRemindersEditor() {
         count={data.reminders.length}
         addLabel="Add Reminder"
         onAdd={() => {
+          setDirty(true);
           const item = emptyReminder();
           setData((d) => ({ ...d, reminders: [item, ...d.reminders] }));
           setEditingReminderId(item.id);
@@ -241,6 +249,7 @@ export default function CalendarRemindersEditor() {
                   <AdminTableActions
                     onEdit={() => setEditingReminderId(r.id)}
                     onDelete={() => {
+                      setDirty(true);
                       setData((d) => ({ ...d, reminders: d.reminders.filter((x) => x.id !== r.id) }));
                       if (editingReminderId === r.id) setEditingReminderId(null);
                     }}
@@ -255,6 +264,7 @@ export default function CalendarRemindersEditor() {
       <AdminFloatingSaveBar
         label="Save Calendar & Reminders"
         saving={saving}
+        dirty={dirty}
         onSave={() => save()}
         status={status}
       />
@@ -266,14 +276,22 @@ export default function CalendarRemindersEditor() {
         onDelete={
           editingHoliday
             ? () => {
+                setDirty(true);
                 setData((d) => ({ ...d, holidays: d.holidays.filter((h) => h.id !== editingHoliday.id) }));
                 setEditingHolidayId(null);
               }
             : undefined
         }
         footer={
-          <button type="button" className="btn btn-orange" disabled={saving} onClick={() => save()}>
-            {saving ? "Saving…" : "Save"}
+          <button
+            type="button"
+            className="btn btn-orange"
+            onClick={() => {
+              setEditingHolidayId(null);
+              setStatus("Saved locally. Click Save Calendar & Reminders to publish.");
+            }}
+          >
+            Done
           </button>
         }
       >
@@ -360,6 +378,7 @@ export default function CalendarRemindersEditor() {
         onDelete={
           editingReminder
             ? () => {
+                setDirty(true);
                 setData((d) => ({ ...d, reminders: d.reminders.filter((r) => r.id !== editingReminder.id) }));
                 setEditingReminderId(null);
               }
@@ -367,8 +386,15 @@ export default function CalendarRemindersEditor() {
         }
         size="lg"
         footer={
-          <button type="button" className="btn btn-orange" disabled={saving} onClick={() => save()}>
-            {saving ? "Saving…" : "Save"}
+          <button
+            type="button"
+            className="btn btn-orange"
+            onClick={() => {
+              setEditingHolidayId(null);
+              setStatus("Saved locally. Click Save Calendar & Reminders to publish.");
+            }}
+          >
+            Done
           </button>
         }
       >

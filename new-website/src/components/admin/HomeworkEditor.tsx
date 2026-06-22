@@ -59,6 +59,7 @@ export default function HomeworkEditor({ uploadFile }: { uploadFile: (f: File) =
   const [status, setStatus] = useState("");
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [dirty, setDirty] = useState(false);
 
   const load = useCallback(async () => {
     const [portalRes, studentsRes] = await Promise.all([
@@ -72,6 +73,7 @@ export default function HomeworkEditor({ uploadFile }: { uploadFile: (f: File) =
     const portalData = await portalRes.json();
     if (portalData.success) {
       setPortal({ homework: portalData.homework ?? [], messages: portalData.messages ?? [] });
+      setDirty(false);
     }
     const studentsData = await studentsRes.json();
     if (studentsData.success) setStudents(studentsData.students ?? []);
@@ -96,6 +98,7 @@ export default function HomeworkEditor({ uploadFile }: { uploadFile: (f: File) =
       if (data.success) {
         setPortal({ homework: data.homework ?? [], messages: data.messages ?? [] });
         setStatus("Homework saved!");
+        setDirty(false);
         return true;
       }
       setStatus(data.message || "Save failed");
@@ -108,6 +111,7 @@ export default function HomeworkEditor({ uploadFile }: { uploadFile: (f: File) =
   const editing = portal.homework.find((h) => h.id === editingId);
 
   function patch(id: string, patchData: Partial<HomeworkItem>) {
+    setDirty(true);
     setPortal((p) => ({
       ...p,
       homework: p.homework.map((h) => (h.id === id ? { ...h, ...patchData } : h)),
@@ -115,12 +119,14 @@ export default function HomeworkEditor({ uploadFile }: { uploadFile: (f: File) =
   }
 
   function addItem() {
+    setDirty(true);
     const item = emptyHomework();
     setPortal((p) => ({ ...p, homework: [item, ...p.homework] }));
     setEditingId(item.id);
   }
 
   function removeItem(id: string) {
+    setDirty(true);
     setPortal((p) => ({ ...p, homework: p.homework.filter((h) => h.id !== id) }));
     if (editingId === id) setEditingId(null);
   }
@@ -180,6 +186,7 @@ export default function HomeworkEditor({ uploadFile }: { uploadFile: (f: File) =
       <AdminFloatingSaveBar
         label="Save All Homework"
         saving={saving}
+        dirty={dirty}
         onSave={() => save()}
         status={status}
       />
@@ -191,13 +198,25 @@ export default function HomeworkEditor({ uploadFile }: { uploadFile: (f: File) =
         onDelete={editing ? () => removeItem(editing.id) : undefined}
         size="xl"
         footer={
-          <button type="button" className="btn btn-orange" disabled={saving} onClick={() => save()}>
-            {saving ? "Saving…" : "Save Homework"}
+          <button
+            type="button"
+            className="btn btn-orange"
+            onClick={() => {
+              setEditingId(null);
+              setStatus("Saved locally. Click Save All Homework to publish.");
+            }}
+          >
+            Done
           </button>
         }
       >
         {editing && (
           <div className="row g-2">
+            <div className="col-12">
+              <p className="small text-muted mb-2">
+                Publish with <strong>Save All Homework</strong> at the bottom when finished.
+              </p>
+            </div>
             <div className="col-md-8">
               <Field label="Title *">
                 <input className="form-control" value={editing.title} onChange={(e) => patch(editing.id, { title: e.target.value })} />

@@ -53,6 +53,7 @@ export default function StudentMessagesEditor({ uploadFile }: { uploadFile: (f: 
   const [status, setStatus] = useState("");
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [dirty, setDirty] = useState(false);
 
   const load = useCallback(async () => {
     const [portalRes, studentsRes] = await Promise.all([
@@ -66,6 +67,7 @@ export default function StudentMessagesEditor({ uploadFile }: { uploadFile: (f: 
     const portalData = await portalRes.json();
     if (portalData.success) {
       setPortal({ homework: portalData.homework ?? [], messages: portalData.messages ?? [] });
+      setDirty(false);
     }
     const studentsData = await studentsRes.json();
     if (studentsData.success) setStudents(studentsData.students ?? []);
@@ -90,6 +92,7 @@ export default function StudentMessagesEditor({ uploadFile }: { uploadFile: (f: 
       if (data.success) {
         setPortal({ homework: data.homework ?? [], messages: data.messages ?? [] });
         setStatus("Messages saved!");
+        setDirty(false);
         return true;
       }
       setStatus(data.message || "Save failed");
@@ -102,6 +105,7 @@ export default function StudentMessagesEditor({ uploadFile }: { uploadFile: (f: 
   const editing = portal.messages.find((m) => m.id === editingId);
 
   function patch(id: string, patchData: Partial<TeacherMessage>) {
+    setDirty(true);
     setPortal((p) => ({
       ...p,
       messages: p.messages.map((m) => {
@@ -115,12 +119,14 @@ export default function StudentMessagesEditor({ uploadFile }: { uploadFile: (f: 
   }
 
   function addItem() {
+    setDirty(true);
     const item = emptyMessage();
     setPortal((p) => ({ ...p, messages: [item, ...p.messages] }));
     setEditingId(item.id);
   }
 
   function removeItem(id: string) {
+    setDirty(true);
     setPortal((p) => ({ ...p, messages: p.messages.filter((m) => m.id !== id) }));
     if (editingId === id) setEditingId(null);
   }
@@ -184,6 +190,7 @@ export default function StudentMessagesEditor({ uploadFile }: { uploadFile: (f: 
       <AdminFloatingSaveBar
         label="Save All Messages"
         saving={saving}
+        dirty={dirty}
         onSave={() => save()}
         status={status}
       />
@@ -195,13 +202,25 @@ export default function StudentMessagesEditor({ uploadFile }: { uploadFile: (f: 
         onDelete={editing ? () => removeItem(editing.id) : undefined}
         size="xl"
         footer={
-          <button type="button" className="btn btn-orange" disabled={saving} onClick={() => save()}>
-            {saving ? "Saving…" : "Save Messages"}
+          <button
+            type="button"
+            className="btn btn-orange"
+            onClick={() => {
+              setEditingId(null);
+              setStatus("Saved locally. Click Save All Messages to publish.");
+            }}
+          >
+            Done
           </button>
         }
       >
         {editing && (
           <div className="row g-2">
+            <div className="col-12">
+              <p className="small text-muted mb-2">
+                Publish with <strong>Save All Messages</strong> at the bottom when finished.
+              </p>
+            </div>
             <div className="col-12">
               <Field label="Message type">
                 <select

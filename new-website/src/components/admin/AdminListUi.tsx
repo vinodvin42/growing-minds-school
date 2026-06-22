@@ -266,25 +266,31 @@ type AdminFloatingSaveBarProps = {
   label: string;
   saving: boolean;
   disabled?: boolean;
+  dirty?: boolean;
   onSave: () => void;
   status?: string;
 };
 
-/** Fixed bottom bar so long lists still have an easy save action. */
-export function AdminFloatingSaveBar({ label, saving, disabled, onSave, status }: AdminFloatingSaveBarProps) {
+/** Fixed bottom bar — only this should call the server; modal edits stay local until publish. */
+export function AdminFloatingSaveBar({ label, saving, disabled, dirty, onSave, status }: AdminFloatingSaveBarProps) {
+  const statusText =
+    status || (dirty ? "Unsaved changes — publish when ready" : "");
+
   return (
     <>
       <div className="admin-floating-save-spacer" aria-hidden="true" />
       <div className="admin-floating-save" role="region" aria-label="Save actions">
         <div className="admin-floating-save__inner">
-          {status ? (
-            <span className="admin-floating-save__status">{status}</span>
+          {statusText ? (
+            <span className={`admin-floating-save__status${dirty && !status ? " admin-floating-save__status--dirty" : ""}`}>
+              {statusText}
+            </span>
           ) : (
             <span className="admin-floating-save__status" aria-hidden="true" />
           )}
           <button
             type="button"
-            className="btn btn-orange admin-floating-save__btn"
+            className={`btn btn-orange admin-floating-save__btn${dirty ? " admin-floating-save__btn--dirty" : ""}`}
             disabled={disabled || saving}
             onClick={onSave}
           >

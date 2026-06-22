@@ -88,6 +88,7 @@ export default function StudentFeesEditor() {
   const [bulkCategory, setBulkCategory] = useState<FeeLineItem["category"]>("tuition");
   const [bulkAmount, setBulkAmount] = useState("");
   const [bulkDueDate, setBulkDueDate] = useState("");
+  const [dirty, setDirty] = useState(false);
 
   const summaries = useMemo(() => {
     const map = new Map(accounts.map((a) => [a.studentId, a]));
@@ -149,6 +150,7 @@ export default function StudentFeesEditor() {
           updatedAt,
         }))
       );
+      setDirty(false);
     }
     setLoading(false);
   }, [router]);
@@ -180,6 +182,7 @@ export default function StudentFeesEditor() {
           }))
         );
         setStatus("Fee accounts saved!");
+        setDirty(false);
         return true;
       }
       setStatus(data.message || "Save failed");
@@ -197,6 +200,7 @@ export default function StudentFeesEditor() {
   }
 
   function patchAccount(studentId: string, patch: Partial<StudentFeeAccount>) {
+    setDirty(true);
     setAccounts((list) => {
       const existing = list.find((a) => a.studentId === studentId);
       if (existing) {
@@ -258,9 +262,15 @@ export default function StudentFeesEditor() {
 
   function openEditor(studentId: string) {
     if (!accounts.find((a) => a.studentId === studentId)) {
+      setDirty(true);
       setAccounts((list) => [...list, emptyFeeAccount(studentId, academicYear)]);
     }
     setEditingId(studentId);
+  }
+
+  function closeFeeEditor() {
+    setEditingId(null);
+    setStatus("Saved locally. Click Save All Fee Accounts to publish.");
   }
 
   function applyBulkFeeToClass() {
@@ -280,6 +290,7 @@ export default function StudentFeesEditor() {
       return;
     }
     const targetIds = new Set(targets.map((s) => s.id));
+    setDirty(true);
     setAccounts((list) => {
       const byId = new Map(list.map((a) => [a.studentId, a]));
       for (const id of targetIds) {
@@ -320,6 +331,7 @@ export default function StudentFeesEditor() {
       }
       const { merged, added, skipped, unknownLogins } = mergeImportedFeeLines(accounts, students, academicYear, rows);
       setAccounts(merged);
+      setDirty(true);
       let msg = `Imported ${added} fee item(s).`;
       if (skipped) msg += ` Skipped ${skipped} (unknown loginId).`;
       if (unknownLogins.length) {
@@ -582,6 +594,7 @@ export default function StudentFeesEditor() {
       <AdminFloatingSaveBar
         label="Save All Fee Accounts"
         saving={saving}
+        dirty={dirty}
         disabled={students.length === 0}
         onSave={() => save()}
         status={status}
@@ -593,13 +606,19 @@ export default function StudentFeesEditor() {
         onClose={() => setEditingId(null)}
         size="xl"
         footer={
-          <button type="button" className="btn btn-orange" disabled={saving} onClick={() => save()}>
-            {saving ? "Saving…" : "Save Fee Account"}
+          <button type="button" className="btn btn-orange" onClick={closeFeeEditor}>
+            Done
           </button>
         }
       >
         {editing && editingStudent && (
           <div className="row g-3">
+            <div className="col-12">
+              <p className="small text-muted mb-0">
+                Edits are saved in this browser only. Use <strong>Save All Fee Accounts</strong> at the bottom to publish
+                to the live site.
+              </p>
+            </div>
             <div className="col-12">
               <div className="admin-fee-toolbar">
                 <div className="admin-fee-summary">

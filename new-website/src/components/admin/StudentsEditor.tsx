@@ -82,6 +82,7 @@ export default function StudentsEditor() {
   const [filterStandard, setFilterStandard] = useState("all");
   const [filterStatus, setFilterStatus] = useState<"all" | "active" | "inactive">("all");
   const [importing, setImporting] = useState(false);
+  const [dirty, setDirty] = useState(false);
 
   const filteredStudents = useMemo(
     () =>
@@ -105,6 +106,7 @@ export default function StudentsEditor() {
     const data = await res.json();
     if (data.success) {
       setStudents((data.students as StudentProfile[]).map(toInput));
+      setDirty(false);
     }
     setLoading(false);
   }, [router]);
@@ -127,6 +129,7 @@ export default function StudentsEditor() {
       if (data.success) {
         setStudents((data.students as StudentProfile[]).map(toInput));
         setStatus("Students saved!");
+        setDirty(false);
         return true;
       }
       setStatus(data.message || "Save failed");
@@ -140,16 +143,19 @@ export default function StudentsEditor() {
   const isNew = editing && !editing.loginId && !editing.name;
 
   function patch(id: string, patchData: Partial<StudentAdminInput>) {
+    setDirty(true);
     setStudents((list) => list.map((s) => (s.id === id ? { ...s, ...patchData } : s)));
   }
 
   function addStudent() {
+    setDirty(true);
     const row = emptyStudent();
     setStudents((list) => [...list, row]);
     setEditingId(row.id!);
   }
 
   function removeStudent(id: string) {
+    setDirty(true);
     setStudents((list) => list.filter((s) => s.id !== id));
     if (editingId === id) setEditingId(null);
   }
@@ -170,10 +176,8 @@ export default function StudentsEditor() {
       }
       const { merged, added, updated } = mergeImportedStudents(students, rows);
       setStudents(merged);
-      const ok = await save(merged);
-      if (ok) {
-        setStatus(`Imported ${rows.length} row(s): ${added} added, ${updated} updated.`);
-      }
+      setDirty(true);
+      setStatus(`Imported ${rows.length} row(s): ${added} added, ${updated} updated. Click Save All Students to publish.`);
     } catch {
       setStatus("Could not read CSV file.");
     } finally {
@@ -325,6 +329,7 @@ export default function StudentsEditor() {
       <AdminFloatingSaveBar
         label="Save All Students"
         saving={saving}
+        dirty={dirty}
         onSave={() => save()}
         status={status}
       />
@@ -338,13 +343,12 @@ export default function StudentsEditor() {
           <button
             type="button"
             className="btn btn-orange"
-            disabled={saving}
-            onClick={async () => {
-              const ok = await save();
-              if (ok) setEditingId(null);
+            onClick={() => {
+              setEditingId(null);
+              setStatus("Saved locally. Click Save All Students to publish.");
             }}
           >
-            {saving ? "Saving…" : "Save Students"}
+            Done
           </button>
         }
       >
@@ -352,6 +356,9 @@ export default function StudentsEditor() {
           <>
             <p className="admin-hint mb-3">
               Default password for new students: <code>{DEFAULT_STUDENT_PASSWORD}</code>
+            </p>
+            <p className="small text-muted mb-3">
+              Edits stay in this browser until you click <strong>Save All Students</strong> at the bottom.
             </p>
             <div className="row g-2">
               <div className="col-md-6">
