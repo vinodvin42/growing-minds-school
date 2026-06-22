@@ -22,11 +22,13 @@ import {
   feeUid,
   formatInr,
   feeStatusLabel,
+  type FeeAccountStatus,
   type FeeLineItem,
   type FeePayment,
   type StudentFeeAccount,
   type StudentFeeSummary,
 } from "@/types/student-fees";
+import { STUDENT_STANDARDS } from "@/types/student";
 
 type StudentRow = {
   id: string;
@@ -69,6 +71,9 @@ export default function StudentFeesEditor() {
   const [status, setStatus] = useState("");
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterStandard, setFilterStandard] = useState("all");
+  const [filterFeeStatus, setFilterFeeStatus] = useState<"all" | FeeAccountStatus>("all");
 
   const summaries = useMemo(() => {
     const map = new Map(accounts.map((a) => [a.studentId, a]));
@@ -84,6 +89,31 @@ export default function StudentFeesEditor() {
       return { student, account, totalDue, totalPaid, balance, status: feeStatus };
     });
   }, [accounts, students, academicYear]);
+
+  const filteredSummaries = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    return summaries.filter(({ student, status: feeStatus }) => {
+      if (filterStandard !== "all" && student.standard !== filterStandard) return false;
+      if (filterFeeStatus !== "all" && feeStatus !== filterFeeStatus) return false;
+      if (!q) return true;
+      const haystack = [
+        student.name,
+        student.loginId,
+        student.rollNumber,
+        student.parentName,
+        student.parentPhone,
+        student.standard,
+        student.section,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+      return haystack.includes(q);
+    });
+  }, [summaries, searchQuery, filterStandard, filterFeeStatus]);
+
+  const filtersActive =
+    searchQuery.trim() !== "" || filterStandard !== "all" || filterFeeStatus !== "all";
 
   const load = useCallback(async () => {
     const res = await fetch("/api/admin/student-fees", { cache: "no-store" });
@@ -236,13 +266,84 @@ export default function StudentFeesEditor() {
       <AdminCollapsibleSection
         title="Student Fees & Accounts"
         hint={`Academic year ${academicYear}. Saved per student in portal/${academicYear}/accounts/{studentId}.json`}
-        count={students.length}
+        count={filtersActive ? filteredSummaries.length : students.length}
         defaultOpen
       >
+        {students.length > 0 && (
+          <div className="admin-student-toolbar mb-3">
+            <div className="row g-2 align-items-end">
+              <div className="col-md-4">
+                <label className="form-label small mb-1">Search</label>
+                <input
+                  type="search"
+                  className="form-control form-control-sm"
+                  placeholder="Name, ID, roll, parent, phone…"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+              <div className="col-md-3">
+                <label className="form-label small mb-1">Class</label>
+                <select
+                  className="form-select form-select-sm"
+                  value={filterStandard}
+                  onChange={(e) => setFilterStandard(e.target.value)}
+                >
+                  <option value="all">All classes</option>
+                  {STUDENT_STANDARDS.map((s) => (
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="col-md-3">
+                <label className="form-label small mb-1">Fee status</label>
+                <select
+                  className="form-select form-select-sm"
+                  value={filterFeeStatus}
+                  onChange={(e) => setFilterFeeStatus(e.target.value as "all" | FeeAccountStatus)}
+                >
+                  <option value="all">All statuses</option>
+                  <option value="pending">Pending</option>
+                  <option value="partial">Partial</option>
+                  <option value="paid">Paid</option>
+                  <option value="overdue">Overdue</option>
+                </select>
+              </div>
+              <div className="col-md-2">
+                {filtersActive && (
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary btn-sm w-100"
+                    onClick={() => {
+                      setSearchQuery("");
+                      setFilterStandard("all");
+                      setFilterFeeStatus("all");
+                    }}
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+            </div>
+            {filtersActive && (
+              <p className="small text-muted mb-0 mt-2">
+                Showing {filteredSummaries.length} of {students.length} students
+              </p>
+            )}
+          </div>
+        )}
+
         {students.length === 0 ? (
           <div className="admin-empty-list">
             <i className="fas fa-wallet d-block" />
             <p className="mb-0">Add students first, then set up their fee accounts here.</p>
+          </div>
+        ) : filteredSummaries.length === 0 ? (
+          <div className="admin-empty-list">
+            <i className="fas fa-search d-block" />
+            <p className="mb-0">No students match your search or filters.</p>
           </div>
         ) : (
           <AdminTable>
@@ -258,7 +359,7 @@ export default function StudentFeesEditor() {
               </tr>
             </thead>
             <tbody>
-              {summaries.map(({ student, totalDue, totalPaid, balance, status: feeStatus }) => (
+              {filteredSummaries.map(({ student, totalDue, totalPaid, balance, status: feeStatus }) => (
                 <tr key={student.id}>
                   <AdminCellText primary={student.name} secondary={student.loginId} />
                   <td>
