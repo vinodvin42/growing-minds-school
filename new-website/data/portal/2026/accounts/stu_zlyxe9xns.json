@@ -1,8 +1,23 @@
 {
   "studentId": "stu_zlyxe9xns",
   "academicYear": "2026",
-  "lineItems": [],
+  "lineItems": [
+    {
+      "id": "fee_v3iy3vr0o",
+      "label": "5000",
+      "category": "books",
+      "amount": 10000,
+      "dueDate": "2026-06-15"
+    },
+    {
+      "id": "fee_89ucg9yxa",
+      "label": "5000",
+      "category": "books",
+      "amount": 10000,
+      "dueDate": "2026-06-15"
+    }
+  ],
   "payments": [],
   "notes": "",
-  "updatedAt": "2026-06-20T15:23:52.275Z"
+  "updatedAt": "2026-06-22T10:28:21.393Z"
 }
