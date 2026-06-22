@@ -1,11 +1,16 @@
 import { redirect } from "next/navigation";
 import { isAuthenticated } from "@/lib/auth";
 import AdminPanel from "@/components/admin/AdminPanel";
+import { AdminToastProvider } from "@/components/admin/AdminToast";
 
 export default async function AdminPage() {
   if (!(await isAuthenticated())) {
     redirect("/admin/login");
   }
 
-  return <AdminPanel />;
+  return (
+    <AdminToastProvider>
+      <AdminPanel />
+    </AdminToastProvider>
+  );
 }

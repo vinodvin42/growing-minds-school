@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { isAuthenticated } from "@/lib/auth";
 import { getStudentsRegistry } from "@/lib/student-store";
 import { getAllStudentFeeSummaries, saveStudentFeeAccounts } from "@/lib/student-fees-store";
+import { buildFeePublishLog } from "@/lib/admin-publish-log";
 import { sendStudentPush } from "@/lib/web-push";
 import { academicYear, PORTAL_ROOT } from "@/lib/portal-storage-paths";
 import type { StudentFeeAccount } from "@/types/student-fees";
@@ -58,12 +59,20 @@ export async function PUT(request: Request) {
     }));
 
     const saved = await saveStudentFeeAccounts(normalized);
+    const registry = await getStudentsRegistry({ fresh: true });
     void sendStudentPush({
       title: "Fees updated",
       body: "Your fee account was updated — tap to view",
       url: "/student/fees",
     });
-    return NextResponse.json({ success: true, accounts: saved });
+    return NextResponse.json({
+      success: true,
+      accounts: saved,
+      publishLog: buildFeePublishLog(
+        normalized,
+        registry.students.map((s) => ({ id: s.id, name: s.name, loginId: s.loginId }))
+      ),
+    });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Failed to save fees";
     return NextResponse.json({ success: false, message }, { status: 500 });

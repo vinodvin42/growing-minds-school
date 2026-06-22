@@ -22,8 +22,11 @@ import {
   homeworkDueDisplay,
   homeworkDueInputValue,
   type HomeworkItem,
+  type TeacherMessage,
   type StudentPortalData,
 } from "@/types/student-portal";
+import { useAdminToast } from "@/components/admin/AdminToast";
+import type { AdminPublishLog } from "@/lib/admin-publish-log";
 import type { StudentProfile } from "@/types/student";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
@@ -53,6 +56,7 @@ function emptyHomework(): HomeworkItem {
 
 export default function HomeworkEditor({ uploadFile }: { uploadFile: (f: File) => Promise<string | null> }) {
   const router = useRouter();
+  const { showPublishLog, showError } = useAdminToast();
   const [portal, setPortal] = useState<StudentPortalData>({ homework: [], messages: [] });
   const [students, setStudents] = useState<StudentProfile[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -94,14 +98,22 @@ export default function HomeworkEditor({ uploadFile }: { uploadFile: (f: File) =
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ homework: payload.homework }),
       });
-      const data = await res.json();
+      const data = (await res.json()) as {
+        success: boolean;
+        message?: string;
+        publishLog?: AdminPublishLog;
+        homework?: HomeworkItem[];
+        messages?: TeacherMessage[];
+      };
       if (data.success) {
         setPortal({ homework: data.homework ?? [], messages: data.messages ?? [] });
         setStatus("Homework saved!");
         setDirty(false);
+        if (data.publishLog) showPublishLog(data.publishLog);
         return true;
       }
       setStatus(data.message || "Save failed");
+      showError("Homework save failed", [data.message || "Save failed"]);
       return false;
     } finally {
       setSaving(false);

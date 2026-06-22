@@ -25,6 +25,8 @@ import {
   type StudentCalendarData,
 } from "@/types/student-calendar";
 import type { StudentProfile } from "@/types/student";
+import { useAdminToast } from "@/components/admin/AdminToast";
+import type { AdminPublishLog } from "@/lib/admin-publish-log";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -66,6 +68,7 @@ function emptyReminder(): PortalReminder {
 
 export default function CalendarRemindersEditor() {
   const router = useRouter();
+  const { showPublishLog, showError } = useAdminToast();
   const [data, setData] = useState<StudentCalendarData>({ holidays: [], reminders: [] });
   const [students, setStudents] = useState<StudentProfile[]>([]);
   const [academicYear, setAcademicYear] = useState(String(new Date().getFullYear()));
@@ -110,14 +113,22 @@ export default function CalendarRemindersEditor() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      const result = await res.json();
+      const result = (await res.json()) as {
+        success: boolean;
+        message?: string;
+        publishLog?: AdminPublishLog;
+        holidays?: HolidayItem[];
+        reminders?: PortalReminder[];
+      };
       if (result.success) {
         setData({ holidays: result.holidays ?? [], reminders: result.reminders ?? [] });
         setStatus("Calendar saved!");
         setDirty(false);
+        if (result.publishLog) showPublishLog(result.publishLog);
         return true;
       }
       setStatus(result.message || "Save failed");
+      showError("Calendar save failed", [result.message || "Save failed"]);
       return false;
     } finally {
       setSaving(false);

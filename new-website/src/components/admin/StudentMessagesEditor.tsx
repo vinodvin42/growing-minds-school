@@ -17,8 +17,10 @@ import {
   audienceLabel,
   portalUid,
 } from "@/components/admin/PortalTargetingFields";
-import type { StudentPortalData, TeacherMessage } from "@/types/student-portal";
+import type { StudentPortalData, TeacherMessage, HomeworkItem } from "@/types/student-portal";
 import type { StudentProfile } from "@/types/student";
+import { useAdminToast } from "@/components/admin/AdminToast";
+import type { AdminPublishLog } from "@/lib/admin-publish-log";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -47,6 +49,7 @@ function emptyMessage(): TeacherMessage {
 
 export default function StudentMessagesEditor({ uploadFile }: { uploadFile: (f: File) => Promise<string | null> }) {
   const router = useRouter();
+  const { showPublishLog, showError } = useAdminToast();
   const [portal, setPortal] = useState<StudentPortalData>({ homework: [], messages: [] });
   const [students, setStudents] = useState<StudentProfile[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -88,14 +91,22 @@ export default function StudentMessagesEditor({ uploadFile }: { uploadFile: (f: 
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: payload.messages }),
       });
-      const data = await res.json();
+      const data = (await res.json()) as {
+        success: boolean;
+        message?: string;
+        publishLog?: AdminPublishLog;
+        homework?: HomeworkItem[];
+        messages?: TeacherMessage[];
+      };
       if (data.success) {
         setPortal({ homework: data.homework ?? [], messages: data.messages ?? [] });
         setStatus("Messages saved!");
         setDirty(false);
+        if (data.publishLog) showPublishLog(data.publishLog);
         return true;
       }
       setStatus(data.message || "Save failed");
+      showError("Messages save failed", [data.message || "Save failed"]);
       return false;
     } finally {
       setSaving(false);

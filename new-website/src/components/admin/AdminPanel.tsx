@@ -24,8 +24,11 @@ import AdminDashboard from "@/components/admin/AdminDashboard";
 import {
   type AdminTab,
   usesWebsiteContentSave,
+  findAdminNavItem,
 } from "@/components/admin/admin-nav";
 import { ACTIVITY_CATEGORIES } from "@/lib/activities";
+import { useAdminToast } from "@/components/admin/AdminToast";
+import { buildWebsitePublishLog } from "@/lib/admin-publish-log";
 
 function uid() {
   return Math.random().toString(36).slice(2, 10);
@@ -37,6 +40,7 @@ export default function AdminPanel() {
   const [status, setStatus] = useState("");
   const [saving, setSaving] = useState(false);
   const router = useRouter();
+  const { showPublishLog, showError } = useAdminToast();
 
   const load = useCallback(async () => {
     const res = await fetch("/api/content", { cache: "no-store" });
@@ -66,9 +70,12 @@ export default function AdminPanel() {
         if (data.content) setContent(data.content);
         else setContent(payload);
         setStatus("Saved successfully!");
+        const nav = findAdminNavItem(tab);
+        showPublishLog(buildWebsitePublishLog(nav?.label ?? "Website"));
         return true;
       }
       setStatus(data.message || "Save failed");
+      showError("Website save failed", [data.message || "Save failed"]);
       return false;
     } catch {
       setStatus("Save failed — check your connection and try again.");

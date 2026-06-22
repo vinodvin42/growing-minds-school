@@ -5,6 +5,7 @@ import {
   mergeStudentInputs,
   saveStudentsRegistry,
 } from "@/lib/student-store";
+import { buildStudentPublishLog } from "@/lib/admin-publish-log";
 import { academicYear, PORTAL_ROOT } from "@/lib/portal-storage-paths";
 import { toStudentProfile, type StudentAdminInput } from "@/types/student";
 
@@ -47,6 +48,7 @@ export async function PUT(request: Request) {
     return NextResponse.json({
       success: true,
       students: merged.map(toStudentProfile),
+      publishLog: buildStudentPublishLog(merged),
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Failed to save students";

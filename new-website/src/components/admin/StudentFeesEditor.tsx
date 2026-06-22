@@ -37,6 +37,8 @@ import {
   type StudentFeeSummary,
 } from "@/types/student-fees";
 import { STUDENT_STANDARDS } from "@/types/student";
+import { useAdminToast } from "@/components/admin/AdminToast";
+import type { AdminPublishLog } from "@/lib/admin-publish-log";
 
 type StudentRow = {
   id: string;
@@ -72,6 +74,7 @@ function parseAmount(value: string): number {
 
 export default function StudentFeesEditor() {
   const router = useRouter();
+  const { showPublishLog, showError } = useAdminToast();
   const [students, setStudents] = useState<StudentRow[]>([]);
   const [accounts, setAccounts] = useState<StudentFeeAccount[]>([]);
   const [academicYear, setAcademicYear] = useState(String(new Date().getFullYear()));
@@ -169,7 +172,12 @@ export default function StudentFeesEditor() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ accounts: payload }),
       });
-      const data = await res.json();
+      const data = (await res.json()) as {
+        success: boolean;
+        message?: string;
+        publishLog?: AdminPublishLog;
+        accounts?: StudentFeeSummary[];
+      };
       if (data.success) {
         setAccounts(
           (data.accounts as StudentFeeSummary[]).map(({ studentId, academicYear: year, lineItems, payments, notes, updatedAt }) => ({
@@ -183,9 +191,11 @@ export default function StudentFeesEditor() {
         );
         setStatus("Fee accounts saved!");
         setDirty(false);
+        if (data.publishLog) showPublishLog(data.publishLog);
         return true;
       }
       setStatus(data.message || "Save failed");
+      showError("Fee save failed", [data.message || "Save failed"]);
       return false;
     } finally {
       setSaving(false);

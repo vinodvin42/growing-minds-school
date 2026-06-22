@@ -26,6 +26,8 @@ import {
   type StudentAdminInput,
   type StudentProfile,
 } from "@/types/student";
+import { useAdminToast } from "@/components/admin/AdminToast";
+import type { AdminPublishLog } from "@/lib/admin-publish-log";
 
 function uid() {
   return `stu_${Math.random().toString(36).slice(2, 11)}`;
@@ -73,6 +75,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 
 export default function StudentsEditor() {
   const router = useRouter();
+  const { showPublishLog, showError } = useAdminToast();
   const [students, setStudents] = useState<StudentAdminInput[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [status, setStatus] = useState("");
@@ -125,14 +128,21 @@ export default function StudentsEditor() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ students: payload }),
       });
-      const data = await res.json();
+      const data = (await res.json()) as {
+        success: boolean;
+        message?: string;
+        publishLog?: AdminPublishLog;
+        students?: StudentProfile[];
+      };
       if (data.success) {
         setStudents((data.students as StudentProfile[]).map(toInput));
         setStatus("Students saved!");
         setDirty(false);
+        if (data.publishLog) showPublishLog(data.publishLog);
         return true;
       }
       setStatus(data.message || "Save failed");
+      showError("Student save failed", [data.message || "Save failed"]);
       return false;
     } finally {
       setSaving(false);

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { isAuthenticated } from "@/lib/auth";
 import { getStudentPortalData, saveStudentPortalData } from "@/lib/student-portal-store";
+import { buildHomeworkPublishLog, buildMessagesPublishLog } from "@/lib/admin-publish-log";
 import { sendStudentPush } from "@/lib/web-push";
 import { PORTAL_ROOT } from "@/lib/portal-storage-paths";
 import type { HomeworkItem, StudentPortalData, TeacherMessage } from "@/types/student-portal";
@@ -36,14 +37,17 @@ export async function PUT(request: Request) {
 
     const saved = await saveStudentPortalData({ homework, messages });
 
-    if (Array.isArray(body.homework)) {
+    const homeworkOnly = Array.isArray(body.homework);
+    const messagesOnly = Array.isArray(body.messages);
+
+    if (homeworkOnly) {
       void sendStudentPush({
         title: "New homework",
         body: "Your teacher posted homework — tap to view",
         url: "/student/homework",
       });
     }
-    if (Array.isArray(body.messages)) {
+    if (messagesOnly) {
       void sendStudentPush({
         title: "New school message",
         body: "Tap to read the latest notice",
@@ -51,7 +55,13 @@ export async function PUT(request: Request) {
       });
     }
 
-    return NextResponse.json({ success: true, ...saved });
+    const publishLog = homeworkOnly
+      ? buildHomeworkPublishLog(saved.homework)
+      : messagesOnly
+        ? buildMessagesPublishLog(saved.messages)
+        : buildHomeworkPublishLog(saved.homework);
+
+    return NextResponse.json({ success: true, ...saved, publishLog });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Failed to save";
     return NextResponse.json({ success: false, message }, { status: 500 });

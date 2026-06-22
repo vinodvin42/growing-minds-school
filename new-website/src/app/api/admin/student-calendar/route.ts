@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { isAuthenticated } from "@/lib/auth";
 import { getStudentCalendarData, saveStudentCalendarData } from "@/lib/student-calendar-store";
+import { buildCalendarPublishLog } from "@/lib/admin-publish-log";
 import { sendStudentPush } from "@/lib/web-push";
 import { academicYear, PORTAL_ROOT } from "@/lib/portal-storage-paths";
 import type { StudentCalendarData } from "@/types/student-calendar";
@@ -48,7 +49,12 @@ export async function PUT(request: Request) {
       url: "/student/calendar",
     });
 
-    return NextResponse.json({ success: true, academicYear: year, ...saved });
+    return NextResponse.json({
+      success: true,
+      academicYear: year,
+      ...saved,
+      publishLog: buildCalendarPublishLog(saved.holidays, saved.reminders),
+    });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Failed to save calendar";
     return NextResponse.json({ success: false, message }, { status: 500 });
