@@ -1,0 +1,17 @@
+{
+  "items": [
+    {
+      "id": "kmjccbbb",
+      "kind": "broadcast",
+      "title": "Test",
+      "body": "School holiday on upcoming monday",
+      "audience": "all",
+      "standard": "All",
+      "section": "",
+      "targetStudentIds": [],
+      "attachments": [],
+      "active": true,
+      "createdAt": "2026-06-22T10:20:48.641Z"
+    }
+  ]
+}
