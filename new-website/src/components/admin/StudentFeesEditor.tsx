@@ -9,6 +9,7 @@ import {
   AdminEditModal,
   AdminTable,
   AdminTableActions,
+  AdminFloatingSaveBar,
 } from "@/components/admin/AdminListUi";
 import {
   openReceiptInNewTab,
@@ -385,12 +386,13 @@ export default function StudentFeesEditor() {
         )}
       </AdminCollapsibleSection>
 
-      <div className="d-flex align-items-center gap-3 mt-3">
-        <button type="button" className="btn btn-orange" disabled={saving || students.length === 0} onClick={() => save()}>
-          {saving ? "Saving…" : "Save All Fee Accounts"}
-        </button>
-        {status && <span className="small text-muted">{status}</span>}
-      </div>
+      <AdminFloatingSaveBar
+        label="Save All Fee Accounts"
+        saving={saving}
+        disabled={students.length === 0}
+        onSave={() => save()}
+        status={status}
+      />
 
       <AdminEditModal
         open={!!editing && !!editingStudent}
