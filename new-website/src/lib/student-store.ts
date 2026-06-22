@@ -3,9 +3,11 @@ import { hashPassword } from "@/lib/password";
 import {
   STORAGE_CACHE_TTL_MS,
   ensurePortalManifest,
+  getYearIndex,
+  clearPortalManifestCache,
+  PORTAL_MANIFEST_PATH,
   studentJsonPaths,
   syncStudentClassSlugsAfterSave,
-  updatePortalYearIndex,
 } from "@/lib/portal-manifest";
 import {
   academicYear,
@@ -14,7 +16,7 @@ import {
   LEGACY_STUDENTS_PATH,
 } from "@/lib/portal-storage-paths";
 import { isStorageConfigured, storageErrorMessage } from "@/lib/storage/config";
-import { readStorageJson, readStorageText, writeStorageJson } from "@/lib/storage/index";
+import { readStorageJson, readStorageText, writeStorageJson, writeStorageJsonBatch } from "@/lib/storage/index";
 import type { StudentAdminInput, StudentRecord, StudentsRegistry } from "@/types/student";
 import { DEFAULT_STUDENT_LOGIN_ID, DEFAULT_STUDENT_PASSWORD } from "@/types/student";
 
@@ -126,13 +128,26 @@ export async function saveStudentsRegistry(registry: StudentsRegistry): Promise<
   const manifest = await ensurePortalManifest();
   const knownSlugs = manifest.years[year]?.studentClassSlugs ?? [];
 
-  for (const slug of new Set([...activeSlugs, ...knownSlugs])) {
-    const path = classStudentsPath(year, slug);
-    await writeStorageJson(path, { students: byClass.get(slug) ?? [] });
-  }
+  const files = [...new Set([...activeSlugs, ...knownSlugs])].map((slug) => ({
+    relativePath: classStudentsPath(year, slug),
+    data: { students: byClass.get(slug) ?? [] },
+  }));
 
-  await updatePortalYearIndex(year, (index) => syncStudentClassSlugsAfterSave(index, activeSlugs));
+  const updatedManifest = {
+    ...manifest,
+    years: {
+      ...manifest.years,
+      [year]: syncStudentClassSlugsAfterSave(getYearIndex(manifest, year), activeSlugs),
+    },
+    updatedAt: new Date().toISOString(),
+  };
 
+  await writeStorageJsonBatch(
+    [...files, { relativePath: PORTAL_MANIFEST_PATH, data: updatedManifest }],
+    `Update student roster (${registry.students.length} students)`
+  );
+
+  clearPortalManifestCache();
   memoryRegistry = registry;
   memoryRegistryAt = Date.now();
 }

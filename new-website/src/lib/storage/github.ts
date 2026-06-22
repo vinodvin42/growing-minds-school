@@ -208,3 +208,85 @@ export function clearGithubCache(): void {
   shaCache.clear();
   textCache.clear();
 }
+
+export type GithubBatchFile = {
+  relativePath: string;
+  text: string;
+};
+
+async function getBranchHeadCommitSha(): Promise<string> {
+  const branch = getGithubBranch();
+  const ref = await githubRequest<{ object: { sha: string } }>(
+    repoApiUrl(`/git/ref/heads/${encodeURIComponent(branch)}`)
+  );
+  return ref.object.sha;
+}
+
+/** Write many files in one Git commit — avoids one Vercel deploy per file. */
+export async function writeGithubBatch(files: GithubBatchFile[], commitMessage: string): Promise<void> {
+  if (files.length === 0) return;
+  if (files.length === 1) {
+    await writeGithubText(files[0].relativePath, files[0].text);
+    return;
+  }
+
+  const branch = getGithubBranch();
+  const maxAttempts = 3;
+
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    try {
+      const parentSha = await getBranchHeadCommitSha();
+      const parentCommit = await githubRequest<{ tree: { sha: string } }>(repoApiUrl(`/git/commits/${parentSha}`));
+
+      const treeItems: Array<{ path: string; mode: "100644"; type: "blob"; sha: string }> = [];
+      for (const file of files) {
+        const repoPath = toGithubRepoPath(file.relativePath);
+        if (!repoPath) throw new Error(`Invalid storage path: ${file.relativePath}`);
+
+        const blob = await githubRequest<{ sha: string }>(repoApiUrl("/git/blobs"), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ content: file.text, encoding: "utf-8" }),
+        });
+
+        treeItems.push({ path: repoPath, mode: "100644", type: "blob", sha: blob.sha });
+      }
+
+      const tree = await githubRequest<{ sha: string }>(repoApiUrl("/git/trees"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ base_tree: parentCommit.tree.sha, tree: treeItems }),
+      });
+
+      const commit = await githubRequest<{ sha: string }>(repoApiUrl("/git/commits"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: commitMessage,
+          tree: tree.sha,
+          parents: [parentSha],
+        }),
+      });
+
+      await githubRequest(repoApiUrl(`/git/refs/heads/${encodeURIComponent(branch)}`), {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sha: commit.sha, force: false }),
+      });
+
+      for (const file of files) {
+        const repoPath = toGithubRepoPath(file.relativePath);
+        if (repoPath) {
+          textCache.set(repoPath, { text: file.text, at: Date.now() });
+          shaCache.delete(repoPath);
+        }
+      }
+      return;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      const isConflict = message.includes("409") || message.toLowerCase().includes("conflict");
+      if (!isConflict || attempt === maxAttempts - 1) throw error;
+      await new Promise((resolve) => setTimeout(resolve, 400 * (attempt + 1)));
+    }
+  }
+}

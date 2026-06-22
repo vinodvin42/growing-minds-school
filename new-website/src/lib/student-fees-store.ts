@@ -1,11 +1,13 @@
 import { unstable_noStore as noStore } from "next/cache";
 import { isStorageConfigured, storageErrorMessage } from "@/lib/storage/config";
-import { readStorageJson, writeStorageJson } from "@/lib/storage/index";
+import { readStorageJson, writeStorageJsonBatch } from "@/lib/storage/index";
 import {
   STORAGE_CACHE_TTL_MS,
   ensurePortalManifest,
   feeJsonPaths,
-  updatePortalYearIndex,
+  getYearIndex,
+  clearPortalManifestCache,
+  PORTAL_MANIFEST_PATH,
   uniqSorted,
 } from "@/lib/portal-manifest";
 import { academicYear, studentFeesPath } from "@/lib/portal-storage-paths";
@@ -100,37 +102,64 @@ export async function getAllStudentFeeSummaries(
 }
 
 export async function saveStudentFeeAccount(account: StudentFeeAccount): Promise<StudentFeeAccount> {
+  const summaries = await saveStudentFeeAccounts([account]);
+  const saved = summaries[0];
+  return {
+    studentId: saved.studentId,
+    academicYear: saved.academicYear,
+    lineItems: saved.lineItems,
+    payments: saved.payments,
+    notes: saved.notes,
+    updatedAt: saved.updatedAt,
+  };
+}
+
+export async function saveStudentFeeAccounts(accounts: StudentFeeAccount[]): Promise<StudentFeeSummary[]> {
   if (!isStorageConfigured()) {
     throw new Error(storageErrorMessage());
   }
 
-  const year = account.academicYear || academicYear();
-  const saved: StudentFeeAccount = {
+  if (accounts.length === 0) return [];
+
+  const year = accounts[0]?.academicYear || academicYear();
+  const normalized = accounts.map((account) => ({
     ...normalizeAccount(account, year),
+    updatedAt: new Date().toISOString(),
+  }));
+
+  const manifest = await ensurePortalManifest();
+  const yearIndex = getYearIndex(manifest, year);
+  const updatedManifest = {
+    ...manifest,
+    years: {
+      ...manifest.years,
+      [year]: {
+        ...yearIndex,
+        feeStudentIds: uniqSorted([...yearIndex.feeStudentIds, ...normalized.map((a) => a.studentId)]),
+      },
+    },
     updatedAt: new Date().toISOString(),
   };
 
-  await writeStorageJson(studentFeesPath(year, saved.studentId), saved);
+  const files = [
+    ...normalized.map((account) => ({
+      relativePath: studentFeesPath(year, account.studentId),
+      data: account,
+    })),
+    { relativePath: PORTAL_MANIFEST_PATH, data: updatedManifest },
+  ];
 
-  await updatePortalYearIndex(year, (index) => ({
-    ...index,
-    feeStudentIds: uniqSorted([...index.feeStudentIds, saved.studentId]),
-  }));
+  await writeStorageJsonBatch(files, `Update student fee accounts (${normalized.length} students)`);
+
+  clearPortalManifestCache();
 
   const map = await getAccountMap(year, true);
-  map.set(saved.studentId, saved);
+  for (const account of normalized) {
+    map.set(account.studentId, account);
+  }
   memoryAccounts = map;
   memoryAccountsAt = Date.now();
   memoryYear = year;
 
-  return saved;
-}
-
-export async function saveStudentFeeAccounts(accounts: StudentFeeAccount[]): Promise<StudentFeeSummary[]> {
-  const saved: StudentFeeSummary[] = [];
-  for (const account of accounts) {
-    const result = await saveStudentFeeAccount(account);
-    saved.push(toFeeSummary(result));
-  }
-  return saved;
+  return normalized.map(toFeeSummary);
 }

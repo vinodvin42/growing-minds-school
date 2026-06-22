@@ -119,6 +119,45 @@ export async function writeStorageJson(relativePath: string, data: unknown): Pro
   await writeStorageText(relativePath, JSON.stringify(data, null, 2));
 }
 
+export async function writeStorageBatch(
+  files: { relativePath: string; text: string }[],
+  commitMessage?: string
+): Promise<void> {
+  if (files.length === 0) return;
+
+  const prepared = files.map((file) => {
+    const safe = sanitizeStoragePath(file.relativePath);
+    if (!safe) throw new Error(`Invalid storage path: ${file.relativePath}`);
+    return { relativePath: safe, text: file.text };
+  });
+
+  if (storageBackend() === "github") {
+    const { writeGithubBatch } = await import("@/lib/storage/github");
+    const label =
+      commitMessage ??
+      (prepared.length === 1 ? `Update ${prepared[0].relativePath}` : `Update ${prepared.length} data files`);
+    await writeGithubBatch(prepared, label);
+    return;
+  }
+
+  for (const file of prepared) {
+    await writeStorageText(file.relativePath, file.text);
+  }
+}
+
+export async function writeStorageJsonBatch(
+  files: { relativePath: string; data: unknown }[],
+  commitMessage?: string
+): Promise<void> {
+  await writeStorageBatch(
+    files.map((file) => ({
+      relativePath: file.relativePath,
+      text: JSON.stringify(file.data, null, 2),
+    })),
+    commitMessage
+  );
+}
+
 export async function readStorageBytes(relativePath: string): Promise<Buffer | null> {
   const safe = sanitizeStoragePath(relativePath);
   if (!safe) return null;
