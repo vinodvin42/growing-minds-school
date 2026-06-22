@@ -1,8 +1,26 @@
 {
   "studentId": "stu_zvq1sxwnc",
   "academicYear": "2026",
-  "lineItems": [],
-  "payments": [],
+  "lineItems": [
+    {
+      "id": "fee_yix8torcp",
+      "label": "Q1",
+      "category": "tuition",
+      "amount": 1000,
+      "dueDate": "",
+      "notes": ""
+    }
+  ],
+  "payments": [
+    {
+      "id": "pay_0qyslqvne",
+      "date": "2026-06-22",
+      "amount": 500,
+      "mode": "upi",
+      "reference": "",
+      "notes": ""
+    }
+  ],
   "notes": "",
-  "updatedAt": "2026-06-22T10:04:17.388Z"
+  "updatedAt": "2026-06-22T10:07:53.558Z"
 }
