@@ -9,6 +9,7 @@ import {
   AdminEditModal,
   AdminTable,
   AdminTableActions,
+  AdminFloatingSaveBar,
 } from "@/components/admin/AdminListUi";
 import {
   AttachmentUploader,
@@ -180,12 +181,12 @@ export default function StudentMessagesEditor({ uploadFile }: { uploadFile: (f: 
         </AdminTable>
       )}
       </AdminCollapsibleSection>
-      <div className="d-flex align-items-center gap-3 mt-3">
-        <button type="button" className="btn btn-orange" disabled={saving} onClick={() => save()}>
-          {saving ? "Saving…" : "Save All Messages"}
-        </button>
-        {status && <span className="small text-muted">{status}</span>}
-      </div>
+      <AdminFloatingSaveBar
+        label="Save All Messages"
+        saving={saving}
+        onSave={() => save()}
+        status={status}
+      />
 
       <AdminEditModal
         open={!!editing}

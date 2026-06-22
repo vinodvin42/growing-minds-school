@@ -9,6 +9,7 @@ import {
   AdminEditModal,
   AdminTable,
   AdminTableActions,
+  AdminFloatingSaveBar,
 } from "@/components/admin/AdminListUi";
 import { PortalTargetingFields, audienceLabel } from "@/components/admin/PortalTargetingFields";
 import {
@@ -251,12 +252,12 @@ export default function CalendarRemindersEditor() {
         )}
       </AdminCollapsibleSection>
 
-      <div className="d-flex align-items-center gap-3 mt-3">
-        <button type="button" className="btn btn-orange" disabled={saving} onClick={() => save()}>
-          {saving ? "Saving…" : "Save Calendar & Reminders"}
-        </button>
-        {status && <span className="small text-muted">{status}</span>}
-      </div>
+      <AdminFloatingSaveBar
+        label="Save Calendar & Reminders"
+        saving={saving}
+        onSave={() => save()}
+        status={status}
+      />
 
       <AdminEditModal
         open={!!editingHoliday}

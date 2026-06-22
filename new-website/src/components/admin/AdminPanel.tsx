@@ -12,6 +12,7 @@ import {
   AdminTable,
   AdminTableActions,
   AdminTableThumb,
+  AdminFloatingSaveBar,
 } from "@/components/admin/AdminListUi";
 import StudentsEditor from "@/components/admin/StudentsEditor";
 import HomeworkEditor from "@/components/admin/HomeworkEditor";
@@ -151,14 +152,6 @@ export default function AdminPanel() {
       )}
 
       <main className="admin-main">
-        {showWebsiteSave && (
-          <div className="admin-main__save-row">
-            <button type="button" className="btn btn-sm btn-orange" onClick={save} disabled={saving}>
-              <i className="fas fa-save me-1" />
-              {saving ? "Saving..." : "Save Website"}
-            </button>
-          </div>
-        )}
         <div className="admin-card">
             {tab === "dashboard" && <AdminDashboard onSelect={selectTab} />}
             {tab === "settings" && (
@@ -198,6 +191,14 @@ export default function AdminPanel() {
             {tab === "messages" && <StudentMessagesEditor uploadFile={uploadFile} />}
         </div>
       </main>
+      {showWebsiteSave && (
+        <AdminFloatingSaveBar
+          label="Save Website"
+          saving={saving}
+          onSave={() => save()}
+          status={status.includes("success") || status.includes("failed") ? status : ""}
+        />
+      )}
     </div>
   );
 }

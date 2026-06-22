@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   AdminBadge,
@@ -10,6 +10,7 @@ import {
   AdminTable,
   AdminTableActions,
   AdminFloatingSaveBar,
+  AdminBulkCsvPanel,
 } from "@/components/admin/AdminListUi";
 import {
   downloadStudentCsvTemplate,
@@ -72,7 +73,6 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 
 export default function StudentsEditor() {
   const router = useRouter();
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [students, setStudents] = useState<StudentAdminInput[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [status, setStatus] = useState("");
@@ -178,7 +178,6 @@ export default function StudentsEditor() {
       setStatus("Could not read CSV file.");
     } finally {
       setImporting(false);
-      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   }
 
@@ -256,46 +255,20 @@ export default function StudentsEditor() {
             </div>
           </div>
 
-          <div className="admin-student-bulk mt-3 p-3 border rounded bg-light">
-            <p className="small fw-semibold mb-2 mb-md-1">
-              <i className="fas fa-file-csv me-1 text-orange" />
-              Bulk upload (CSV)
-            </p>
-            <p className="small text-muted mb-2">
-              Download the template, fill in rows, then upload. Existing login IDs are updated; new IDs are added.
-              Leave password blank for default <code>{DEFAULT_STUDENT_PASSWORD}</code>.
-            </p>
-            <div className="d-flex flex-wrap gap-2 align-items-center">
-              <button type="button" className="btn btn-outline-orange btn-sm" onClick={downloadStudentCsvTemplate}>
-                <i className="fas fa-download me-1" />
-                Sample template
-              </button>
-              <button
-                type="button"
-                className="btn btn-outline-secondary btn-sm"
-                onClick={() => exportStudentsCsv(students)}
-                disabled={students.length === 0}
-              >
-                <i className="fas fa-file-export me-1" />
-                Export current list
-              </button>
-              <label className="btn btn-orange btn-sm mb-0">
-                <i className="fas fa-upload me-1" />
-                {importing ? "Importing…" : "Upload CSV"}
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept=".csv,text/csv"
-                  className="d-none"
-                  disabled={importing || saving}
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) void handleBulkImport(file);
-                  }}
-                />
-              </label>
-            </div>
-          </div>
+          <AdminBulkCsvPanel
+            hint={
+              <>
+                Download the template, fill in rows, then upload. Existing login IDs are updated; new IDs are added.
+                Leave password blank for default <code>{DEFAULT_STUDENT_PASSWORD}</code>.
+              </>
+            }
+            uploading={importing}
+            uploadDisabled={saving}
+            onDownloadTemplate={downloadStudentCsvTemplate}
+            onExport={() => exportStudentsCsv(students)}
+            exportDisabled={students.length === 0}
+            onFileSelected={(file) => void handleBulkImport(file)}
+          />
 
           {filtersActive && (
             <p className="small text-muted mb-2">

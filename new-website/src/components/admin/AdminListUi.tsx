@@ -1,5 +1,7 @@
 "use client";
 
+import { useRef } from "react";
+
 import { useEffect, useId, useState } from "react";
 
 type AdminListHeaderProps = {
@@ -291,5 +293,73 @@ export function AdminFloatingSaveBar({ label, saving, disabled, onSave, status }
         </div>
       </div>
     </>
+  );
+}
+
+type AdminBulkCsvPanelProps = {
+  hint: React.ReactNode;
+  uploading?: boolean;
+  uploadDisabled?: boolean;
+  onDownloadTemplate: () => void;
+  onExport?: () => void;
+  exportDisabled?: boolean;
+  onFileSelected: (file: File) => void;
+};
+
+/** Reusable CSV bulk import/export panel for admin lists. */
+export function AdminBulkCsvPanel({
+  hint,
+  uploading,
+  uploadDisabled,
+  onDownloadTemplate,
+  onExport,
+  exportDisabled,
+  onFileSelected,
+}: AdminBulkCsvPanelProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  return (
+    <div className="admin-bulk-panel mt-3 p-3 border rounded bg-light">
+      <p className="small fw-semibold mb-2 mb-md-1">
+        <i className="fas fa-file-csv me-1 text-orange" />
+        Bulk upload (CSV)
+      </p>
+      <p className="small text-muted mb-2">{hint}</p>
+      <div className="d-flex flex-wrap gap-2 align-items-center">
+        <button type="button" className="btn btn-outline-orange btn-sm" onClick={onDownloadTemplate}>
+          <i className="fas fa-download me-1" />
+          Sample template
+        </button>
+        {onExport && (
+          <button
+            type="button"
+            className="btn btn-outline-secondary btn-sm"
+            onClick={onExport}
+            disabled={exportDisabled}
+          >
+            <i className="fas fa-file-export me-1" />
+            Export current list
+          </button>
+        )}
+        <label className="btn btn-orange btn-sm mb-0">
+          <i className="fas fa-upload me-1" />
+          {uploading ? "Importing…" : "Upload CSV"}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".csv,text/csv"
+            className="d-none"
+            disabled={uploading || uploadDisabled}
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                onFileSelected(file);
+                e.target.value = "";
+              }
+            }}
+          />
+        </label>
+      </div>
+    </div>
   );
 }

@@ -10,7 +10,14 @@ import {
   AdminTable,
   AdminTableActions,
   AdminFloatingSaveBar,
+  AdminBulkCsvPanel,
 } from "@/components/admin/AdminListUi";
+import {
+  downloadFeeLineCsvTemplate,
+  exportFeeSummaryCsv,
+  mergeImportedFeeLines,
+  parseFeeLineCsv,
+} from "@/lib/fee-csv";
 import {
   openReceiptInNewTab,
   adminFeeStatementReceiptUrl,
@@ -75,6 +82,12 @@ export default function StudentFeesEditor() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStandard, setFilterStandard] = useState("all");
   const [filterFeeStatus, setFilterFeeStatus] = useState<"all" | FeeAccountStatus>("all");
+  const [importing, setImporting] = useState(false);
+  const [bulkStandard, setBulkStandard] = useState("all");
+  const [bulkLabel, setBulkLabel] = useState("");
+  const [bulkCategory, setBulkCategory] = useState<FeeLineItem["category"]>("tuition");
+  const [bulkAmount, setBulkAmount] = useState("");
+  const [bulkDueDate, setBulkDueDate] = useState("");
 
   const summaries = useMemo(() => {
     const map = new Map(accounts.map((a) => [a.studentId, a]));
@@ -250,6 +263,91 @@ export default function StudentFeesEditor() {
     setEditingId(studentId);
   }
 
+  function applyBulkFeeToClass() {
+    const label = bulkLabel.trim();
+    const amount = parseAmount(bulkAmount);
+    if (!label) {
+      setStatus("Enter a fee name for bulk assign.");
+      return;
+    }
+    if (amount <= 0) {
+      setStatus("Enter a valid amount for bulk assign.");
+      return;
+    }
+    const targets = students.filter((s) => bulkStandard === "all" || s.standard === bulkStandard);
+    if (targets.length === 0) {
+      setStatus("No students in the selected class.");
+      return;
+    }
+    const targetIds = new Set(targets.map((s) => s.id));
+    setAccounts((list) => {
+      const byId = new Map(list.map((a) => [a.studentId, a]));
+      for (const id of targetIds) {
+        const account = byId.get(id) ?? emptyFeeAccount(id, academicYear);
+        const item: FeeLineItem = {
+          id: feeUid("fee"),
+          label,
+          category: bulkCategory,
+          amount,
+          dueDate: bulkDueDate || undefined,
+        };
+        byId.set(id, { ...account, lineItems: [...account.lineItems, item] });
+      }
+      const merged = list.map((a) => byId.get(a.studentId) ?? a);
+      for (const id of targetIds) {
+        if (!list.some((a) => a.studentId === id)) {
+          merged.push(byId.get(id)!);
+        }
+      }
+      return merged;
+    });
+    setStatus(`Added "${label}" to ${targets.length} student(s). Click Save All Fee Accounts.`);
+  }
+
+  async function handleFeeCsvImport(file: File) {
+    setImporting(true);
+    setStatus("");
+    try {
+      const text = await file.text();
+      const { rows, errors } = parseFeeLineCsv(text);
+      if (errors.length) {
+        setStatus(errors.slice(0, 5).join(" ") + (errors.length > 5 ? ` (+${errors.length - 5} more)` : ""));
+        return;
+      }
+      if (rows.length === 0) {
+        setStatus("No fee rows found in file.");
+        return;
+      }
+      const { merged, added, skipped, unknownLogins } = mergeImportedFeeLines(accounts, students, academicYear, rows);
+      setAccounts(merged);
+      let msg = `Imported ${added} fee item(s).`;
+      if (skipped) msg += ` Skipped ${skipped} (unknown loginId).`;
+      if (unknownLogins.length) {
+        msg += ` Unknown IDs: ${unknownLogins.slice(0, 3).join(", ")}${unknownLogins.length > 3 ? "…" : ""}.`;
+      }
+      msg += " Click Save All Fee Accounts.";
+      setStatus(msg);
+    } catch {
+      setStatus("Could not read CSV file.");
+    } finally {
+      setImporting(false);
+    }
+  }
+
+  function exportFeeSummary() {
+    exportFeeSummaryCsv(
+      summaries.map(({ student, totalDue, totalPaid, balance, status: feeStatus }) => ({
+        loginId: student.loginId,
+        name: student.name,
+        standard: student.standard,
+        totalDue,
+        totalPaid,
+        balance,
+        status: feeStatus,
+      }))
+    );
+  }
+
   const editingDue = editing?.lineItems.reduce((s, i) => s + i.amount, 0) ?? 0;
   const editingPaid = editing?.payments.reduce((s, p) => s + p.amount, 0) ?? 0;
   const editingBalance = Math.max(0, editingDue - editingPaid);
@@ -333,6 +431,101 @@ export default function StudentFeesEditor() {
                 Showing {filteredSummaries.length} of {students.length} students
               </p>
             )}
+
+            <div className="admin-bulk-panel mt-3 p-3 border rounded bg-light">
+              <p className="small fw-semibold mb-2">
+                <i className="fas fa-layer-group me-1 text-orange" />
+                Bulk assign fee
+              </p>
+              <p className="small text-muted mb-2">
+                Add the same fee item to every student in a class (or all students). Save when done.
+              </p>
+              <div className="row g-2 align-items-end">
+                <div className="col-md-2">
+                  <label className="form-label small mb-1">Class</label>
+                  <select
+                    className="form-select form-select-sm"
+                    value={bulkStandard}
+                    onChange={(e) => setBulkStandard(e.target.value)}
+                  >
+                    <option value="all">All students</option>
+                    {STUDENT_STANDARDS.map((s) => (
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="col-md-3">
+                  <label className="form-label small mb-1">Fee name</label>
+                  <input
+                    className="form-control form-control-sm"
+                    value={bulkLabel}
+                    onChange={(e) => setBulkLabel(e.target.value)}
+                    placeholder="Term 1 Tuition"
+                  />
+                </div>
+                <div className="col-md-2">
+                  <label className="form-label small mb-1">Category</label>
+                  <select
+                    className="form-select form-select-sm"
+                    value={bulkCategory}
+                    onChange={(e) => setBulkCategory(e.target.value as FeeLineItem["category"])}
+                  >
+                    {FEE_CATEGORIES.map((c) => (
+                      <option key={c.value} value={c.value}>
+                        {c.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="col-md-2">
+                  <label className="form-label small mb-1">Amount (₹)</label>
+                  <input
+                    type="number"
+                    min={0}
+                    className="form-control form-control-sm"
+                    value={bulkAmount}
+                    onChange={(e) => setBulkAmount(e.target.value)}
+                    placeholder="15000"
+                  />
+                </div>
+                <div className="col-md-2">
+                  <label className="form-label small mb-1">Due date</label>
+                  <input
+                    type="date"
+                    className="form-control form-control-sm admin-date-input"
+                    value={bulkDueDate}
+                    onChange={(e) => setBulkDueDate(e.target.value)}
+                  />
+                </div>
+                <div className="col-md-1">
+                  <button
+                    type="button"
+                    className="btn btn-orange btn-sm w-100"
+                    disabled={saving || importing}
+                    onClick={applyBulkFeeToClass}
+                  >
+                    Apply
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <AdminBulkCsvPanel
+              hint={
+                <>
+                  Import fee line items by student login ID, or export a summary of all balances. Unknown login IDs are
+                  skipped.
+                </>
+              }
+              uploading={importing}
+              uploadDisabled={saving}
+              onDownloadTemplate={downloadFeeLineCsvTemplate}
+              onExport={exportFeeSummary}
+              exportDisabled={students.length === 0}
+              onFileSelected={(file) => void handleFeeCsvImport(file)}
+            />
           </div>
         )}
 
