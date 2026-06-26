@@ -147,6 +147,21 @@
       "imageFit": "cover",
       "imageFocusX": 50,
       "imageFocusY": 25
+    },
+    {
+      "id": "s5c6o057",
+      "imageUrl": "",
+      "caption": "New Slide",
+      "alt": "Slide",
+      "title": "New Slide",
+      "description": "",
+      "eyebrow": "",
+      "linkUrl": "/admissions",
+      "linkText": "Learn More",
+      "imagePosition": "right",
+      "imageFit": "cover",
+      "imageFocusX": 50,
+      "imageFocusY": 32
     }
   ],
   "programs": [
