@@ -387,7 +387,7 @@
       "videoUrl": "C:\\Users\\growi",
       "thumbnailUrl": "https://growingmindsschool.org/api/storage/uploads/1783152133024-Screenshot_2026-07-04_133154.png",
       "category": "activities",
-      "featured": true
+      "featured": false
     },
     {
       "id": "qugmsysa",
@@ -396,7 +396,7 @@
       "videoUrl": "C:\\Users\\growi\\Downloads",
       "thumbnailUrl": "",
       "category": "tour",
-      "featured": false
+      "featured": true
     }
   ],
   "news": [
