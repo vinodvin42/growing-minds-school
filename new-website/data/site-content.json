@@ -381,20 +381,11 @@
   ],
   "videos": [
     {
-      "id": "731kzbtt",
-      "title": "Nur Edits",
-      "description": "",
-      "videoUrl": "",
-      "thumbnailUrl": "https://growingmindsschool.org/api/storage/uploads/1783153139875-WhatsApp_Video_2026-07-04_at_13.26.24.mp4",
-      "category": "activities",
-      "featured": false
-    },
-    {
       "id": "qugmsysa",
       "title": "School Journey begins",
       "description": "",
       "videoUrl": "C:\\Users\\growi\\Downloads",
-      "thumbnailUrl": "https://growingmindsschool.org/api/storage/uploads/1783152770386-Screenshot_2026-07-04_134233.png",
+      "thumbnailUrl": "https://growingmindsschool.org/api/storage/uploads/1783153190246-WhatsApp_Video_2026-07-04_at_13.26.24.mp4",
       "category": "tour",
       "featured": true
     }
