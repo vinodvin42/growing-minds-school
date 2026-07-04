@@ -387,6 +387,15 @@
       "videoUrl": "C:\\Users\\growi",
       "thumbnailUrl": "https://growingmindsschool.org/api/storage/uploads/1783152133024-Screenshot_2026-07-04_133154.png",
       "category": "activities",
+      "featured": false
+    },
+    {
+      "id": "qugmsysa",
+      "title": "School Journey begins",
+      "description": "",
+      "videoUrl": "C:\\Users\\growi\\Downloads",
+      "thumbnailUrl": "",
+      "category": "tour",
       "featured": true
     }
   ],
