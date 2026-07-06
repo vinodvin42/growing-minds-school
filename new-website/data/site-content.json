@@ -15,10 +15,10 @@
     "heroTitle": "Growing Minds",
     "heroHighlight": "English School",
     "heroTagline": "Where Little Steps Lead to Bigger Dreams 🌈",
-    "heroDescription": "We nurture curiosity, confidence, creativity, and strong values through quality English-medium education. From Nursery to Grade 8, every child is encouraged to learn, grow, and shine in a safe and caring environment.",
+    "heroDescription": "We nurture curiosity, confidence, creativity, and strong values through quality English-medium education. From Nursery to Grade 10, every child is encouraged to learn, grow, and shine in a safe and caring environment.",
     "admissionTitle": "🎉 Admissions Open!",
     "admissionYear": "Academic Year 2026-2027",
-    "admissionGrades": "Nursery to 8th Standard",
+    "admissionGrades": "Nursery to 10th Standard",
     "featuredVideoButtonText": "Watch Our School Tour"
   },
   "about": {
@@ -316,6 +316,14 @@
       "title": "School Opening",
       "caption": "",
       "category": "Events"
+    },
+    {
+      "id": "ytgaw8m8",
+      "imageUrl": "https://growingmindsschool.org/api/storage/uploads/1783321128000-WhatsApp_Image_2026-07-06_at_12.11.35.jpeg",
+      "alt": "Photo",
+      "title": "",
+      "caption": "",
+      "category": "Sports"
     }
   ],
   "activitiesSection": {
