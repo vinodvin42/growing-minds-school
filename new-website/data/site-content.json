@@ -263,7 +263,28 @@
     {
       "id": "ne2f4pzm",
       "name": "Shaikh Madiha ",
-      "role": "Teacher and Supervisor ",
+      "role": "Admin,Teacher and Supervisor ",
+      "experience": "",
+      "photoUrl": ""
+    },
+    {
+      "id": "kic1q8f5",
+      "name": "Salma Shaikh",
+      "role": "Teacher",
+      "experience": "10 years+ experience",
+      "photoUrl": ""
+    },
+    {
+      "id": "nccmnhk0",
+      "name": "Maryam Inamdar",
+      "role": "Teacher",
+      "experience": "",
+      "photoUrl": ""
+    },
+    {
+      "id": "0lx5gdbs",
+      "name": "New Teacher",
+      "role": "Teacher",
       "experience": "",
       "photoUrl": ""
     }
