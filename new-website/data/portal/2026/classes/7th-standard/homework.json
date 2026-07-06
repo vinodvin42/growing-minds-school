@@ -1,0 +1,24 @@
+{
+  "items": [
+    {
+      "id": "8ena9m3o",
+      "title": "Science chapter no.01 Living World and Classification",
+      "description": "Please complete this in your workbook and submit your workbook by 8 JULY 2026 for checking. Practice test will be there on 7 ",
+      "audience": "standard",
+      "standard": "7th Standard",
+      "section": "",
+      "targetStudentIds": [],
+      "attachments": [
+        {
+          "id": "1nucfuuo",
+          "fileName": "Science Study Guide_ The Living World and Classification (1).pdf",
+          "fileUrl": "https://growingmindsschool.org/api/storage/uploads/1783314088773-Science_Study_Guide__The_Living_World_and_Classification__1_.pdf"
+        }
+      ],
+      "dueDateLabel": "Tuesday, 7 July 2026",
+      "active": true,
+      "createdAt": "2026-07-06T04:56:49.051Z",
+      "dueDate": "2026-07-07"
+    }
+  ]
+}
