@@ -235,7 +235,7 @@
     {
       "id": "1",
       "name": "Mrs. Sufia Mohd Farooque bukhari",
-      "role": "Principle",
+      "role": "Principal",
       "experience": "15+ years experience",
       "photoUrl": "https://growingmindsschool.org/api/storage/uploads/1781600194144-WhatsApp_Image_2026-06-10_at_11.01.02_PM.jpeg"
     },
@@ -270,21 +270,35 @@
     {
       "id": "kic1q8f5",
       "name": "Salma Shaikh",
-      "role": "Teacher",
+      "role": "Secondary Class Teacher",
       "experience": "10 years+ experience",
       "photoUrl": ""
     },
     {
       "id": "nccmnhk0",
       "name": "Maryam Inamdar",
-      "role": "Teacher",
+      "role": "Junior Kg Class Teacher",
       "experience": "",
       "photoUrl": ""
     },
     {
       "id": "0lx5gdbs",
       "name": "Sana Idrisi",
-      "role": "Teacher",
+      "role": "Nursery Class Teacher",
+      "experience": "",
+      "photoUrl": ""
+    },
+    {
+      "id": "muwm8c9u",
+      "name": "Tarannum Khan",
+      "role": "Primary Class Teacher",
+      "experience": "",
+      "photoUrl": ""
+    },
+    {
+      "id": "behais0t",
+      "name": "Alisha Qureshi",
+      "role": "Senior Class Teacher",
       "experience": "",
       "photoUrl": ""
     }
