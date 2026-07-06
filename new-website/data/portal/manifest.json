@@ -14,6 +14,7 @@
         "ukg"
       ],
       "homeworkClassSlugs": [
+        "7th-standard",
         "all-classes"
       ],
       "messageMonths": [
@@ -104,5 +105,5 @@
       ]
     }
   },
-  "updatedAt": "2026-07-06T04:56:44.927Z"
+  "updatedAt": "2026-07-06T05:01:34.324Z"
 }
