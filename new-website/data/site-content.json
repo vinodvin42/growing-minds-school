@@ -248,17 +248,24 @@
     },
     {
       "id": "3",
-      "name": "Ms. Meera Reddy",
-      "role": "Primary Teacher",
+      "name": "Mr.Kifayat Ali Shaikh",
+      "role": "Trustee Member ",
       "experience": "8+ years experience",
       "photoUrl": "/assets/images/teacher-3.jpg"
     },
     {
       "id": "4",
-      "name": "Ms. Kavita Singh",
-      "role": "Activities Coordinator",
+      "name": "Mr.  Abrar Farooque Bukhari",
+      "role": "Trustee Member",
       "experience": "12+ years experience",
       "photoUrl": "/assets/images/teacher-4.jpg"
+    },
+    {
+      "id": "ne2f4pzm",
+      "name": "Shaikh Madiha ",
+      "role": "Teacher and Supervisor ",
+      "experience": "",
+      "photoUrl": ""
     }
   ],
   "testimonials": [
