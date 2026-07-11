@@ -3,7 +3,7 @@
     {
       "id": "stu_4t4gxknpa",
       "loginId": "Shakshi2017",
-      "passwordHash": "$2b$10$wcMkHb7Oal8uaFhgx5v.Ouhh3eOJ1IcWgS/DLE91yXI1eI5SMDHya",
+      "passwordHash": "$2b$10$.PoVRpwdOUWYrb.R/G7GZuQDiCquxF3iTSRT5tDbRdbRrjzlufz66",
       "name": "Shakshi Sanjay Chauhan",
       "standard": "5th Standard",
       "rollNumber": "75",
@@ -11,7 +11,7 @@
       "parentPhone": "9619056872",
       "active": true,
       "createdAt": "2026-06-20T10:24:37.751Z",
-      "updatedAt": "2026-07-06T04:55:44.766Z"
+      "updatedAt": "2026-07-11T03:00:12.393Z"
     }
   ]
 }
