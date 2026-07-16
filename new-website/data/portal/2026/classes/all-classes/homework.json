@@ -1,3 +1,18 @@
 {
-  "items": []
+  "items": [
+    {
+      "id": "i7silzbx",
+      "title": "Maths Homework ",
+      "description": "Sr.KG\nMaths notebook : Missing Number H.W\nMaths work book: Square page no:12 H.W",
+      "audience": "standard",
+      "standard": "All",
+      "section": "",
+      "targetStudentIds": [],
+      "attachments": [],
+      "dueDateLabel": "Friday 17 July, 2026",
+      "active": true,
+      "createdAt": "2026-07-16T13:51:39.639Z",
+      "dueDate": "2026-07-17"
+    }
+  ]
 }
