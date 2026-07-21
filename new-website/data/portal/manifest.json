@@ -20,7 +20,8 @@
         "ukg"
       ],
       "messageMonths": [
-        "2026/06"
+        "2026/06",
+        "2026/07"
       ],
       "feeStudentIds": [
         "stu_0ewjzqgvr",
@@ -107,5 +108,5 @@
       ]
     }
   },
-  "updatedAt": "2026-07-21T02:45:33.090Z"
+  "updatedAt": "2026-07-21T02:45:34.954Z"
 }
