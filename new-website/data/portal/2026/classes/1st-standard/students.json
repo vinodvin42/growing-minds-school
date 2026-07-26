@@ -6,12 +6,12 @@
       "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Isal Saddam Ansari",
       "standard": "1st Standard",
-      "rollNumber": "65",
+      "rollNumber": "01",
       "parentName": "Saddam Ansari",
       "parentPhone": "7715049213",
       "active": true,
       "createdAt": "2026-06-20T09:51:12.598Z",
-      "updatedAt": "2026-07-26T14:47:04.976Z"
+      "updatedAt": "2026-07-26T14:50:40.934Z"
     },
     {
       "id": "stu_zvq1sxwnc",
@@ -19,12 +19,12 @@
       "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Mohammed Khizar Afzal Haji Attar",
       "standard": "1st Standard",
-      "rollNumber": "66",
+      "rollNumber": "02",
       "parentName": "Mohd Afzal Haji Attar",
       "parentPhone": "9930543232",
       "active": true,
       "createdAt": "2026-06-20T09:56:09.428Z",
-      "updatedAt": "2026-07-26T14:47:04.976Z"
+      "updatedAt": "2026-07-26T14:50:40.934Z"
     },
     {
       "id": "stu_6zhempb2d",
@@ -32,12 +32,12 @@
       "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Altaf Jamirul Haq Fazal",
       "standard": "1st Standard",
-      "rollNumber": "67",
+      "rollNumber": "03",
       "parentName": "Jamirul Haq Fazal",
       "parentPhone": "9167002836",
       "active": true,
       "createdAt": "2026-06-20T10:07:15.136Z",
-      "updatedAt": "2026-07-26T14:47:04.976Z"
+      "updatedAt": "2026-07-26T14:50:40.934Z"
     },
     {
       "id": "stu_zfrslhdmw",
@@ -45,12 +45,12 @@
       "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Harsh Sanjay Chauhan",
       "standard": "1st Standard",
-      "rollNumber": "68",
+      "rollNumber": "04",
       "parentName": "Sanjay Chauhan",
       "parentPhone": "9619056872",
       "active": true,
       "createdAt": "2026-06-20T10:08:45.766Z",
-      "updatedAt": "2026-07-26T14:47:04.976Z"
+      "updatedAt": "2026-07-26T14:50:40.934Z"
     },
     {
       "id": "stu_udcgraumz",
@@ -58,12 +58,12 @@
       "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Arhab Faheem Sayyed",
       "standard": "1st Standard",
-      "rollNumber": "69",
+      "rollNumber": "05",
       "parentName": "Faheem Sayyed",
       "parentPhone": "9152404867",
       "active": true,
       "createdAt": "2026-06-20T10:10:48.117Z",
-      "updatedAt": "2026-07-26T14:47:04.976Z"
+      "updatedAt": "2026-07-26T14:50:40.934Z"
     },
     {
       "id": "stu_4qzmaa2nt",
@@ -71,12 +71,12 @@
       "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Adina Mohd Shafi Shaikh",
       "standard": "1st Standard",
-      "rollNumber": "70",
+      "rollNumber": "06",
       "parentName": "Mohd Shafi Shaikh",
       "parentPhone": "9967372644",
       "active": true,
       "createdAt": "2026-06-20T10:12:10.811Z",
-      "updatedAt": "2026-07-26T14:47:04.976Z"
+      "updatedAt": "2026-07-26T14:50:40.934Z"
     },
     {
       "id": "stu_rn3tvk4be",
@@ -84,12 +84,12 @@
       "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Anaya Mohd Shafi Shaikh",
       "standard": "1st Standard",
-      "rollNumber": "71",
+      "rollNumber": "07",
       "parentName": "Mohd Shafi Shaikh",
       "parentPhone": "9967375664",
       "active": true,
       "createdAt": "2026-06-20T10:13:50.716Z",
-      "updatedAt": "2026-07-26T14:47:04.976Z"
+      "updatedAt": "2026-07-26T14:50:40.934Z"
     },
     {
       "id": "stu_69slqqlgn",
@@ -97,12 +97,12 @@
       "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Javeria Matin Patel",
       "standard": "1st Standard",
-      "rollNumber": "72",
+      "rollNumber": "08",
       "parentName": "Javed Matin Patel",
       "parentPhone": "9881443725",
       "active": true,
       "createdAt": "2026-06-20T10:16:47.002Z",
-      "updatedAt": "2026-07-26T14:47:04.976Z"
+      "updatedAt": "2026-07-26T14:50:40.934Z"
     },
     {
       "id": "stu_uhqffsl9f",
@@ -110,11 +110,12 @@
       "passwordHash": "$2b$10$DSwKraOza5lKd8fyAEYBH.CeiY6UgWc.fgxffyQJ/UGcY9lnqtvpa",
       "name": "Hammad Khan",
       "standard": "1st Standard",
+      "rollNumber": "09",
       "parentName": "Ajizurrahman Khan",
       "parentPhone": "9137553821",
       "active": true,
       "createdAt": "2026-07-25T07:05:54.768Z",
-      "updatedAt": "2026-07-26T14:47:04.976Z"
+      "updatedAt": "2026-07-26T14:50:40.934Z"
     },
     {
       "id": "stu_115nm4rlz",
@@ -122,11 +123,12 @@
       "passwordHash": "$2b$10$haamJV828osZzKiHlkm67uRtSwX43A0utjoV4KVQ9qTKTfC2lHBu2",
       "name": "Aairah Matloob Khan",
       "standard": "1st Standard",
+      "rollNumber": "10",
       "parentName": "Matloob Khan",
       "parentPhone": "8104284133",
       "active": true,
       "createdAt": "2026-07-25T08:25:37.884Z",
-      "updatedAt": "2026-07-26T14:47:04.976Z"
+      "updatedAt": "2026-07-26T14:50:40.934Z"
     }
   ]
 }

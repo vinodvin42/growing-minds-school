@@ -6,12 +6,12 @@
       "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Rabia Ammar Ahmad Ansari",
       "standard": "UKG",
-      "rollNumber": "45",
+      "rollNumber": "01",
       "parentName": "Ammar Ahmad Ansari",
       "parentPhone": "9870198458",
       "active": true,
       "createdAt": "2026-06-20T08:12:10.091Z",
-      "updatedAt": "2026-07-26T14:47:04.976Z"
+      "updatedAt": "2026-07-26T14:50:40.934Z"
     },
     {
       "id": "stu_vp0wu7u80",
@@ -19,12 +19,12 @@
       "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Fatima Tahir Khan",
       "standard": "UKG",
-      "rollNumber": "46",
+      "rollNumber": "02",
       "parentName": "Tahir Khan",
       "parentPhone": "9326465119",
       "active": true,
       "createdAt": "2026-06-20T08:14:27.786Z",
-      "updatedAt": "2026-07-26T14:47:04.976Z"
+      "updatedAt": "2026-07-26T14:50:40.934Z"
     },
     {
       "id": "stu_5psp2gasv",
@@ -32,12 +32,12 @@
       "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Arhan Tasdik Patel",
       "standard": "UKG",
-      "rollNumber": "47",
+      "rollNumber": "03",
       "parentName": "Tasdik Patel",
       "parentPhone": "8149353988",
       "active": true,
       "createdAt": "2026-06-20T08:16:37.849Z",
-      "updatedAt": "2026-07-26T14:47:04.976Z"
+      "updatedAt": "2026-07-26T14:50:40.934Z"
     },
     {
       "id": "stu_c3vjyy8jq",
@@ -45,12 +45,12 @@
       "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Sara Noor Ahmed Ansari",
       "standard": "UKG",
-      "rollNumber": "48",
+      "rollNumber": "04",
       "parentName": "Noor Ahmed Ansari",
       "parentPhone": "8108614518",
       "active": true,
       "createdAt": "2026-06-20T08:18:29.936Z",
-      "updatedAt": "2026-07-26T14:47:04.976Z"
+      "updatedAt": "2026-07-26T14:50:40.934Z"
     },
     {
       "id": "stu_8lc4dnemy",
@@ -58,12 +58,12 @@
       "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Hammad Ali Salamat Ali Sayed",
       "standard": "UKG",
-      "rollNumber": "49",
+      "rollNumber": "05",
       "parentName": "Salamat Ali Sayed",
       "parentPhone": "9222113241",
       "active": true,
       "createdAt": "2026-06-20T08:20:53.990Z",
-      "updatedAt": "2026-07-26T14:47:04.976Z"
+      "updatedAt": "2026-07-26T14:50:40.934Z"
     },
     {
       "id": "stu_48jn8ht1d",
@@ -71,12 +71,12 @@
       "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Rohana Wasim Khan",
       "standard": "UKG",
-      "rollNumber": "50",
+      "rollNumber": "06",
       "parentName": "Wasim Amin Khan",
       "parentPhone": "9768937229",
       "active": true,
       "createdAt": "2026-06-20T08:22:20.369Z",
-      "updatedAt": "2026-07-26T14:47:04.976Z"
+      "updatedAt": "2026-07-26T14:50:40.934Z"
     },
     {
       "id": "stu_urc384xru",
@@ -84,12 +84,12 @@
       "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Arishfa JamirulHak Parveen",
       "standard": "UKG",
-      "rollNumber": "51",
+      "rollNumber": "07",
       "parentName": "JamirulHak Parveen",
       "parentPhone": "9167002836",
       "active": true,
       "createdAt": "2026-06-20T08:25:06.996Z",
-      "updatedAt": "2026-07-26T14:47:04.976Z"
+      "updatedAt": "2026-07-26T14:50:40.934Z"
     },
     {
       "id": "stu_5i7r7xnd3",
@@ -97,12 +97,12 @@
       "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Sadik Sameer Ansari",
       "standard": "UKG",
-      "rollNumber": "52",
+      "rollNumber": "08",
       "parentName": "Sameer Ansari",
       "parentPhone": "9324641499",
       "active": true,
       "createdAt": "2026-06-20T08:26:14.116Z",
-      "updatedAt": "2026-07-26T14:47:04.976Z"
+      "updatedAt": "2026-07-26T14:50:40.934Z"
     },
     {
       "id": "stu_9z6888cbe",
@@ -110,12 +110,12 @@
       "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Suzain Noorulhuda Shaikh",
       "standard": "UKG",
-      "rollNumber": "53",
+      "rollNumber": "09",
       "parentName": "Noorulhuda Shaikh",
       "parentPhone": "7738089364",
       "active": true,
       "createdAt": "2026-06-20T08:27:55.240Z",
-      "updatedAt": "2026-07-26T14:47:04.976Z"
+      "updatedAt": "2026-07-26T14:50:40.934Z"
     },
     {
       "id": "stu_dnrfo1z7b",
@@ -123,12 +123,12 @@
       "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Anaiza Asif Shaikh",
       "standard": "UKG",
-      "rollNumber": "54",
+      "rollNumber": "10",
       "parentName": "Asif Shaikh",
       "parentPhone": "8879149543",
       "active": true,
       "createdAt": "2026-06-20T08:30:23.228Z",
-      "updatedAt": "2026-07-26T14:47:04.976Z"
+      "updatedAt": "2026-07-26T14:50:40.934Z"
     },
     {
       "id": "stu_cv7ygaovr",
@@ -136,12 +136,12 @@
       "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Hasan Mohd Sagir Ansari",
       "standard": "UKG",
-      "rollNumber": "55",
+      "rollNumber": "11",
       "parentName": "Mohd Sagir Shahkat Ali Ansari",
       "parentPhone": "9892831309",
       "active": true,
       "createdAt": "2026-06-20T08:32:48.468Z",
-      "updatedAt": "2026-07-26T14:47:04.976Z"
+      "updatedAt": "2026-07-26T14:50:40.934Z"
     },
     {
       "id": "stu_cor54if5b",
@@ -149,12 +149,12 @@
       "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Anabiya Sultan Khan",
       "standard": "UKG",
-      "rollNumber": "56",
+      "rollNumber": "12",
       "parentName": "Sultan Khan",
       "parentPhone": "9967336398",
       "active": true,
       "createdAt": "2026-06-20T08:34:41.610Z",
-      "updatedAt": "2026-07-26T14:47:04.976Z"
+      "updatedAt": "2026-07-26T14:50:40.934Z"
     },
     {
       "id": "stu_5ymy1lq1u",
@@ -162,12 +162,12 @@
       "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Fayha Parveez Qureshi",
       "standard": "UKG",
-      "rollNumber": "57",
+      "rollNumber": "13",
       "parentName": "Parveez Qureshi",
       "parentPhone": "858978805",
       "active": true,
       "createdAt": "2026-06-20T08:38:45.971Z",
-      "updatedAt": "2026-07-26T14:47:04.976Z"
+      "updatedAt": "2026-07-26T14:50:40.934Z"
     },
     {
       "id": "stu_zqm23w0c3",
@@ -175,12 +175,12 @@
       "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Yusra Moinuddin Zardi",
       "standard": "UKG",
-      "rollNumber": "58",
+      "rollNumber": "14",
       "parentName": "Moinuddin Zardi",
       "parentPhone": "9967286384",
       "active": true,
       "createdAt": "2026-06-20T08:41:12.638Z",
-      "updatedAt": "2026-07-26T14:47:04.976Z"
+      "updatedAt": "2026-07-26T14:50:40.934Z"
     },
     {
       "id": "stu_vvl9urf6i",
@@ -188,12 +188,12 @@
       "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Zohra Mohd Sajid Khan",
       "standard": "UKG",
-      "rollNumber": "59",
+      "rollNumber": "15",
       "parentName": "Mohd Sajid Khan",
       "parentPhone": "8424048198",
       "active": true,
       "createdAt": "2026-06-20T08:43:39.588Z",
-      "updatedAt": "2026-07-26T14:47:04.976Z"
+      "updatedAt": "2026-07-26T14:50:40.934Z"
     },
     {
       "id": "stu_hdmekvago",
@@ -201,12 +201,12 @@
       "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "MuhammdArsh Wasim Ansari",
       "standard": "UKG",
-      "rollNumber": "60",
+      "rollNumber": "16",
       "parentName": "Wasim Mobin Ansari",
       "parentPhone": "9967433507",
       "active": true,
       "createdAt": "2026-06-20T08:47:29.975Z",
-      "updatedAt": "2026-07-26T14:47:04.976Z"
+      "updatedAt": "2026-07-26T14:50:40.934Z"
     },
     {
       "id": "stu_0wq5bimo1",
@@ -214,12 +214,12 @@
       "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Usman Shadab Ansari",
       "standard": "UKG",
-      "rollNumber": "61",
+      "rollNumber": "17",
       "parentName": "Shadab Ansari",
       "parentPhone": "9084052156",
       "active": true,
       "createdAt": "2026-06-20T08:49:33.888Z",
-      "updatedAt": "2026-07-26T14:47:04.976Z"
+      "updatedAt": "2026-07-26T14:50:40.934Z"
     },
     {
       "id": "stu_xsvbumgi5",
@@ -227,12 +227,12 @@
       "passwordHash": "$2b$10$t/67wBEtIa/07VDcpUabPu2mGWDD3RSFndlL5XzDAAvrizTyENqiO",
       "name": "Faizan Mehboob Ansari",
       "standard": "UKG",
-      "rollNumber": "62",
+      "rollNumber": "18",
       "parentName": "Mehboob Ansari",
       "parentPhone": "9987264854",
       "active": true,
       "createdAt": "2026-06-20T08:51:07.234Z",
-      "updatedAt": "2026-07-26T14:47:04.976Z"
+      "updatedAt": "2026-07-26T14:50:40.934Z"
     }
   ]
 }

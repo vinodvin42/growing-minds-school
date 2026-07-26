@@ -6,12 +6,12 @@
       "passwordHash": "$2b$10$RntmwVBFVopBBkq39dGDseVdbAWAmNdRZnYIJhAEgB8xXb0ihsNZW",
       "name": "Ashna Imran Shaikh",
       "standard": "6th Standard",
-      "rollNumber": "76",
+      "rollNumber": "01",
       "parentName": "Imran Shaikh",
       "parentPhone": "8424090049",
       "active": true,
       "createdAt": "2026-06-20T10:26:31.126Z",
-      "updatedAt": "2026-07-26T14:47:04.976Z"
+      "updatedAt": "2026-07-26T14:50:40.934Z"
     },
     {
       "id": "stu_bzkisv9jb",
@@ -19,12 +19,12 @@
       "passwordHash": "$2b$10$eU1RJkHGH8746lwGh.PF6O0J.qLwQXMCuiuLtVq9WXQYIkhJKvxV6",
       "name": "Pritam Pradeep Singh",
       "standard": "6th Standard",
-      "rollNumber": "77",
+      "rollNumber": "02",
       "parentName": "Pradeep Singh",
       "parentPhone": "9137247487",
       "active": true,
       "createdAt": "2026-06-20T10:28:11.811Z",
-      "updatedAt": "2026-07-26T14:47:04.976Z"
+      "updatedAt": "2026-07-26T14:50:40.934Z"
     },
     {
       "id": "stu_6fs1i2htb",
@@ -32,12 +32,12 @@
       "passwordHash": "$2b$10$7Jna3r96DGJagawnEkErs.w3Vnc1BfS8NkGDLGgOAf.eCYDIkdDam",
       "name": "Mohd Hanzala Wasim Ahmed Khan",
       "standard": "6th Standard",
-      "rollNumber": "78",
+      "rollNumber": "03",
       "parentName": "Wasim Ahmed Khan",
       "parentPhone": "7738742887",
       "active": true,
       "createdAt": "2026-06-20T10:30:37.352Z",
-      "updatedAt": "2026-07-26T14:47:04.976Z"
+      "updatedAt": "2026-07-26T14:50:40.934Z"
     }
   ]
 }

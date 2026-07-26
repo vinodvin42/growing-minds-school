@@ -6,12 +6,12 @@
       "passwordHash": "$2b$10$oOKCBu6Bu4/2DtDSLdjze.A46ZC7UhTVWMGyQYVL.NDVLcHzpPz7y",
       "name": "Aliya Sharif Shaikh",
       "standard": "7th Standard",
-      "rollNumber": "79",
+      "rollNumber": "01",
       "parentName": "Sharif Shaikh",
       "parentPhone": "7718965771",
       "active": true,
       "createdAt": "2026-06-20T10:36:27.661Z",
-      "updatedAt": "2026-07-26T14:47:04.976Z"
+      "updatedAt": "2026-07-26T14:50:40.934Z"
     },
     {
       "id": "stu_zlyxe9xns",
@@ -19,12 +19,12 @@
       "passwordHash": "$2b$10$cWaLgxhqQ4ITrv.1GYviKeasM/1pWFnvpAQtOSftwXhkGFfwzKztG",
       "name": "Azaan Imran Shaikh",
       "standard": "7th Standard",
-      "rollNumber": "80",
+      "rollNumber": "02",
       "parentName": "Imran Shaikh",
       "parentPhone": "9967179218",
       "active": true,
       "createdAt": "2026-06-20T10:37:51.067Z",
-      "updatedAt": "2026-07-26T14:47:04.976Z"
+      "updatedAt": "2026-07-26T14:50:40.934Z"
     }
   ]
 }
