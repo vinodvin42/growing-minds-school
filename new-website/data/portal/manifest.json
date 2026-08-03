@@ -14,6 +14,7 @@
         "ukg"
       ],
       "homeworkClassSlugs": [
+        "2nd-standard",
         "7th-standard",
         "all-classes",
         "lkg",
@@ -108,5 +109,5 @@
       ]
     }
   },
-  "updatedAt": "2026-07-30T17:36:08.508Z"
+  "updatedAt": "2026-08-03T11:29:34.752Z"
 }
