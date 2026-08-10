@@ -1,0 +1,23 @@
+{
+  "items": [
+    {
+      "id": "4v7l2j6t",
+      "kind": "broadcast",
+      "title": "Nursery Examination ",
+      "body": "",
+      "audience": "standard",
+      "standard": "Nursery",
+      "section": "",
+      "targetStudentIds": [],
+      "attachments": [
+        {
+          "id": "h61a17mi",
+          "fileName": "IMG-20260810-WA0001.jpg",
+          "fileUrl": "https://growingmindsschool.org/api/storage/uploads/1786357829459-IMG-20260810-WA0001.jpg"
+        }
+      ],
+      "active": true,
+      "createdAt": "2026-08-10T10:30:02.093Z"
+    }
+  ]
+}
