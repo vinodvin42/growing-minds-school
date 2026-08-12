@@ -1,6 +1,20 @@
 {
   "items": [
     {
+      "id": "fkx7a3oe",
+      "title": "Homework for JR.KG",
+      "description": "12/8/26\n\nMaths workbook \nHw- pg no. 37,38,39and 43 Colour the star\n\nEnglish notebook\nHw- Match with objects",
+      "audience": "standard",
+      "standard": "All",
+      "section": "",
+      "targetStudentIds": [],
+      "attachments": [],
+      "dueDateLabel": "Thursday, 13 August 2026",
+      "active": true,
+      "createdAt": "2026-08-12T12:30:30.775Z",
+      "dueDate": "2026-08-13"
+    },
+    {
       "id": "72755v27",
       "title": "Nursery Homework ",
       "description": "30/7/26\n\nMaths workbook\nCw- pg no. 19 \nHw-pg no. 20\n\nMaths notebook\nCw- left curve \nHw- left curve",
