@@ -11,12 +11,12 @@
       "parentPhone": "7718965771",
       "active": true,
       "createdAt": "2026-06-20T10:36:27.661Z",
-      "updatedAt": "2026-08-18T04:11:48.606Z"
+      "updatedAt": "2026-08-20T03:26:51.530Z"
     },
     {
       "id": "stu_zlyxe9xns",
       "loginId": "Azaan2014",
-      "passwordHash": "$2b$10$cWaLgxhqQ4ITrv.1GYviKeasM/1pWFnvpAQtOSftwXhkGFfwzKztG",
+      "passwordHash": "$2b$10$Gch5OpUlX57//sUHSp/S4.WSp3L7ajDRkDNqJiAhqgnbKNOaJYBSG",
       "name": "Azaan Imran Shaikh",
       "standard": "7th Standard",
       "rollNumber": "02",
@@ -24,7 +24,7 @@
       "parentPhone": "9967179218",
       "active": true,
       "createdAt": "2026-06-20T10:37:51.067Z",
-      "updatedAt": "2026-08-18T04:11:48.606Z"
+      "updatedAt": "2026-08-20T03:26:51.530Z"
     }
   ]
 }
