@@ -1,6 +1,19 @@
 {
   "items": [
     {
+      "id": "pryy04yh",
+      "kind": "broadcast",
+      "title": "Please clear all fees dues ",
+      "body": "Dear Parents,\n\nThis is a humble request to please clear the outstanding fee amount on or before 28 August 2026 (Friday). The payment is already overdue, and we kindly request your cooperation.\n\nPlease ensure that the fees are paid at least up to the month of July as soon as possible.\n\nAfter making the payment online, kindly send the payment screenshot along with your child's name to my personal number for confirmation.\n\nYour prompt cooperation is highly appreciated.\n\nThank you.",
+      "audience": "all",
+      "standard": "All",
+      "section": "",
+      "targetStudentIds": [],
+      "attachments": [],
+      "active": true,
+      "createdAt": "2026-08-24T09:47:25.356Z"
+    },
+    {
       "id": "4psrob97",
       "kind": "broadcast",
       "title": "Vacation list",
