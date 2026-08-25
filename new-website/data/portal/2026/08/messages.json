@@ -1,6 +1,19 @@
 {
   "items": [
     {
+      "id": "xd3bc3pk",
+      "kind": "broadcast",
+      "title": "Holiday ",
+      "body": "Dear Parents,\n\nPlease note that tomorrow, Thursday, 26th, will be a holiday on account of Eid Milad-un-Nabi.",
+      "audience": "all",
+      "standard": "All",
+      "section": "",
+      "targetStudentIds": [],
+      "attachments": [],
+      "active": true,
+      "createdAt": "2026-08-25T13:06:55.642Z"
+    },
+    {
       "id": "pryy04yh",
       "kind": "broadcast",
       "title": "Please clear all fees dues ",
