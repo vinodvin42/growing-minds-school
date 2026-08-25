@@ -1,8 +1,26 @@
 {
   "studentId": "stu_1f2bw517p",
   "academicYear": "2026",
-  "lineItems": [],
-  "payments": [],
+  "lineItems": [
+    {
+      "id": "fee_oil262mee",
+      "label": "",
+      "category": "tuition",
+      "amount": 0,
+      "dueDate": "",
+      "notes": ""
+    }
+  ],
+  "payments": [
+    {
+      "id": "pay_dot09tvkk",
+      "date": "2026-06-15",
+      "amount": 20000,
+      "mode": "cash",
+      "reference": "",
+      "notes": ""
+    }
+  ],
   "notes": "",
-  "updatedAt": "2026-08-25T07:51:20.705Z"
+  "updatedAt": "2026-08-25T09:18:14.096Z"
 }
