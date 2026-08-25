@@ -2,16 +2,7 @@
   "studentId": "stu_ut6naqfa7",
   "academicYear": "2026",
   "lineItems": [],
-  "payments": [
-    {
-      "id": "pay_g5vcpstyb",
-      "date": "2026-05-12",
-      "amount": 22500,
-      "mode": "cash",
-      "reference": "",
-      "notes": ""
-    }
-  ],
+  "payments": [],
   "notes": "",
-  "updatedAt": "2026-08-25T09:18:14.096Z"
+  "updatedAt": "2026-08-25T09:23:46.000Z"
 }
