@@ -9,18 +9,26 @@
       "amount": 0,
       "dueDate": "",
       "notes": ""
+    },
+    {
+      "id": "fee_rqcnxmqyd",
+      "label": "",
+      "category": "tuition",
+      "amount": 0,
+      "dueDate": "",
+      "notes": ""
     }
   ],
   "payments": [
     {
       "id": "pay_8y1548m5k",
       "date": "2026-06-20",
-      "amount": 5000,
-      "mode": "upi",
+      "amount": 8000,
+      "mode": "cash",
       "reference": "",
       "notes": ""
     }
   ],
   "notes": "",
-  "updatedAt": "2026-06-22T10:28:21.393Z"
+  "updatedAt": "2026-08-25T07:51:20.705Z"
 }
