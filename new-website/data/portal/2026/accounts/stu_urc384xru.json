@@ -2,7 +2,16 @@
   "studentId": "stu_urc384xru",
   "academicYear": "2026",
   "lineItems": [],
-  "payments": [],
+  "payments": [
+    {
+      "id": "pay_lm2l1wrzd",
+      "date": "2026-06-02",
+      "amount": 20000,
+      "mode": "upi",
+      "reference": "",
+      "notes": ""
+    }
+  ],
   "notes": "",
-  "updatedAt": "2026-08-25T09:23:46.000Z"
+  "updatedAt": "2026-08-27T05:07:29.576Z"
 }
