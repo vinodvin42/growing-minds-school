@@ -1,6 +1,25 @@
 {
   "items": [
     {
+      "id": "oagctq1q",
+      "kind": "broadcast",
+      "title": "Raksha Bandhan ",
+      "body": "",
+      "audience": "all",
+      "standard": "All",
+      "section": "",
+      "targetStudentIds": [],
+      "attachments": [
+        {
+          "id": "kyytn8kf",
+          "fileName": "ChatGPT Image Aug 27, 2026, 03_47_46 PM.png",
+          "fileUrl": "https://growingmindsschool.org/api/storage/uploads/1787826082465-ChatGPT_Image_Aug_27__2026__03_47_46_PM.png"
+        }
+      ],
+      "active": true,
+      "createdAt": "2026-08-27T10:20:28.295Z"
+    },
+    {
       "id": "xd3bc3pk",
       "kind": "broadcast",
       "title": "Holiday ",
