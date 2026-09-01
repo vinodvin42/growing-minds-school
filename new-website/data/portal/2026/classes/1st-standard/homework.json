@@ -1,0 +1,18 @@
+{
+  "items": [
+    {
+      "id": "z04h1k9w",
+      "title": "Maths/ Hindi",
+      "description": "Maths:- learn and write tan of 3\n\nHindi and Marathi:- learn and write च  छ ज झ",
+      "audience": "standard",
+      "standard": "1st Standard",
+      "section": "",
+      "targetStudentIds": [],
+      "attachments": [],
+      "dueDateLabel": "Tuesday, 1 September 2026",
+      "active": true,
+      "createdAt": "2026-09-01T11:12:25.047Z",
+      "dueDate": "2026-09-01"
+    }
+  ]
+}
