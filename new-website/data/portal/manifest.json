@@ -18,6 +18,7 @@
         "2nd-standard",
         "4th-standard",
         "5th-standard",
+        "6th-standard",
         "7th-standard",
         "all-classes",
         "lkg",
@@ -116,5 +117,5 @@
       ]
     }
   },
-  "updatedAt": "2026-09-01T11:18:02.366Z"
+  "updatedAt": "2026-09-01T11:21:17.937Z"
 }
