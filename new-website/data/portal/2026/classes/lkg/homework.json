@@ -1,6 +1,40 @@
 {
   "items": [
     {
+      "id": "ll0jo4tf",
+      "title": "Maths notebook",
+      "description": "Numbers 1-10 ",
+      "audience": "standard",
+      "standard": "LKG",
+      "section": "",
+      "targetStudentIds": [],
+      "attachments": [
+        {
+          "id": "lwm4nqd4",
+          "fileName": "IMG-20260901-WA0016.jpg",
+          "fileUrl": "https://growingmindsschool.org/api/storage/uploads/1788257529956-IMG-20260901-WA0016.jpg"
+        }
+      ],
+      "dueDateLabel": "Wednesday, 2 September 2026",
+      "active": true,
+      "createdAt": "2026-09-01T10:11:18.501Z",
+      "dueDate": "2026-09-02"
+    },
+    {
+      "id": "kzugovfe",
+      "title": "Maths workbook",
+      "description": "Pg no. 48 \nJoin the dots to make squares. Colour them",
+      "audience": "standard",
+      "standard": "LKG",
+      "section": "",
+      "targetStudentIds": [],
+      "attachments": [],
+      "dueDateLabel": "Wednesday, 2 September 2026",
+      "active": true,
+      "createdAt": "2026-09-01T10:10:15.035Z",
+      "dueDate": "2026-09-02"
+    },
+    {
       "id": "uc3l2r56",
       "title": "Homework for JR.KG",
       "description": "10/8/26\n\nEnglish workbook:\nHw- pg no. 26,27 and 28\n\nHandwriting:\nHw- pg no. 9 [ Small c]\n\nGeneral Awareness:\nCw- pg no. 15,16,17,18 and 19. [MY BODY]",
