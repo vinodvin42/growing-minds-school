@@ -15,6 +15,7 @@
       ],
       "homeworkClassSlugs": [
         "2nd-standard",
+        "5th-standard",
         "7th-standard",
         "all-classes",
         "lkg",
@@ -113,5 +114,5 @@
       ]
     }
   },
-  "updatedAt": "2026-09-01T08:47:05.357Z"
+  "updatedAt": "2026-09-01T08:47:38.287Z"
 }
