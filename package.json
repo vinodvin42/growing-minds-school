@@ -2,5 +2,8 @@
   "private": true,
   "scripts": {
     "vercel-build": "npm --prefix new-website install && npm --prefix new-website run build"
+  },
+  "dependencies": {
+    "next": "16.2.7"
   }
 }
