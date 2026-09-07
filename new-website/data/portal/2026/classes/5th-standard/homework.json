@@ -1,6 +1,20 @@
 {
   "items": [
     {
+      "id": "424zzhtt",
+      "title": "English, maths and hindi",
+      "description": "Lesson for Tuesday \nEnglish- Chapter 10th\nThree sacks of rice\nWrite the question and answer in workbook\nWrite the given worksheet in hw.book\nMath - Basic concepts of triangles\nComplete the table write 1 time in hw.book\nHindi - chapter 9 neem\nWrite question and answer in workbook \nPrepare fir Tomorrow test\n",
+      "audience": "standard",
+      "standard": "5th Standard",
+      "section": "",
+      "targetStudentIds": [],
+      "attachments": [],
+      "dueDateLabel": "Wednesday, 9 September 2026",
+      "active": true,
+      "createdAt": "2026-09-07T10:02:20.490Z",
+      "dueDate": "2026-09-09"
+    },
+    {
       "id": "e8oppdxe",
       "title": "Hindi",
       "description": "Hindi - chapter 5\nPeturam\nQuestion and answer complete workbook \nGrammar sanghya\n Write Sanghya definition \nType of sanghya and  their 2-2 examples  in hw book\nMaths -\nBasic maths\nPrime number \nComposite number \nEven  and Odd number (2times) in hw",
